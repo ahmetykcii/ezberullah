@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="EZBERULLAH">
+  <defs>
+    <linearGradient id="ez-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="52%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#312E81"/>
+    </linearGradient>
+    <radialGradient id="ez-glow" cx="0.74" cy="0.28" r="0.55">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ez-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="50%" stop-color="#EAB308"/>
+      <stop offset="100%" stop-color="#C9A86A"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#09090B"/>
+  <rect x="36" y="36" width="440" height="440" rx="96" fill="url(#ez-bg)" stroke="#C9A86A" stroke-opacity="0.35" stroke-width="3"/>
+  <rect x="36" y="36" width="440" height="440" rx="96" fill="url(#ez-glow)"/>
+  <path d="M286 150H156V362H298" fill="none" stroke="#FAFAFA" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M156 256H256" fill="none" stroke="#FAFAFA" stroke-width="44" stroke-linecap="round"/>
+  <path d="M368 106 C372 136, 384 148, 414 152 C384 156, 372 168, 368 198 C364 168, 352 156, 322 152 C352 148, 364 136, 368 106 Z" fill="url(#ez-gold)"/>
+  <circle cx="368" cy="342" r="14" fill="#C9A86A" opacity="0.92"/>
+</svg>

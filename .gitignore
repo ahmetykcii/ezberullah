@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+node_modules/
+*.tmp
+*.backup*.json
+data/backups/
+data/sources/
+data/a2-pilot-100.json
