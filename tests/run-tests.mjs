@@ -19,6 +19,9 @@ import { resumeSaved } from '../js/learning.js';
 import * as G from '../js/grammar.js';
 import '../js/vocab-ui.js';
 import { resolveTheme } from '../js/app.js';
+import * as Auth from '../js/auth.js';
+import * as FbCfg from '../js/firebase-config.js';
+import { renderSurprise } from '../js/surprise.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
@@ -29,6 +32,15 @@ if (typeof globalThis.localStorage === 'undefined') {
     setItem: (k, v) => mem.set(String(k), String(v)),
     removeItem: (k) => mem.delete(String(k)),
     clear: () => mem.clear(),
+  };
+}
+if (typeof globalThis.sessionStorage === 'undefined') {
+  const smem = new Map();
+  globalThis.sessionStorage = {
+    getItem: (k) => (smem.has(String(k)) ? smem.get(String(k)) : null),
+    setItem: (k, v) => smem.set(String(k), String(v)),
+    removeItem: (k) => smem.delete(String(k)),
+    clear: () => smem.clear(),
   };
 }
 let pass = 0, fail = 0;
@@ -361,9 +373,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.2.1) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.3.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.2.1';"), 'SW sürümü veluno-v4.2.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.0';"), 'SW sürümü veluno-v4.3.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1270,7 +1282,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.2.1';"), 'SW sürümü veluno-v4.2.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.0';"), 'SW sürümü veluno-v4.3.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1474,6 +1486,120 @@ await test('UI Refinement: Kelime öğrenme ekranında Yavaş metni kaldırıld�
   ok(appSrc.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı korunmalı');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
   ok(css.includes('.hero-title-row{') && css.includes('.hero-sig{'), 'Başlık ve imza satır CSS kuralları korunmalı');
+});
+
+out('\n13) VELUNO v4.3 — Private Romantic Surprise & Secure Architecture');
+
+await test('Sude [1] Gizlilik ve Güvenlik: Depoda hiçbir kişisel fotoğraf, özel mesaj, şifre veya gizli anahtar bulunmamalı', async () => {
+  const fbCfgSrc = await readText('js/firebase-config.js');
+  const authSrc = await readText('js/auth.js');
+
+  // 1) Asla gerçek şifre veya servis hesabı anahtarı kaynak kodda olmamalı
+  ok(!fbCfgSrc.includes('private_key') && !fbCfgSrc.includes('service_account'), 'Firebase istemci yapılandırmasında servis hesabı veya gizli anahtar olmamalı');
+  ok(!authSrc.includes('password = "') && !authSrc.includes("password = '"), 'Sabit şifre karşılaştırması kodda bulunmamalı');
+
+  // 2) Gerçek fotoğraf veya mp3 dosyası depoya eklenmemiş olmalı
+  const fs = await import('node:fs').catch(() => null);
+  if (fs) {
+    ok(!fs.existsSync('assets/sude.jpg') && !fs.existsSync('assets/photo.jpg') && !fs.existsSync('assets/derdim.mp3'), 'Özel fotoğraf veya şarkı deposu herkese açık assets klasörüne yüklenmemeli');
+  }
+});
+
+await test('Sude [2] Firebase Güvenlik Kuralları Taslağı: storage.rules ve firestore.rules varsayılan erişimi reddetmeli', async () => {
+  const storageRules = await readText('firebase/storage.rules');
+  const firestoreRules = await readText('firebase/firestore.rules');
+
+  // Storage Kuralları
+  ok(storageRules.includes("service firebase.storage"), 'storage.rules geçerli firebase.storage servisi tanımlamalı');
+  ok(storageRules.includes("allow read, write: if false;"), 'storage.rules varsayılan olarak tüm yolları engellemeli');
+  ok(storageRules.includes("match /private/sude/{fileName}") && storageRules.includes("request.auth != null"), 'storage.rules private/sude altında yetkili UID kontrolü yapmalı');
+
+  // Firestore Kuralları
+  ok(firestoreRules.includes("service cloud.firestore"), 'firestore.rules geçerli cloud.firestore servisi tanımlamalı');
+  ok(firestoreRules.includes("allow read, write: if false;"), 'firestore.rules varsayılan olarak tüm yolları engellemeli');
+  ok(firestoreRules.includes("match /private/sude") && firestoreRules.includes("request.auth != null"), 'firestore.rules private/sude belgesi için yetkili UID kontrolü yapmalı');
+});
+
+await test('Sude [3] Yetkilendirme & Rol Davranışı: Misafir, Sude, Ahmet ve yetkisiz UID durumları', () => {
+  Auth._resetForTesting();
+
+  // 1) Misafir (Giriş yapılmamış)
+  eq(Auth.getCurrentUser(), null, 'Başlangıçta kullanıcı null olmalı');
+  eq(Auth.isLoggedIn(), false, 'Misafir isLoggedIn=false olmalı');
+  eq(Auth.isSude(), false, 'Misafir isSude=false olmalı');
+  eq(Auth.isAhmet(), false, 'Misafir isAhmet=false olmalı');
+  eq(Auth.isAuthorizedUser(), false, 'Misafir isAuthorizedUser=false olmalı');
+
+  // 2) Rastgele / yetkisiz UID
+  Auth._setMockUserForTesting({ uid: 'random-unauthorized-uid', email: 'intruder@test.com' });
+  eq(Auth.isLoggedIn(), true, 'Giriş yapmış sayılmalı');
+  eq(Auth.isSude(), false, 'Yetkisiz hesap Sude sayılmamalı');
+  eq(Auth.isAhmet(), false, 'Yetkisiz hesap Ahmet sayılmamalı');
+  eq(Auth.isAuthorizedUser(), false, 'Yetkisiz hesap isAuthorizedUser=false olmalı');
+
+  // 3) Geçersiz UID kontrol fonksiyonları
+  eq(FbCfg.isSudeUid(''), false);
+  eq(FbCfg.isAhmetUid(''), false);
+  eq(FbCfg.isAuthorizedUid('fake'), false);
+
+  Auth._resetForTesting();
+});
+
+await test('Sude [4] Sude Oturum Kalıcılığı: Yeni girişte sürpriz gösterilmeli, sayfa yenilemede zorla açılmamalı', () => {
+  Auth._resetForTesting();
+
+  // Başlangıçta oturumda görülmedi
+  eq(Auth.hasSeenSurpriseThisSession(), false, 'Yeni oturumda sürpriz henüz görülmemiş olmalı');
+
+  // Sude sürprizi gördüğünde veya devam et butonuna bastığında
+  Auth.markSurpriseSeen();
+  eq(Auth.hasSeenSurpriseThisSession(), true, 'Sürpriz görüldükten sonra true dönmeli');
+
+  // Sayfa yenilemesi oturumu korur
+  eq(Auth.hasSeenSurpriseThisSession(), true, 'Sayfa yenilendiğinde sürpriz tekrar zorla açılmamalı');
+
+  // Yeni bir giriş (login) yapıldığında sıfırlanır
+  Auth.resetSurpriseSession();
+  eq(Auth.hasSeenSurpriseThisSession(), false, 'Yeni girişte sürpriz yeniden gösterilmek üzere sıfırlanmalı');
+
+  Auth._resetForTesting();
+});
+
+await test('Sude [5] Sürpriz Ekranı Arayüzü: Just For You tasarımı, Apple sadeliği, süzülen kalpler ve müzik altyapısı', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+
+  // Arayüz bileşenleri
+  ok(surpriseSrc.includes('JUST FOR YOU') && surpriseSrc.includes('Senin için küçük bir şey hazırladım'), 'Sürpriz başlığı ve selamlama metni bulunmalı');
+  ok(surpriseSrc.includes('id="btn-open-surprise"'), 'Sürprizini Aç butonu bulunmalı');
+  ok(surpriseSrc.includes('id="jfy-revealed"') && surpriseSrc.includes('id="jfy-placeholder"'), 'Açılış aşaması ve güvenli fotoğraf yer tutucusu bulunmalı');
+  ok(surpriseSrc.includes('Gökhan Türkmen — Derdim'), 'Özel müzik çalar bilgisi bulunmalı');
+  ok(surpriseSrc.includes('VELUNO’ya Devam Et') || surpriseSrc.includes('VELUNO&#39;ya Devam Et') || surpriseSrc.includes("VELUNO'ya Devam Et"), "VELUNO'ya Devam Et çıkış butonu bulunmalı");
+
+  // CSS sınıfları (jfy-* isim alanı)
+  ok(css.includes('.jfy-page{') && css.includes('.jfy-hearts-bg{'), 'Romantik sayfa ve süzülen kalpler CSS kuralları tanımlı olmalı');
+  ok(css.includes('@keyframes jfyFloat') && css.includes('.jfy-romantic-card{'), 'Kalp animasyonları ve romantik kart tasarımı bulunmalı');
+});
+
+await test('Sude [6] Çevrimdışı ve Sıfır Bağımlılık Garantisi: Firebase olmadan VELUNO kelime, grammar ve temaları 100% çalışmalı', async () => {
+  const allWords = [...data.A2, ...data.B1, ...data.B2];
+  const activeWords = allWords.filter((w) => !w.isDraft);
+
+  // 1) Tüm eğitim verileri eksiksiz korunmalı
+  eq(activeWords.length, 2010, '2.010 aktif kelime korunmalı');
+  eq(allWords.length, 2024, '2.024 toplam kayıt korunmalı');
+  eq(G.GRAMMAR_TOPICS.length, 38, '38 Grammar dersi korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 760, '760 Grammar sorusu korunmalı');
+
+  // 2) Dört tema ve imza korunmalı
+  eq(resolveTheme('light'), 'light');
+  eq(resolveTheme('dark'), 'dark');
+  eq(resolveTheme('studio'), 'studio');
+  eq(resolveTheme('auto', true), 'dark');
+  eq(resolveTheme('auto', false), 'light');
+
+  const appSrc = await readText('js/app.js');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

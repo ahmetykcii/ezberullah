@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1) Varsayılan Güvenlik: Tüm genel okuma ve yazma işlemlerini reddet
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2) Sude & Ahmet Özel Romantik Mesaj Belgesi
+    match /private/sude {
+      // Yalnızca kimliği doğrulanmış Ahmet veya Sude mesajı okuyabilir
+      allow read: if request.auth != null && (
+        request.auth.uid == 'AHMET_FIREBASE_UID_BURAYA' ||
+        request.auth.uid == 'SUDE_FIREBASE_UID_BURAYA'
+      );
+
+      // Yalnızca Ahmet (yönetici) mesajı yazabilir ve güncelleyebilir
+      allow write: if request.auth != null &&
+        request.auth.uid == 'AHMET_FIREBASE_UID_BURAYA';
+    }
+  }
+}

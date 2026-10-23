@@ -1,0 +1,191 @@
+// VELUNO v4.3 — Authentication & Session Management
+// Sadece Ahmet ve Sude için özel hesap oturumu. Normal kullanıcılar misafir olarak çalışır.
+
+import { FIREBASE_CONFIG, AUTHORIZED_UIDS, isFirebaseConfigured, isSudeUid, isAhmetUid, isAuthorizedUid } from './firebase-config.js';
+
+const SESSION_SURPRISE_KEY = 'veluno_surprise_seen_session';
+const AUTH_STATE_KEY = 'veluno_cached_auth_state';
+
+let currentUser = null;
+let authInstance = null;
+let isInitialized = false;
+const authListeners = new Set();
+
+/* ---------- Oturum ve Sürpriz Takibi ---------- */
+export function hasSeenSurpriseThisSession() {
+  try {
+    return typeof sessionStorage !== 'undefined' && sessionStorage.getItem(SESSION_SURPRISE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export function markSurpriseSeen() {
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SESSION_SURPRISE_KEY, 'true');
+    }
+  } catch {}
+}
+
+export function resetSurpriseSession() {
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem(SESSION_SURPRISE_KEY);
+    }
+  } catch {}
+}
+
+/* ---------- Kullanıcı Bilgisi ve Yetki Kontrolleri ---------- */
+export function getCurrentUser() {
+  return currentUser;
+}
+
+export function isLoggedIn() {
+  return Boolean(currentUser && currentUser.uid);
+}
+
+export function isSude() {
+  return Boolean(currentUser && isSudeUid(currentUser.uid));
+}
+
+export function isAhmet() {
+  return Boolean(currentUser && isAhmetUid(currentUser.uid));
+}
+
+export function isAuthorizedUser() {
+  return Boolean(currentUser && isAuthorizedUid(currentUser.uid));
+}
+
+export function onAuthStateChanged(fn) {
+  if (typeof fn === 'function') {
+    authListeners.add(fn);
+    fn(currentUser);
+  }
+  return () => authListeners.delete(fn);
+}
+
+function notifyListeners() {
+  authListeners.forEach((fn) => {
+    try { fn(currentUser); } catch {}
+  });
+}
+
+/* ---------- Firebase Entegrasyonu & Güvenli Oturum Başlatma ---------- */
+export async function initAuth() {
+  if (isInitialized) return { ready: true, configured: isFirebaseConfigured(), user: currentUser };
+  isInitialized = true;
+
+  // Çevrimdışı / tarayıcı dışı ortam kontrolü (JSC, Node testleri)
+  if (typeof window === 'undefined' || !isFirebaseConfigured()) {
+    return { ready: true, configured: false, user: null };
+  }
+
+  try {
+    // Tarayıcı ortamında Firebase SDK dinamik yükleme
+    if (window.firebase && window.firebase.auth) {
+      if (!window.firebase.apps || !window.firebase.apps.length) {
+        window.firebase.initializeApp(FIREBASE_CONFIG);
+      }
+      authInstance = window.firebase.auth();
+      authInstance.onAuthStateChanged((user) => {
+        handleFirebaseUser(user);
+      });
+      return { ready: true, configured: true, user: currentUser };
+    }
+  } catch (err) {
+    // Firebase bağlantısı kurulamazsa normal VELUNO asla aksamaz
+    console.warn('Firebase başlatılamadı (çevrimdışı mod):', err?.message || err);
+  }
+
+  return { ready: true, configured: isFirebaseConfigured(), user: null };
+}
+
+function handleFirebaseUser(fbUser) {
+  if (!fbUser) {
+    currentUser = null;
+    notifyListeners();
+    return;
+  }
+
+  currentUser = {
+    uid: fbUser.uid,
+    email: fbUser.email,
+    displayName: fbUser.displayName || (isSudeUid(fbUser.uid) ? 'Sude' : (isAhmetUid(fbUser.uid) ? 'Ahmet' : 'Kullanıcı')),
+    isSude: isSudeUid(fbUser.uid),
+    isAhmet: isAhmetUid(fbUser.uid),
+    isAuthorized: isAuthorizedUid(fbUser.uid)
+  };
+
+  notifyListeners();
+}
+
+/* ---------- Giriş ve Çıkış İşlemleri ---------- */
+export async function login(email, password) {
+  if (!email || !password) {
+    return { success: false, error: 'Lütfen e-posta ve şifrenizi girin.' };
+  }
+
+  // Firebase yapılandırılmamışsa
+  if (!isFirebaseConfigured()) {
+    return {
+      success: false,
+      error: 'Firebase yapılandırması henüz tamamlanmadı. Lütfen firebase-config.js dosyasını kontrol edin.'
+    };
+  }
+
+  try {
+    if (authInstance && authInstance.signInWithEmailAndPassword) {
+      const cred = await authInstance.signInWithEmailAndPassword(email.trim(), password);
+      handleFirebaseUser(cred.user);
+
+      // Sude her yeni başarılı girişinde sürprizi görür
+      if (isSudeUid(cred.user.uid)) {
+        resetSurpriseSession();
+      }
+
+      return { success: true, user: currentUser };
+    }
+    return { success: false, error: 'Kimlik doğrulama servisine bağlanılamadı. İnternet bağlantınızı kontrol edin.' };
+  } catch (err) {
+    let msg = 'Giriş yapılamadı.';
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      msg = 'E-posta veya şifre hatalı.';
+    } else if (err.code === 'auth/network-request-failed') {
+      msg = 'Ağ bağlantısı başarısız. Lütfen internetinizi kontrol edin.';
+    } else if (err.code === 'auth/too-many-requests') {
+      msg = 'Çok fazla başarısız deneme. Lütfen bir süre sonra tekrar deneyin.';
+    }
+    return { success: false, error: msg };
+  }
+}
+
+export async function logout() {
+  resetSurpriseSession();
+  currentUser = null;
+  if (authInstance && authInstance.signOut) {
+    try { await authInstance.signOut(); } catch {}
+  }
+  notifyListeners();
+  return { success: true };
+}
+
+/* ---------- Test ve Mock Yardımcıları (Yalnızca Test Ortamı İçin) ---------- */
+export function _setMockUserForTesting(user) {
+  currentUser = user ? {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName || 'Kullanıcı',
+    isSude: isSudeUid(user.uid),
+    isAhmet: isAhmetUid(user.uid),
+    isAuthorized: isAuthorizedUid(user.uid)
+  } : null;
+  notifyListeners();
+}
+
+export function _resetForTesting() {
+  currentUser = null;
+  resetSurpriseSession();
+  authListeners.clear();
+  isInitialized = false;
+}

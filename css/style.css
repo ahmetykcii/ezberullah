@@ -441,3 +441,62 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
 .reduce *,.reduce *::before,.reduce *::after,.no-anim *,.no-anim *::before,.no-anim *::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+
+/* ===== VELUNO v4.3 — "Just For You ❤️" Özel Sürpriz Arayüzü ===== */
+.jfy-page{min-height:calc(100vh - 120px);min-height:calc(100dvh - 120px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:24px 16px 40px;background:#18101E;border-radius:24px;border:1px solid #3B2446;color:#FFF0F5}
+.jfy-hearts-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.jfy-heart{position:absolute;font-size:18px;opacity:.4;animation:jfyFloat 9s infinite linear}
+.jfy-heart.h1{left:10%;animation-duration:8s;animation-delay:0s;font-size:16px}
+.jfy-heart.h2{left:25%;animation-duration:11s;animation-delay:2s;font-size:22px}
+.jfy-heart.h3{left:42%;animation-duration:7s;animation-delay:4s;font-size:14px}
+.jfy-heart.h4{left:60%;animation-duration:10s;animation-delay:1s;font-size:20px}
+.jfy-heart.h5{left:75%;animation-duration:12s;animation-delay:5s;font-size:18px}
+.jfy-heart.h6{left:88%;animation-duration:9s;animation-delay:3s;font-size:24px}
+.jfy-heart.h7{left:18%;animation-duration:13s;animation-delay:6s;font-size:15px}
+.jfy-heart.h8{left:68%;animation-duration:8.5s;animation-delay:2.5s;font-size:19px}
+@keyframes jfyFloat{0%{transform:translateY(110vh) scale(.8);opacity:0}20%{opacity:.45}80%{opacity:.45}100%{transform:translateY(-10vh) scale(1.1);opacity:0}}
+.jfy-content-wrap{position:relative;z-index:1;width:100%;max-width:560px;margin:0 auto;text-align:center}
+.jfy-badge-preview{display:inline-block;background:#3B2446;color:#F472B6;font-size:.78rem;font-weight:700;padding:4px 14px;border-radius:99px;margin-bottom:16px;border:1px solid #5C326E}
+.jfy-stage{width:100%}
+.jfy-stage-intro{padding:20px 0}
+.jfy-eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.2em;color:#F472B6;margin-bottom:12px;text-transform:uppercase}
+.jfy-heading{font-size:clamp(1.7rem,6vw,2.5rem);font-weight:800;letter-spacing:-.02em;line-height:1.25;color:#FFF0F5;margin:0 0 12px}
+.jfy-heart-pulse{display:inline-block;animation:jfyPulse 2s infinite ease-in-out}
+@keyframes jfyPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.jfy-subtitle{font-size:clamp(1rem,3.2vw,1.15rem);color:#D8B4E2;margin:0 auto 32px;max-width:380px;line-height:1.55}
+.jfy-btn-reveal{background:#DB2777;color:#FFFFFF;border:0;padding:16px 36px;font:700 1.05rem Inter,sans-serif;letter-spacing:.04em;border-radius:999px;cursor:pointer;transition:transform 160ms,background var(--dur);box-shadow:0 4px 16px rgba(219,39,119,.35);display:inline-flex;align-items:center;gap:10px}
+.jfy-btn-reveal:hover{background:#BE185D;transform:translateY(-2px)}
+.jfy-btn-reveal:active{transform:scale(.98)}
+.jfy-stage-revealed.jfy-fade-in{animation:jfyFadeIn .8s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes jfyFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.jfy-romantic-card{background:#22152B;border:1px solid #442654;border-radius:22px;padding:28px 22px;display:flex;flex-direction:column;align-items:center;gap:24px;box-shadow:0 4px 16px rgba(15,8,22,.4)}
+.jfy-photo-container{width:100%;max-width:340px}
+.jfy-photo-frame{width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;background:#2F1B3C;border:1.5px solid #5C326E;display:flex;align-items:center;justify-content:center;position:relative}
+.jfy-photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:10px;color:#D8B4E2}
+.jfy-svg-heart{stroke:#F472B6;fill:rgba(244,114,182,.1)}
+.jfy-placeholder-caption{font-size:.84rem;font-weight:600;letter-spacing:.06em;color:#E9D5FF}
+.jfy-real-photo{width:100%;height:100%;object-fit:cover;display:block}
+.jfy-message-box{width:100%;max-width:480px;text-align:center}
+.jfy-msg-sigil{font-size:.74rem;letter-spacing:.22em;color:#F472B6;font-weight:700;margin-bottom:8px}
+.jfy-msg-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.5rem,5vw,2rem);font-weight:700;color:#FFF0F5;margin:0 0 14px}
+.jfy-msg-body{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.12rem,3.4vw,1.3rem);line-height:1.75;color:#FDF2F8}
+.jfy-msg-body p{margin:0 0 14px;color:inherit}
+.jfy-music-card{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;max-width:420px;background:#2F1B3C;border:1px solid #5C326E;border-radius:14px;padding:12px 16px;text-align:left}
+.jfy-music-info{display:flex;align-items:center;gap:12px;min-width:0}
+.jfy-music-ic{font-size:1.3rem;flex-shrink:0}
+.jfy-music-texts{display:flex;flex-direction:column;min-width:0}
+.jfy-music-title{font-size:.9rem;font-weight:700;color:#FFF0F5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jfy-music-sub{font-size:.76rem;color:#D8B4E2}
+.jfy-music-btn{width:38px;height:38px;border-radius:50%;background:#DB2777;color:#FFF;border:0;display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:transform 140ms,background var(--dur);font-size:.9rem}
+.jfy-music-btn:active{transform:scale(.94)}
+.jfy-music-card.playing .jfy-music-btn{background:#BE185D}
+.jfy-exit-wrap{width:100%;max-width:420px;margin-top:6px}
+.jfy-btn-continue{background:#DB2777;color:#FFF;border-radius:14px}
+.jfy-btn-continue:hover:not(:disabled){background:#BE185D}
+.jfy-locked-card{max-width:440px;padding:36px 24px;background:#22152B;border:1px solid #442654;border-radius:20px}
+.jfy-lock-ic{font-size:2.4rem;margin-bottom:12px}
+.jfy-lead{margin:10px 0 24px}
+.ahmet-preview-banner{margin:12px 0 18px;padding:12px 16px;background:#24152E;border:1px solid #4D265F;border-radius:14px;display:flex;justify-content:space-between;align-items:center;color:#F472B6;font-size:.88rem;font-weight:600}
+.ahmet-preview-banner a{color:#F472B6;text-decoration:none;border:1px solid #70338A;background:#381E48;padding:6px 14px;border-radius:8px;font-size:.82rem}
+.ahmet-preview-banner a:hover{background:#4D265F}
+
