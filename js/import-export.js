@@ -143,9 +143,14 @@ export function openImportWizard(onDone) {
 export function buildBackup() {
   const meta = [];
   if (getMeta('deletedIds')) meta.push({ key: 'deletedIds', value: getMeta('deletedIds') });
+  if (state.grammarProgress && Object.keys(state.grammarProgress).length) {
+    meta.push({ key: 'grammarProgress', value: { ...state.grammarProgress } });
+  }
   return {
     app: 'EZBERULLAH', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(),
-    words: state.words, progress: Object.values(state.progress), exams: state.exams, daily: Object.values(state.daily), meta, settings: getSettings(),
+    words: state.words, progress: Object.values(state.progress), exams: state.exams, daily: Object.values(state.daily),
+    grammarProgress: Object.values(state.grammarProgress || {}),
+    meta, settings: getSettings(),
   };
 }
 /** Geri yüklemeden önce doğrular. Hata listesi döner (boşsa geçerli). Eski LEXORA ve yeni EZBERULLAH yedeklerini destekler. */
@@ -155,6 +160,9 @@ export function validateBackup(o) {
   if (typeof o.schemaVersion !== 'number') e.push('Şema sürümü eksik');
   else if (o.schemaVersion > SCHEMA_VERSION) e.push('Yedek daha yeni bir EZBERULLAH sürümünden; uygulamayı güncelleyin');
   for (const k of ['words', 'progress', 'exams', 'daily', 'meta']) if (!Array.isArray(o[k])) e.push(`"${k}" listesi eksik veya hatalı`);
+  if (o.grammarProgress !== undefined && !Array.isArray(o.grammarProgress) && typeof o.grammarProgress !== 'object') {
+    e.push('"grammarProgress" alanı geçersiz');
+  }
   if (e.length) return e;
   const bad = o.words.map((w) => [w?.id, validateWord(w)]).filter(([, er]) => er.length);
   if (bad.length) e.push(`${bad.length} kelime geçersiz (örn. ${bad[0][0]}: ${bad[0][1][0]})`);
@@ -162,10 +170,17 @@ export function validateBackup(o) {
   if (o.progress.some((p) => !p || typeof p.id !== 'string')) e.push('Bozuk ilerleme kaydı var');
   if (o.daily.some((d) => !d || typeof d.date !== 'string')) e.push('Bozuk günlük kayıt var');
   if (o.exams.some((x) => !x || typeof x.id !== 'string' || typeof x.date !== 'string')) e.push('Bozuk sınav kaydı var');
+  if (Array.isArray(o.grammarProgress) && o.grammarProgress.some((gp) => !gp || typeof gp.topicId !== 'string')) {
+    e.push('Bozuk grammar ilerleme kaydı var');
+  }
   return e;
 }
 export async function restoreBackup(o) {
-  await replaceAll({ words: o.words, progress: o.progress, exams: o.exams, daily: o.daily, meta: [...o.meta, { key: 'schemaVersion', value: SCHEMA_VERSION }] });
+  await replaceAll({
+    words: o.words, progress: o.progress, exams: o.exams, daily: o.daily,
+    grammarProgress: o.grammarProgress,
+    meta: [...o.meta, { key: 'schemaVersion', value: SCHEMA_VERSION }],
+  });
   if (o.settings) setAllSettings(o.settings);
 }
 export function downloadFile(name, text, type = 'application/json') {

@@ -5,7 +5,7 @@ export const SCHEMA_VERSION = 1;
 const DB_NAME = 'lexora-db';
 const STORES = ['words', 'progress', 'exams', 'daily', 'meta'];
 const KEYS = { words: 'id', progress: 'id', exams: 'id', daily: 'date', meta: 'key' };
-export const state = { words: [], wordMap: new Map(), progress: {}, exams: [], daily: {}, meta: {} };
+export const state = { words: [], wordMap: new Map(), progress: {}, exams: [], daily: {}, meta: {}, grammarProgress: {} };
 let idb = null;
 export let persistent = false;
 
@@ -67,6 +67,7 @@ export async function loadData() {
   state.exams = e.sort((a, b) => a.date.localeCompare(b.date));
   state.daily = Object.fromEntries(d.map((x) => [x.date, x]));
   state.meta = Object.fromEntries(m.map((x) => [x.key, x.value]));
+  state.grammarProgress = state.meta.grammarProgress && typeof state.meta.grammarProgress === 'object' ? { ...state.meta.grammarProgress } : {};
 }
 
 function applyToState(store, obj) {
@@ -79,14 +80,20 @@ function applyToState(store, obj) {
     const i = state.exams.findIndex((x) => x.id === obj.id);
     if (i >= 0) state.exams[i] = obj; else state.exams.push(obj);
   } else if (store === 'daily') state.daily[obj.date] = obj;
-  else if (store === 'meta') state.meta[obj.key] = obj.value;
+  else if (store === 'meta') {
+    state.meta[obj.key] = obj.value;
+    if (obj.key === 'grammarProgress') state.grammarProgress = obj.value && typeof obj.value === 'object' ? { ...obj.value } : {};
+  }
 }
 function removeFromState(store, key) {
   if (store === 'words') { state.words = state.words.filter((w) => w.id !== key); state.wordMap.delete(key); }
   else if (store === 'progress') delete state.progress[key];
   else if (store === 'daily') delete state.daily[key];
   else if (store === 'exams') state.exams = state.exams.filter((x) => x.id !== key);
-  else if (store === 'meta') delete state.meta[key];
+  else if (store === 'meta') {
+    delete state.meta[key];
+    if (key === 'grammarProgress') state.grammarProgress = {};
+  }
 }
 
 /** saveData: tek kayıt yazar (bellek anında, IndexedDB hemen ardından). Hata kullanıcıya bildirilir. */
@@ -115,9 +122,50 @@ export const setMeta = (key, value) => saveData('meta', { key, value });
 export function getProgress(id) { return state.progress[id] || newProgress(id); }
 export const saveProgress = (p) => saveData('progress', p);
 
+/* ---------- Grammar İlerleme Kaydı (IndexedDB meta.grammarProgress içinde kalıcı) ---------- */
+export function newGrammarProgress(topicId) {
+  return {
+    topicId,
+    attempts: 0,
+    totalQuestions: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+    lastScore: null,
+    bestScore: null,
+    completed: false,
+    lastStudiedAt: null,
+  };
+}
+export function getGrammarProgress(topicId) {
+  const cur = state.grammarProgress[topicId];
+  return cur ? { ...newGrammarProgress(topicId), ...cur } : newGrammarProgress(topicId);
+}
+export async function saveGrammarProgress(gp) {
+  if (!gp || typeof gp.topicId !== 'string') throw new Error('Geçersiz grammar ilerleme kaydı');
+  const norm = { ...newGrammarProgress(gp.topicId), ...gp };
+  state.grammarProgress[norm.topicId] = norm;
+  await setMeta('grammarProgress', { ...state.grammarProgress });
+  return norm;
+}
+
 /** Bütün depoları tek işlemde değiştirir (yedek geri yükleme / sıfırlama). */
 export async function replaceAll(data) {
-  const sets = { words: data.words || [], progress: data.progress || [], exams: data.exams || [], daily: data.daily || [], meta: data.meta || [] };
+  const rawMeta = Array.isArray(data.meta) ? [...data.meta] : [];
+  let gpMap = {};
+  const metaGp = rawMeta.find((x) => x && x.key === 'grammarProgress')?.value;
+  if (metaGp && typeof metaGp === 'object' && !Array.isArray(metaGp)) gpMap = { ...metaGp };
+  if (Array.isArray(data.grammarProgress)) {
+    for (const item of data.grammarProgress) {
+      if (item && typeof item.topicId === 'string') gpMap[item.topicId] = { ...newGrammarProgress(item.topicId), ...item };
+    }
+  } else if (data.grammarProgress && typeof data.grammarProgress === 'object') {
+    for (const [k, item] of Object.entries(data.grammarProgress)) {
+      if (item && typeof item === 'object') gpMap[k] = { ...newGrammarProgress(k), ...item, topicId: k };
+    }
+  }
+  const filteredMeta = rawMeta.filter((x) => x && x.key !== 'grammarProgress');
+  if (Object.keys(gpMap).length > 0) filteredMeta.push({ key: 'grammarProgress', value: gpMap });
+  const sets = { words: data.words || [], progress: data.progress || [], exams: data.exams || [], daily: data.daily || [], meta: filteredMeta };
   if (persistent) {
     const t = idb.transaction(STORES, 'readwrite');
     for (const s of STORES) { const os = t.objectStore(s); os.clear(); sets[s].forEach((o) => os.put(o)); }
@@ -128,6 +176,7 @@ export async function replaceAll(data) {
     state.progress = Object.fromEntries(sets.progress.map((x) => [x.id, x]));
     state.exams = sets.exams; state.daily = Object.fromEntries(sets.daily.map((x) => [x.date, x]));
     state.meta = Object.fromEntries(sets.meta.map((x) => [x.key, x.value]));
+    state.grammarProgress = { ...gpMap };
   } else await loadData();
 }
 

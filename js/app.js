@@ -7,6 +7,7 @@ import { renderReview, studyPlan, startReview } from './review.js';
 import { renderExams } from './exams.js';
 import { renderStats, levelStats, today, streakStats, streak, totalSeconds, todayLearnedCount, getMistakeAnalytics } from './statistics.js';
 import { renderVocabulary } from './vocab-ui.js';
+import { renderGrammar, grammarOverallStats } from './grammar.js';
 import { exportBackup, pickAndRestore } from './import-export.js';
 
 const view = () => $('#view');
@@ -61,7 +62,7 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings };
+const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings };
 function route() {
   const name = (location.hash.replace('#/', '') || 'dashboard').split('?')[0];
   const fn = routes[name] || renderDashboard;
@@ -83,10 +84,15 @@ function renderDashboard(v) {
   const hasSaved = saved && saved.idx < (saved.items?.length || 0);
   const strk = streakStats();
   const mistakes = getMistakeAnalytics(10);
+  const gStats = grammarOverallStats();
   const plan = studyPlan();
   const next = all.due ? { m: 'smart', t: `${all.due} kelime tekrar bekliyor`, b: 'Akıllı Tekrarı Başlat' } : null;
   const stat = (l, val, sub = '') => `<div class="stat"><span class="muted">${l}</span><b>${val}</b>${sub ? `<small class="muted">${sub}</small>` : ''}</div>`;
   v.innerHTML = `<header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="EZBERULLAH kitap ve beyin logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Yeni kelimeler öğrenmeye hazır mısın? <span class="muted">· Daha akıllıca öğren, daha uzun süre hatırla.</span></p></div></div></header>
+  <div class="platform-switch" role="navigation" aria-label="Bölüm seçimi">
+    <a class="p-tab active" href="#/dashboard"><span>📖 VOCABULARY</span><small>Kelime Öğrenme &amp; SRS Sistemi</small></a>
+    <a class="p-tab" href="#/grammar"><span>🎓 GRAMMAR ACADEMY</span><small>A2 · B1 · B2 Dil Bilgisi (${gStats.completedTopics}/${gStats.totalTopics} Konu)</small></a>
+  </div>
   ${hasSaved ? `<div class="card resume-card">
     <div class="resume-row">
       <div class="resume-info">
@@ -156,7 +162,7 @@ function renderDashboard(v) {
     <div class="pools"><span><b>${x.NEW}</b>${STATUS_LABELS.NEW}</span><span><b>${x.LEARNING}</b>${STATUS_LABELS.LEARNING}</span><span><b>${x.REVIEW}</b>${STATUS_LABELS.REVIEW}</span><span><b>${x.MASTERED}</b>${STATUS_LABELS.MASTERED}</span></div>
     <p class="small"><span class="muted">Öğrenme Tamamlanma Oranı:</span> <b>%${Math.round(x.completion)}</b> · <span class="muted">Kalıcı Öğrenme Oranı:</span> <b>%${Math.round(x.mastery)}</b></p>
     <p class="small muted">${x.due} kelime tekrar bekliyor</p><button class="btn primary block" data-learn="${l}">Öğrenmeye Devam Et</button></div>`; }).join('')}</div>
-  <div class="grid modes quick"><a class="card link" href="#/vocabulary">📚 <b>Kelime Havuzum</b><span class="muted">Kelime ekle, ara, içe aktar</span></a><a class="card link" href="#/exams">📝 <b>Sınavlar</b><span class="muted">Sınavlar ve sınav geçmişi</span></a></div>`;
+  <div class="grid modes quick"><a class="card link" href="#/grammar">🎓 <b>Grammar Academy</b><span class="muted">A2, B1, B2 Türkçe konu anlatımları ve mini sınavlar (${gStats.completedTopics}/${gStats.totalTopics} tamamlandı)</span></a><a class="card link" href="#/vocabulary">📚 <b>Kelime Havuzum</b><span class="muted">Kelime ekle, ara, içe aktar</span></a><a class="card link" href="#/exams">📝 <b>Sınavlar</b><span class="muted">Kelime sınavları ve sınav geçmişi</span></a></div>`;
   $$('[data-learn]', v).forEach((b) => { b.onclick = () => startLearn(b.dataset.learn); });
   const sm = $('#smart', v); if (sm) sm.onclick = () => startReview('smart');
   const rm = $('#review-mistakes', v); if (rm) rm.onclick = () => startReview('mistakes');

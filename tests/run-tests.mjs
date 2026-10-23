@@ -14,8 +14,9 @@ import '../js/review.js';
 import { buildExamItems } from '../js/exams.js';
 import { studyPlan, candidates, reviewItems } from '../js/review.js';
 import { levelStats, streak, streakStats, todayLearnedCount, getMistakeAnalytics, bumpDaily } from '../js/statistics.js';
-import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta } from '../js/storage.js';
+import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta, getGrammarProgress, saveGrammarProgress } from '../js/storage.js';
 import { resumeSaved } from '../js/learning.js';
+import * as G from '../js/grammar.js';
 import '../js/vocab-ui.js';
 import '../js/app.js';
 
@@ -351,10 +352,10 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (ezberullah-v2.1.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (ezberullah-v2.2.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'ezberullah-v2.1.0';"), 'SW sürümü ezberullah-v2.1.0 olmalı');
-  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
+  ok(sw.includes("const VERSION = 'ezberullah-v2.2.0';"), 'SW sürümü ezberullah-v2.2.0 olmalı');
+  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
 });
@@ -690,6 +691,210 @@ await test('v2.1 Ana sayfa ve ayarlar tasarımı: akıllı kartlar, hızlı hede
   ok(css.includes('.smart-grid'), 'Akıllı öğrenme kartları CSS ızgarası bulunmalı');
   ok(css.includes('.resume-card'), 'Kaldığın yerden devam et kartı CSS kuralı bulunmalı');
   ok(css.includes('.goal-chip-row'), 'Hızlı hedef butonları CSS kuralı bulunmalı');
+});
+
+// ===== EZBERULLAH v2.2 — Grammar Academy Testleri (20 Test) =====
+out('7) EZBERULLAH v2.2 — Grammar Academy (Müfredat, Dersler, 60 Soru, Sınav ve İlerleme)');
+
+await test('v2.2 [1] Grammar seviyelerinin doğru yüklenmesi (yalnızca A2, B1, B2; A1 veya C1 yok)', () => {
+  eq(G.GRAMMAR_LEVELS.map((l) => l.id), ['A2', 'B1', 'B2'], 'Yalnızca A2, B1 ve B2 seviyeleri bulunmalı');
+  ok(!G.GRAMMAR_LEVELS.some((l) => l.id === 'A1' || l.id === 'C1'), 'A1 veya C1 seviyesi olmamalı');
+});
+
+await test('v2.2 [2] Toplam 38 grammar konusunun bulunması ve benzersiz ID kontrolü', () => {
+  eq(G.GRAMMAR_TOPICS.length, 38, 'Toplam 38 grammar konusu bulunmalı');
+  eq(new Set(G.GRAMMAR_TOPICS.map((t) => t.id)).size, 38, '38 konunun tamamı benzersiz ID değerine sahip olmalı');
+});
+
+await test('v2.2 [3] A2 seviyesinde tam 14 konu bulunması', () => {
+  const a2Topics = G.getTopicsByLevel('A2');
+  eq(a2Topics.length, 14, 'A2 seviyesinde 14 konu olmalı');
+  eq(a2Topics[0].title, 'Present Continuous vs. Simple Present');
+  eq(a2Topics[13].title, 'Basic Relative Clauses (Who, Which, Where)');
+});
+
+await test('v2.2 [4] B1 seviyesinde tam 12 konu bulunması', () => {
+  const b1Topics = G.getTopicsByLevel('B1');
+  eq(b1Topics.length, 12, 'B1 seviyesinde 12 konu olmalı');
+  eq(b1Topics[0].title, 'Present Perfect vs. Past Simple (For & Since)');
+  eq(b1Topics[11].title, 'Question Tags');
+});
+
+await test('v2.2 [5] B2 seviyesinde tam 12 konu bulunması', () => {
+  const b2Topics = G.getTopicsByLevel('B2');
+  eq(b2Topics.length, 12, 'B2 seviyesinde 12 konu olmalı');
+  eq(b2Topics[0].title, 'Past Perfect Continuous');
+  eq(b2Topics[11].title, 'Advanced Articles & Noun Phrases');
+});
+
+await test('v2.2 [6] Üç örnek dersin (A2 Past Continuous, B1 Present Perfect vs. Past Simple, B2 Third & Mixed Conditionals) eksiksiz içerikle açılması', () => {
+  const readyIds = ['a2-g03', 'b1-g01', 'b2-g04'];
+  for (const id of readyIds) {
+    const t = G.getTopicById(id);
+    ok(t && G.isTopicReady(t), `${id} dersi hazır (ready) ve eksiksiz olmalı`);
+    ok(t.content.sections.length >= 3, `${id} konu anlatımı bölümleri bulunmalı`);
+    ok(t.content.formulas.length >= 3, `${id} formül kutuları bulunmalı`);
+    ok(t.content.examples.length >= 4 && t.content.examples.every((ex) => ex.en && ex.tr), `${id} İngilizce ve Türkçe örnek cümleler bulunmalı`);
+    ok(t.content.keyRules.length >= 3, `${id} önemli kurallar bulunmalı`);
+    ok(t.content.commonMistakes.length >= 3 && t.content.commonMistakes.every((m) => m.wrong && m.right && m.explanation), `${id} sık yapılan hatalar karşılaştırması bulunmalı`);
+    ok(t.content.examTips.length >= 3, `${id} sınav taktikleri bulunmalı`);
+    ok(G.openGrammarLesson(id, null) === true, `${id} dersi başarıyla açılabilmeli`);
+  }
+});
+
+await test('v2.2 [7] Toplam 60 özgün sorunun bulunması (her hazır ders için 20 soru)', () => {
+  eq(G.GRAMMAR_QUESTIONS.length, 60, 'Toplam 60 soru bulunmalı');
+  eq(G.getQuestionsForTopic('a2-g03').length, 20, 'A2 Past Continuous için 20 geçerli soru olmalı');
+  eq(G.getQuestionsForTopic('b1-g01').length, 20, 'B1 Present Perfect vs. Past Simple için 20 geçerli soru olmalı');
+  eq(G.getQuestionsForTopic('b2-g04').length, 20, 'B2 Third Conditional & Mixed Conditionals için 20 geçerli soru olmalı');
+});
+
+await test('v2.2 [8] Soruların benzersiz ID’lere ve geçerli şemaya sahip olması', () => {
+  const ids = G.GRAMMAR_QUESTIONS.map((q) => q.id);
+  eq(new Set(ids).size, 60, '60 sorunun tamamı benzersiz ID değerine sahip olmalı');
+  for (const q of G.GRAMMAR_QUESTIONS) {
+    eq(G.validateGrammarQuestion(q), [], `Soru şeması hatasız olmalı: ${q.id}`);
+  }
+});
+
+await test('v2.2 [9] Soruların doğru konuya (topicId) ve doğru seviyeye (level) bağlı olması', () => {
+  for (const q of G.GRAMMAR_QUESTIONS) {
+    const topic = G.getTopicById(q.topicId);
+    ok(topic, `Sorunun bağlı olduğu konu (${q.topicId}) mevcut olmalı`);
+    eq(q.level, topic.level, `${q.id} sorusunun seviyesi (${q.level}) konu seviyesiyle (${topic.level}) eşleşmeli`);
+  }
+});
+
+await test('v2.2 [10] Mini sınavda rastgele 5 soru seçilmesi ve soru sırasının karıştırılması', () => {
+  const runs = Array.from({ length: 8 }, () => G.buildGrammarMiniQuiz('a2-g03', 5).map((q) => q.id).join(','));
+  for (const r of runs) eq(r.split(',').length, 5, 'Her mini sınavda 5 soru seçilmeli');
+  ok(new Set(runs).size >= 5, 'Mini sınav her başlatıldığında rastgele farklı sorular ve farklı soru sırası üretmeli');
+});
+
+await test('v2.2 [11] Aynı mini sınavda bir sorunun iki kez seçilmemesi', () => {
+  for (const tid of ['a2-g03', 'b1-g01', 'b2-g04']) {
+    for (let i = 0; i < 10; i++) {
+      const quiz = G.buildGrammarMiniQuiz(tid, 5);
+      eq(new Set(quiz.map((q) => q.id)).size, 5, `${tid} mini sınavında tekrar eden soru olmamalı`);
+    }
+  }
+});
+
+await test('v2.2 [12] A/B/C/D seçeneklerinin rastgele karıştırılması', () => {
+  const indices = new Set();
+  for (let i = 0; i < 40; i++) {
+    const quiz = G.buildGrammarMiniQuiz('b1-g01', 5);
+    quiz.forEach((q) => indices.add(q.answerIndex));
+  }
+  eq(indices.size, 4, 'Şıklar karıştırıldığında doğru cevap A(0), B(1), C(2) ve D(3) konumlarının tamamında yer alabilmeli');
+});
+
+await test('v2.2 [13] Seçenekler karıştırıldıktan sonra da doğru cevabın korunması', () => {
+  for (const tid of ['a2-g03', 'b1-g01', 'b2-g04']) {
+    const quiz = G.buildGrammarMiniQuiz(tid, 5);
+    for (const item of quiz) {
+      eq(item.options[item.answerIndex], item.correctAnswer, 'Karıştırılmış seçeneklerde answerIndex doğru cevabı göstermeli');
+      ok(G.checkGrammarAnswer(item, item.answerIndex), 'Doğru şık indeksi kabul edilmeli');
+      ok(G.checkGrammarAnswer(item, item.correctAnswer), 'Doğru cevap metni kabul edilmeli');
+      const wrongIdx = (item.answerIndex + 1) % 4;
+      ok(!G.checkGrammarAnswer(item, wrongIdx), 'Yanlış şık indeksi reddedilmeli');
+    }
+  }
+});
+
+await test('v2.2 [14] Başarı yüzdesinin doğru hesaplanması', () => {
+  eq(G.calculateQuizScore(0, 5), 0);
+  eq(G.calculateQuizScore(3, 5), 60);
+  eq(G.calculateQuizScore(4, 5), 80);
+  eq(G.calculateQuizScore(5, 5), 100);
+});
+
+await test('v2.2 [15] %80 (4/5) başarıyla konunun Tamamlandı işaretlenmesi ve sonraki düşük puanın rozeti silmemesi', async () => {
+  // İlk deneme: 3/5 (%60) -> henüz tamamlanmadı
+  const r1 = await G.recordGrammarQuizResult('a2-g03', { correct: 3, total: 5, elapsedSeconds: 20 });
+  eq(r1.score, 60);
+  eq(r1.passed, false);
+  eq(r1.progress.completed, false, '%60 başarıda konu tamamlanmış sayılmamalı');
+
+  // İkinci deneme: 4/5 (%80) -> Tamamlandı!
+  const r2 = await G.recordGrammarQuizResult('a2-g03', { correct: 4, total: 5, elapsedSeconds: 25 });
+  eq(r2.score, 80);
+  eq(r2.passed, true);
+  eq(r2.progress.completed, true, '%80 (4/5) başarıda konu Tamamlandı olmalı');
+  eq(r2.progress.bestScore, 80);
+
+  // Üçüncü deneme: 2/5 (%40) -> Kazanılmış Tamamlandı rozeti silinmemeli!
+  const r3 = await G.recordGrammarQuizResult('a2-g03', { correct: 2, total: 5, elapsedSeconds: 15 });
+  eq(r3.score, 40);
+  eq(r3.progress.lastScore, 40, 'Son sınav puanı %40 olarak güncellenmeli');
+  eq(r3.progress.bestScore, 80, 'En yüksek puan %80 olarak korunmalı');
+  eq(r3.progress.completed, true, 'Daha sonraki düşük puan kazanılmış Tamamlandı rozetini silmemeli');
+});
+
+await test('v2.2 [16] Grammar ilerleme verilerinin ve seviye istatistiklerinin korunması', () => {
+  const gp = getGrammarProgress('a2-g03');
+  eq(gp.attempts, 3, 'Toplam 3 deneme kaydedilmiş olmalı');
+  eq(gp.totalQuestions, 15, 'Toplam 15 soru çözülmüş olmalı');
+  eq(gp.correctAnswers, 9, 'Toplam 9 doğru cevap kaydedilmiş olmalı');
+  eq(gp.wrongAnswers, 6, 'Toplam 6 yanlış cevap kaydedilmiş olmalı');
+  ok(gp.lastStudiedAt > 0, 'Son çalışma tarihi kaydedilmiş olmalı');
+
+  const a2Stat = G.grammarLevelStats('A2');
+  eq(a2Stat.total, 14);
+  eq(a2Stat.completedCount, 1);
+});
+
+await test('v2.2 [17] Yedekleme ve geri yükleme uyumluluğu (hem v2.2 Grammar verileri hem eski sürüm yedekler)', async () => {
+  await G.recordGrammarQuizResult('b1-g01', { correct: 5, total: 5, elapsedSeconds: 30 });
+  const backupV22 = JSON.parse(JSON.stringify(buildBackup()));
+  eq(validateBackup(backupV22), [], 'v2.2 yedeği geçerli olmalı');
+  ok(Array.isArray(backupV22.grammarProgress) && backupV22.grammarProgress.length >= 2, 'Yedekte grammarProgress bulunmalı');
+
+  // Eski sürüm (grammarProgress alanı olmayan) yedek geri yüklendiğinde güvenli varsayılanlarla çalışmalı
+  const legacyBackup = JSON.parse(JSON.stringify(backupV22));
+  delete legacyBackup.grammarProgress;
+  legacyBackup.meta = legacyBackup.meta.filter((m) => m.key !== 'grammarProgress');
+  eq(validateBackup(legacyBackup), [], 'grammarProgress içermeyen eski sürüm yedek de geçerli olmalı');
+  await restoreBackup(legacyBackup);
+  eq(getGrammarProgress('a2-g03').completed, false, 'Eski yedekte grammar verisi yoksa güvenli varsayılan (false) olmalı');
+
+  // Şimdi v2.2 yedeğini geri yükleyelim ve Grammar ilerlemesinin geri geldiğini doğrulayalım
+  await restoreBackup(backupV22);
+  eq(getGrammarProgress('a2-g03').completed, true, 'v2.2 yedeği geri yüklendiğinde A2 konu tamamlanma durumu korunmalı');
+  eq(getGrammarProgress('b1-g01').bestScore, 100, 'v2.2 yedeği geri yüklendiğinde B1 en yüksek puan (%100) korunmalı');
+});
+
+await test('v2.2 [18] Vocabulary sisteminin (1.320 kelime, SRS, günlük hedef, streak) Grammar işlemlerinden etkilenmemesi', () => {
+  const allData = [...data.A2, ...data.B1, ...data.B2];
+  eq(allData.length, 1320, 'Veri dosyalarındaki 1.320 yerleşik kelime kaydı eksiksiz korunmalı');
+  eq(allData.filter((w) => !w.isDraft).length, 931, 'Veri dosyalarındaki 931 aktif kelime sayısı değişmemeli');
+  eq(allData.filter((w) => w.isDraft).length, 389, 'Veri dosyalarındaki 389 taslak kelime sayısı değişmemeli');
+  eq(state.words.length, 1320, 'state.words içindeki toplam kelime sayısı değişmemeli');
+  ok(getProgress('a2-apartment-001').learningComplete, 'Önceden öğrenilmiş kelimenin SRS ilerlemesi korunmalı');
+});
+
+await test('v2.2 [19] Eksik veya hatalı soru verilerinin yakalanması ve 5’ten az soruda sınavın başlatılmaması', () => {
+  const badQ1 = { id: 'bad-1', topicId: 'a2-g03', level: 'A2', question: 'Test?', options: ['a', 'b', 'c'], correctAnswer: 'a', explanation: 'Açıklama', difficulty: 'easy' };
+  ok(G.validateGrammarQuestion(badQ1).length > 0, '3 şıklı hatalı soru yakalanmalı');
+
+  const badQ2 = { id: 'bad-2', topicId: 'a2-g03', level: 'A2', question: 'Test?', options: ['a', 'b', 'c', 'd'], correctAnswer: 'x', explanation: 'Açıklama', difficulty: 'easy' };
+  ok(G.validateGrammarQuestion(badQ2).length > 0, 'Doğru cevabı şıklarda olmayan soru yakalanmalı');
+
+  // Yalnızca 3 soruluk bir havuz verildiğinde mini sınav başlatılmamalı
+  const smallPool = G.GRAMMAR_QUESTIONS.slice(0, 3);
+  eq(G.canStartGrammarQuiz('a2-g03', smallPool), false, '5’ten az geçerli soru varsa sınav başlatılamamalı');
+  eq(G.buildGrammarMiniQuiz('a2-g03', 5, Math.random, smallPool), [], '5’ten az soruda buildGrammarMiniQuiz boş dizi dönmeli');
+});
+
+await test('v2.2 [20] Henüz hazır olmayan (Yakında) 35 dersin açılmaması ve testlerinin başlatılmaması', () => {
+  const soonTopics = G.GRAMMAR_TOPICS.filter((t) => t.status !== 'ready');
+  eq(soonTopics.length, 35, '35 konu Yakında (soon) durumunda olmalı');
+  for (const t of soonTopics) {
+    eq(G.isTopicReady(t), false, `${t.id} hazır olmamalı`);
+    eq(G.canStartGrammarQuiz(t.id), false, `${t.id} sınavı aktif olmamalı`);
+    eq(G.buildGrammarMiniQuiz(t.id), [], `${t.id} için soru üretilmemeli`);
+    eq(G.openGrammarLesson(t.id, null), false, `${t.id} dersi açılmamalı`);
+  }
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
