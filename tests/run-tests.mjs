@@ -216,7 +216,7 @@ await test('basit kelime ekleme (yalnızca 3 bilgi) → taslak olarak kaydedilir
   });
   ok(upd.ok && !upd.isDraft && isWordReady(upd.word), 'tamamlanınca taslak olmaktan çıkmalı');
   eq(getMissingFields(upd.word), []);
-  ok(E.learnBatch(state.words.filter((w) => w.level === 'B2'), state.progress, 500).some((w) => w.id === r.word.id), 'tamamlanan kelime learnBatch içine girmeli');
+  ok(E.learnBatch(state.words.filter((w) => w.level === 'B2'), state.progress, 2000).some((w) => w.id === r.word.id), 'tamamlanan kelime learnBatch içine girmeli');
   await removeWord(r.word.id);
 });
 await test('ücretsiz otomatik bilgi hazırlama: bilinen kelimeyi doldurur, bilinmeyen kelimede uydurmaz', async () => {
@@ -310,11 +310,11 @@ await test('silinen yerleşik kelime güncellemede geri gelmez; kullanıcı keli
   await seedBuiltIn(loader); ok(!state.wordMap.has(builtin.id)); ok(state.wordMap.has(u.word.id));
 });
 
-out('6) A2 + B1 Veri Paketi Entegrasyonu (1.306 Aktif + 14 Taslak | Toplam 1.320 Kayıt), Cevap Kuralları ve Önbellek');
-await test('1.306 aktif kelime ve 14 taslak kelime (toplam 1.320 yerleşik kayıt) doğrulandı', () => {
-  eq(data.A2.length, 496); eq(data.A2.filter((w) => !w.isDraft).length, 484); eq(data.A2.filter((w) => w.isDraft).length, 12);
-  eq(data.B1.length, 563); eq(data.B1.filter((w) => !w.isDraft).length, 561); eq(data.B1.filter((w) => w.isDraft).length, 2);
-  eq(data.B2.length, 261); eq(data.B2.filter((w) => !w.isDraft).length, 261); eq(data.B2.filter((w) => w.isDraft).length, 0);
+out('6) A2 + B1 + B2 Veri Paketi Entegrasyonu (2.010 Aktif + 14 Taslak | Toplam 2.024 Kayıt), Cevap Kuralları ve Önbellek');
+await test('2.010 aktif kelime ve 14 taslak kelime (toplam 2.024 yerleşik kayıt) doğrulandı', () => {
+  eq(data.A2.length, 712); eq(data.A2.filter((w) => !w.isDraft).length, 700); eq(data.A2.filter((w) => w.isDraft).length, 12);
+  eq(data.B1.length, 712); eq(data.B1.filter((w) => !w.isDraft).length, 710); eq(data.B1.filter((w) => w.isDraft).length, 2);
+  eq(data.B2.length, 600); eq(data.B2.filter((w) => !w.isDraft).length, 600); eq(data.B2.filter((w) => w.isDraft).length, 0);
   // neighbor bağımsız aktif kart olmamalı, neighbour alternativeAnswers korunmalı
   const neighbourOrig = data.A2.find((w) => w.id === 'a2-neighbour-027');
   ok(neighbourOrig && !neighbourOrig.isDraft && neighbourOrig.alternativeAnswers.includes('neighbor'));
@@ -957,12 +957,12 @@ await test('v2.2 [17] Yedekleme ve geri yükleme uyumluluğu (hem v2.2 Grammar v
   eq(getGrammarProgress('b1-g01').bestScore, 100, 'v2.2 yedeği geri yüklendiğinde B1 en yüksek puan (%100) korunmalı');
 });
 
-await test('v2.2 [18] Vocabulary sisteminin (1.320 kelime, SRS, günlük hedef, streak) Grammar işlemlerinden etkilenmemesi', () => {
+await test('v2.2 [18] Vocabulary sisteminin (2.024 kelime, SRS, günlük hedef, streak) Grammar işlemlerinden etkilenmemesi', () => {
   const allData = [...data.A2, ...data.B1, ...data.B2];
-  eq(allData.length, 1320, 'Veri dosyalarındaki 1.320 yerleşik kelime kaydı eksiksiz korunmalı');
-  eq(allData.filter((w) => !w.isDraft).length, 1306, 'Veri dosyalarındaki 1.306 aktif kelime sayısı doğrulanmalı');
+  eq(allData.length, 2024, 'Veri dosyalarındaki 2.024 yerleşik kelime kaydı eksiksiz korunmalı');
+  eq(allData.filter((w) => !w.isDraft).length, 2010, 'Veri dosyalarındaki 2.010 aktif kelime sayısı doğrulanmalı');
   eq(allData.filter((w) => w.isDraft).length, 14, 'Veri dosyalarındaki 14 taslak kelime sayısı doğrulanmalı');
-  eq(state.words.length, 1320, 'state.words içindeki toplam kelime sayısı değişmemeli');
+  eq(state.words.length, 2024, 'state.words içindeki toplam kelime sayısı değişmemeli');
   ok(getProgress('a2-apartment-001').learningComplete, 'Önceden öğrenilmiş kelimenin SRS ilerlemesi korunmalı');
 });
 
@@ -1156,10 +1156,10 @@ await test('v3.2 [13] Serbest Seviye Seçimi: Seviye değiştirildiğinde öncek
   ok(stored.B1 && stored.B1.idx === 1, 'B1 oturumu korunmalı');
 });
 
-await test('v3.2 [14] Veri ve İmza Bütünlüğü: 1.320 kelime (1.306 aktif + 14 taslak), 38 grammar konusu, 760 soru ve "ahmet ❤️ sude" imzası aynen korunur', async () => {
+await test('v3.2 [14] Veri ve İmza Bütünlüğü: 2.024 kelime (2.010 aktif + 14 taslak), 38 grammar konusu, 760 soru ve "ahmet ❤️ sude" imzası aynen korunur', async () => {
   const allDataWords = [...data.A2, ...data.B1, ...data.B2];
-  eq(allDataWords.length, 1320, 'Toplam 1.320 kelime korunmalı');
-  eq(allDataWords.filter((w) => !w.isDraft).length, 1306, '1.306 aktif kelime korunmalı');
+  eq(allDataWords.length, 2024, 'Toplam 2.024 kelime korunmalı');
+  eq(allDataWords.filter((w) => !w.isDraft).length, 2010, '2.010 aktif kelime korunmalı');
   eq(allDataWords.filter((w) => w.isDraft).length, 14, '14 taslak kelime korunmalı');
   eq(G.GRAMMAR_TOPICS.length, 38, '38 grammar konusu korunmalı');
   eq(G.GRAMMAR_QUESTIONS.length, 760, '760 grammar sorusu korunmalı');
@@ -1273,22 +1273,14 @@ await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü v
   ok(sw.includes("const VERSION = 'veluno-v4.1.0';"), 'SW sürümü veluno-v4.1.0 olmalı');
 });
 
-out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu & 1.306 Aktif Kelime)');
+out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
 
-await test('v4.1 [1] 375 Taslak Kelimenin Eksiksiz İçerikle Aktifleşmesi (Hedef: 1.306 Aktif Kelime)', () => {
+await test('v4.1 [1] 375 Taslak Kelimenin Eksiksiz İçerikle Aktifleşmesi Doğrulandı', () => {
   const allDataWords = [...data.A2, ...data.B1, ...data.B2];
-  eq(allDataWords.length, 1320, 'Toplam kelime sayısı 1.320 olarak korunmalı');
   const activeWords = allDataWords.filter((w) => !w.isDraft);
   const draftWords = allDataWords.filter((w) => w.isDraft);
-  eq(activeWords.length, 1306, 'Toplam 1.306 aktif kelime bulunmalı');
+  ok(activeWords.length >= 1306, 'En az 1.306 aktif kelime bulunmalı');
   eq(draftWords.length, 14, 'Toplam 14 taslak kelime korunmalı');
-
-  const a2Active = data.A2.filter((w) => !w.isDraft);
-  const b1Active = data.B1.filter((w) => !w.isDraft);
-  const b2Active = data.B2.filter((w) => !w.isDraft);
-  eq(a2Active.length, 484, 'A2 seviyesinde 484 aktif kelime olmalı');
-  eq(b1Active.length, 561, 'B1 seviyesinde 561 aktif kelime olmalı');
-  eq(b2Active.length, 261, 'B2 seviyesinde 261 aktif kelime olmalı');
 
   const a2Drafts = data.A2.filter((w) => w.isDraft);
   const b1Drafts = data.B1.filter((w) => w.isDraft);
@@ -1328,14 +1320,53 @@ await test('v4.1 [2] Yeni Aktifleşen 375 Kelimenin Cümle Bütünlüğü ve Bo�
   ok(realWord && realWord.alternativeAnswers.includes('realise'), 'realize alternativeAnswers realise içermeli');
 });
 
-await test('v4.1 [3] 1.306 Aktif Kelimenin Tamamı 6 Aşamalı Öğrenme, SRS ve Sınav Sistemleriyle Tam Uyumlu', () => {
+await test('v4.1 [3] Tüm Aktif Kelimelerin (>= 2.000) 6 Aşamalı Öğrenme, SRS ve Sınav Sistemleriyle Tam Uyumlu Olması', () => {
   const allActive = [...data.A2, ...data.B1, ...data.B2].filter((w) => !w.isDraft);
-  eq(allActive.length, 1306);
+  ok(allActive.length >= 2000, 'Aktif kelime havuzu >= 2.000 olmalı');
   for (const w of allActive) {
     ok(w.exampleSentence && w.exampleSentence.length >= 15, `${w.id} örnek cümle yeterli uzunlukta olmalı`);
     ok(w.exampleTranslation && w.exampleTranslation.length >= 10, `${w.id} çeviri yeterli uzunlukta olmalı`);
     ok(isWordReady(w), `${w.id} hazır olmalı`);
     ok(E.blankSentence(w), `${w.id} boşluk cümlesi üretebilmeli`);
+  }
+});
+
+out('\n11) VELUNO v4.1 — Vocabulary Expansion / Phase E (>= 2.000 Aktif Kelime Havuzu)');
+
+await test('v4.1 [4] Phase E: 2.010 Aktif Kelime ve 14 Taslak (Toplam 2.024 Kelime) Dağılımı ve Şeması', () => {
+  const allDataWords = [...data.A2, ...data.B1, ...data.B2];
+  eq(allDataWords.length, 2024, 'Toplam 2.024 yerleşik kelime kaydı bulunmalı');
+
+  const activeWords = allDataWords.filter((w) => !w.isDraft);
+  const draftWords = allDataWords.filter((w) => w.isDraft);
+  eq(activeWords.length, 2010, 'Toplam 2.010 aktif kelime bulunmalı (>= 2.000 hedefi aşıldı)');
+  eq(draftWords.length, 14, 'Toplam 14 taslak kelime bulunmalı');
+
+  const a2Active = data.A2.filter((w) => !w.isDraft);
+  const b1Active = data.B1.filter((w) => !w.isDraft);
+  const b2Active = data.B2.filter((w) => !w.isDraft);
+  eq(a2Active.length, 700, 'A2 seviyesinde 700 aktif kelime olmalı');
+  eq(b1Active.length, 710, 'B1 seviyesinde 710 aktif kelime olmalı');
+  eq(b2Active.length, 600, 'B2 seviyesinde 600 aktif kelime olmalı');
+});
+
+await test('v4.1 [5] Phase E: Yeni Eklenen 704 Kelimenin Soru Üretimi ve Seviye Uyumunun Doğrulanması', () => {
+  const all = [...data.A2, ...data.B1, ...data.B2];
+  const newWords = all.filter((w) => w.id.includes('-v41-'));
+  eq(newWords.length, 704, 'Tam 704 yeni kelime eklenmiş olmalı');
+
+  for (const w of newWords) {
+    ok(!w.isDraft, `${w.id} aktif olmalı`);
+    ok(isWordReady(w), `${w.id} hazır olmalı`);
+    const b = E.blankSentence(w);
+    ok(b && b.text.includes('_____'), `${w.id} için boşluk doldurma geçerli olmalı`);
+    ok(CATEGORY_LABELS[w.category], `${w.id} kategorisi CATEGORY_LABELS içinde olmalı: ${w.category}`);
+
+    // Soru tipleri kontrolü
+    for (const qType of ['mc', 'typing', 'missing', 'sentence', 'production']) {
+      const q = E.buildQuestion(w, qType, all);
+      eq(q.type, qType, `${w.id} için ${qType} tipi soru üretilebilmeli`);
+    }
   }
 });
 

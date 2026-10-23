@@ -17653,5 +17653,4502 @@
     "createdAt": "2026-10-23T00:00:00.000Z",
     "updatedAt": "2026-10-23T12:00:00.000Z",
     "isDraft": false
+  },
+  {
+    "id": "b1-appliance-v41-0001",
+    "level": "B1",
+    "word": "appliance",
+    "meanings": [
+      "ev aleti",
+      "cihaz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Modern household appliances consume much less electrical energy.",
+    "exampleTranslation": "Modern ev aletleri çok daha az elektrik enerjisi tüketir.",
+    "synonyms": [
+      "device",
+      "machine"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "household appliance",
+      "electrical appliance"
+    ],
+    "wordFamily": [
+      "apply"
+    ],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-belongings-v41-0002",
+    "level": "B1",
+    "word": "belongings",
+    "meanings": [
+      "kişisel eşyalar"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Please take all your personal belongings when you leave the train.",
+    "exampleTranslation": "Trenden ayrılırken lütfen tüm kişisel eşyalarınızı yanınıza alın.",
+    "synonyms": [
+      "possessions"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "personal belongings",
+      "pack belongings"
+    ],
+    "wordFamily": [
+      "belong"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-biography-v41-0003",
+    "level": "B1",
+    "word": "biography",
+    "meanings": [
+      "biyografi",
+      "yaşam öyküsü"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I am reading a fascinating biography of Albert Einstein this week.",
+    "exampleTranslation": "Bu hafta Albert Einstein'ın büyüleyici bir biyografisini okuyorum.",
+    "synonyms": [
+      "life story"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "write a biography",
+      "authorized biography"
+    ],
+    "wordFamily": [
+      "biographical"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-bravery-v41-0004",
+    "level": "B1",
+    "word": "bravery",
+    "meanings": [
+      "cesaret",
+      "yiğitlik"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The young firefighter was awarded a medal for extraordinary bravery.",
+    "exampleTranslation": "Genç itfaiyeciye olağanüstü cesaretinden dolayı bir madalya verildi.",
+    "synonyms": [
+      "courage"
+    ],
+    "antonyms": [
+      "cowardice"
+    ],
+    "collocations": [
+      "show bravery",
+      "act of bravery"
+    ],
+    "wordFamily": [
+      "brave"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-bulletin-v41-0005",
+    "level": "B1",
+    "word": "bulletin",
+    "meanings": [
+      "bülten",
+      "duyuru"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The radio station broadcasts an updated news bulletin every hour.",
+    "exampleTranslation": "Radyo istasyonu her saat güncellenmiş bir haber bülteni yayımlar.",
+    "synonyms": [
+      "report",
+      "announcement"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "news bulletin",
+      "weather bulletin"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-celebrity-v41-0006",
+    "level": "B1",
+    "word": "celebrity",
+    "meanings": [
+      "ünlü kişi",
+      "şöhret"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A famous Hollywood celebrity attended the international film festival.",
+    "exampleTranslation": "Ünlü bir Hollywood şöhreti uluslararası film festivaline katıldı.",
+    "synonyms": [
+      "star",
+      "vip"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "famous celebrity",
+      "celebrity status"
+    ],
+    "wordFamily": [
+      "celebrate"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-chore-v41-0007",
+    "level": "B1",
+    "word": "chore",
+    "meanings": [
+      "ev işi",
+      "angarya"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Doing the laundry is my least favorite household chore.",
+    "exampleTranslation": "Çamaşır yıkamak benim en az sevdiğim ev işidir.",
+    "synonyms": [
+      "task",
+      "duty"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "household chore",
+      "daily chores"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-citizenship-v41-0008",
+    "level": "B1",
+    "word": "citizenship",
+    "meanings": [
+      "vatandaşlık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "After living in the country for five years, she applied for citizenship.",
+    "exampleTranslation": "Ülkede beş yıl yaşadıktan sonra vatandaşlık için başvurdu.",
+    "synonyms": [
+      "nationality"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "apply for citizenship",
+      "dual citizenship"
+    ],
+    "wordFamily": [
+      "citizen"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-clash-v41-0009",
+    "level": "B1",
+    "word": "clash",
+    "meanings": [
+      "çatışma",
+      "çatışmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "There was a fierce clash between the rival football supporters.",
+    "exampleTranslation": "Rakip futbol taraftarları arasında şiddetli bir çatışma yaşandı.",
+    "synonyms": [
+      "conflict",
+      "confrontation"
+    ],
+    "antonyms": [
+      "harmony"
+    ],
+    "collocations": [
+      "violent clash",
+      "clash of opinions"
+    ],
+    "wordFamily": [
+      "clashing"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-client-v41-0010",
+    "level": "B1",
+    "word": "client",
+    "meanings": [
+      "müşteri",
+      "danışan"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The law firm represents several prominent corporate client companies.",
+    "exampleTranslation": "Hukuk bürosu birçok önde gelen kurumsal müşteri şirketini temsil ediyor.",
+    "synonyms": [
+      "customer",
+      "patron"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "corporate client",
+      "meet a client"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-collision-v41-0011",
+    "level": "B1",
+    "word": "collision",
+    "meanings": [
+      "çarpışma",
+      "çatışma"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Two passenger vehicles were involved in a minor collision at the crossing.",
+    "exampleTranslation": "Kavşakta iki yolcu aracı küçük bir çarpışmaya karıştı.",
+    "synonyms": [
+      "crash",
+      "accident"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "car collision",
+      "avoid a collision"
+    ],
+    "wordFamily": [
+      "collide"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-comfort-v41-0012",
+    "level": "B1",
+    "word": "comfort",
+    "meanings": [
+      "rahatlık",
+      "teselli",
+      "rahatlatmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The soft velvet sofa offers exceptional comfort after a long day.",
+    "exampleTranslation": "Yumuşak kadife kanepe uzun bir günün ardından olağanüstü bir rahatlık sunar.",
+    "synonyms": [
+      "ease"
+    ],
+    "antonyms": [
+      "discomfort"
+    ],
+    "collocations": [
+      "seek comfort",
+      "zone of comfort"
+    ],
+    "wordFamily": [
+      "comfortable"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-commence-v41-0013",
+    "level": "B1",
+    "word": "commence",
+    "meanings": [
+      "başlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The university graduation ceremony will commence promptly at ten o'clock.",
+    "exampleTranslation": "Üniversite mezuniyet töreni saat tam onda başlayacaktır.",
+    "synonyms": [
+      "begin",
+      "start"
+    ],
+    "antonyms": [
+      "conclude",
+      "finish"
+    ],
+    "collocations": [
+      "commence operations",
+      "commence work"
+    ],
+    "wordFamily": [
+      "commencement"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-commentary-v41-0014",
+    "level": "B1",
+    "word": "commentary",
+    "meanings": [
+      "yorum",
+      "maç anlatımı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The television commentator gave an insightful running commentary on the match.",
+    "exampleTranslation": "Televizyon yorumcusu maç üzerine aydınlatıcı canlı bir yorum yaptı.",
+    "synonyms": [
+      "analysis",
+      "review"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "running commentary",
+      "sports commentary"
+    ],
+    "wordFamily": [
+      "comment",
+      "commentator"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-commodity-v41-0015",
+    "level": "B1",
+    "word": "commodity",
+    "meanings": [
+      "ticari mal",
+      "emtia"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Crude oil is one of the most traded global commodity products.",
+    "exampleTranslation": "Ham petrol en çok ticareti yapılan küresel emtia ürünlerinden biridir.",
+    "synonyms": [
+      "good",
+      "merchandise"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "valuable commodity",
+      "agricultural commodity"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-commute-v41-0016",
+    "level": "B1",
+    "word": "commute",
+    "meanings": [
+      "ev ile iş arasında gidip gelmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Many professionals commute to the central city by train every workday.",
+    "exampleTranslation": "Birçok profesyonel her iş günü trenle şehir merkezine gidip gelir.",
+    "synonyms": [
+      "travel to work"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "daily commute",
+      "commute by bus"
+    ],
+    "wordFamily": [
+      "commuter"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-companion-v41-0017",
+    "level": "B1",
+    "word": "companion",
+    "meanings": [
+      "yoldaş",
+      "refakatçi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "His loyal dog has been his constant travel companion for five years.",
+    "exampleTranslation": "Sadık köpeği beş yıldır onun daimi seyahat arkadaşı olmuştur.",
+    "synonyms": [
+      "partner",
+      "friend"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "travel companion",
+      "lifelong companion"
+    ],
+    "wordFamily": [
+      "companionship"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compassion-v41-0018",
+    "level": "B1",
+    "word": "compassion",
+    "meanings": [
+      "merhamet",
+      "şefkat"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Nurses should always treat sick patients with deep kindness and compassion.",
+    "exampleTranslation": "Hemşireler hasta insanlara her zaman derin nezaket ve şefkatle davranmalıdır.",
+    "synonyms": [
+      "empathy",
+      "pity"
+    ],
+    "antonyms": [
+      "cruelty",
+      "indifference"
+    ],
+    "collocations": [
+      "show compassion",
+      "feel compassion"
+    ],
+    "wordFamily": [
+      "compassionate"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compel-v41-0019",
+    "level": "B1",
+    "word": "compel",
+    "meanings": [
+      "zorlamak",
+      "mecbur bırakmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Severe financial hardship may compel families to move to a cheaper city.",
+    "exampleTranslation": "Şiddetli maddi zorluklar aileleri daha ucuz bir şehre taşınmaya mecbur bırakabilir.",
+    "synonyms": [
+      "force",
+      "oblige"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "compel someone to act",
+      "feel compelled"
+    ],
+    "wordFamily": [
+      "compelling"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compensate-v41-0020",
+    "level": "B1",
+    "word": "compensate",
+    "meanings": [
+      "tazmin etmek",
+      "karşılamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The airline agreed to compensate passengers for the delayed flight.",
+    "exampleTranslation": "Havayolu geciken uçuş için yolcuları tazmin etmeyi kabul etti.",
+    "synonyms": [
+      "reimburse"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "compensate for loss",
+      "compensate fully"
+    ],
+    "wordFamily": [
+      "compensation"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-competence-v41-0021",
+    "level": "B1",
+    "word": "competence",
+    "meanings": [
+      "yetkinlik",
+      "ehliyet"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She demonstrated exceptional technical competence in software design.",
+    "exampleTranslation": "Yazılım tasarımında olağanüstü teknik yetkinlik sergiledi.",
+    "synonyms": [
+      "ability",
+      "proficiency"
+    ],
+    "antonyms": [
+      "incompetence"
+    ],
+    "collocations": [
+      "professional competence",
+      "linguistic competence"
+    ],
+    "wordFamily": [
+      "competent"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-complement-v41-0022",
+    "level": "B1",
+    "word": "complement",
+    "meanings": [
+      "tamamlamak",
+      "tamamlayıcı unsur"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The rich garlic tomato sauce will complement the fresh grilled fish.",
+    "exampleTranslation": "Zengin sarımsaklı domates sosu taze ızgara balığı tamamlayacaktır.",
+    "synonyms": [
+      "enhance",
+      "complete"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "complement each other",
+      "perfect complement"
+    ],
+    "wordFamily": [
+      "complementary"
+    ],
+    "category": "General Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-complexity-v41-0023",
+    "level": "B1",
+    "word": "complexity",
+    "meanings": [
+      "karmaşıklık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Students often struggle with the sheer complexity of quantum mechanics.",
+    "exampleTranslation": "Öğrenciler sıklıkla kuantum mekaniğinin aşırı karmaşıklığı ile mücadele ederler.",
+    "synonyms": [
+      "intricacy"
+    ],
+    "antonyms": [
+      "simplicity"
+    ],
+    "collocations": [
+      "increasing complexity",
+      "structural complexity"
+    ],
+    "wordFamily": [
+      "complex"
+    ],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-complicate-v41-0024",
+    "level": "B1",
+    "word": "complicate",
+    "meanings": [
+      "karmaşıklaştırmak",
+      "güçleştirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Unforeseen bad weather conditions could complicate our travel schedule.",
+    "exampleTranslation": "Öngörülemeyen kötü hava koşulları seyahat programımızı karmaşıklaştırabilir.",
+    "synonyms": [
+      "confuse"
+    ],
+    "antonyms": [
+      "simplify"
+    ],
+    "collocations": [
+      "complicate matters",
+      "complicate the situation"
+    ],
+    "wordFamily": [
+      "complicated",
+      "complication"
+    ],
+    "category": "General Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compliment-v41-0025",
+    "level": "B1",
+    "word": "compliment",
+    "meanings": [
+      "övgü",
+      "iltifat",
+      "övmek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He paid his colleague a sincere compliment on her brilliant presentation.",
+    "exampleTranslation": "Meslektaşına harika sunumundan dolayı içten bir iltifatta bulundu.",
+    "synonyms": [
+      "praise",
+      "flattery"
+    ],
+    "antonyms": [
+      "insult"
+    ],
+    "collocations": [
+      "pay a compliment",
+      "accept a compliment"
+    ],
+    "wordFamily": [
+      "complimentary"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-comply-v41-0026",
+    "level": "B1",
+    "word": "comply",
+    "meanings": [
+      "uymak",
+      "itaat etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "All participating companies must comply with international environmental laws.",
+    "exampleTranslation": "Tüm katılımcı şirketler uluslararası çevre yasalarına uymak zorundadır.",
+    "synonyms": [
+      "obey",
+      "conform"
+    ],
+    "antonyms": [
+      "violate",
+      "disobey"
+    ],
+    "collocations": [
+      "comply with regulations",
+      "fail to comply"
+    ],
+    "wordFamily": [
+      "compliance"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-component-v41-0027",
+    "level": "B1",
+    "word": "component",
+    "meanings": [
+      "bileşen",
+      "parça"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A reliable memory unit is an essential hardware component of a computer.",
+    "exampleTranslation": "Güvenilir bir bellek birimi bir bilgisayarın temel donanım bileşenidir.",
+    "synonyms": [
+      "part",
+      "element"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "key component",
+      "electronic component"
+    ],
+    "wordFamily": [],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compose-v41-0028",
+    "level": "B1",
+    "word": "compose",
+    "meanings": [
+      "bestelemek",
+      "oluşturmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The talented musician sat down at the piano to compose a new melody.",
+    "exampleTranslation": "Yetenekli müzisyen yeni bir melodi bestelemek için piyanonun başına oturdu.",
+    "synonyms": [
+      "create",
+      "write"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "compose music",
+      "compose an email"
+    ],
+    "wordFamily": [
+      "composer",
+      "composition"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compound-v41-0029",
+    "level": "B1",
+    "word": "compound",
+    "meanings": [
+      "bileşik",
+      "birleşim"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Water is a chemical compound formed by hydrogen and oxygen atoms.",
+    "exampleTranslation": "Su, hidrojen ve oksijen atomlarından oluşan kimyasal bir bileşiktir.",
+    "synonyms": [
+      "mixture"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "chemical compound",
+      "compound interest"
+    ],
+    "wordFamily": [],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-comprehend-v41-0030",
+    "level": "B1",
+    "word": "comprehend",
+    "meanings": [
+      "kavramak",
+      "anlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Young students often struggle to comprehend abstract philosophical theories.",
+    "exampleTranslation": "Genç öğrenciler genellikle soyut felsefi teorileri kavramakta zorlanırlar.",
+    "synonyms": [
+      "understand",
+      "grasp"
+    ],
+    "antonyms": [
+      "misunderstand"
+    ],
+    "collocations": [
+      "fully comprehend",
+      "fail to comprehend"
+    ],
+    "wordFamily": [
+      "comprehension",
+      "comprehensible"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compromise-v41-0031",
+    "level": "B1",
+    "word": "compromise",
+    "meanings": [
+      "uzlaşma",
+      "taviz vermek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Both political parties reached a sensible compromise on the budget.",
+    "exampleTranslation": "Her iki siyasi parti de bütçe konusunda makul bir uzlaşmaya vardı.",
+    "synonyms": [
+      "agreement",
+      "middle ground"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "reach a compromise",
+      "make a compromise"
+    ],
+    "wordFamily": [
+      "compromising"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-compulsory-v41-0032",
+    "level": "B1",
+    "word": "compulsory",
+    "meanings": [
+      "zorunlu",
+      "mecburi"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "Primary education is completely free and compulsory for all children.",
+    "exampleTranslation": "İlköğretim tüm çocuklar için tamamen ücretsiz ve zorunludur.",
+    "synonyms": [
+      "mandatory",
+      "obligatory"
+    ],
+    "antonyms": [
+      "optional",
+      "voluntary"
+    ],
+    "collocations": [
+      "compulsory education",
+      "compulsory military service"
+    ],
+    "wordFamily": [
+      "compulsion"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conceal-v41-0033",
+    "level": "B1",
+    "word": "conceal",
+    "meanings": [
+      "gizlemek",
+      "saklamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "He tried hard to conceal his disappointment after losing the match.",
+    "exampleTranslation": "Maçı kaybettikten sonra hayal kırıklığını gizlemek için çok çabaladı.",
+    "synonyms": [
+      "hide"
+    ],
+    "antonyms": [
+      "reveal"
+    ],
+    "collocations": [
+      "conceal feelings",
+      "conceal the truth"
+    ],
+    "wordFamily": [
+      "concealment"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-concede-v41-0034",
+    "level": "B1",
+    "word": "concede",
+    "meanings": [
+      "kabullenmek",
+      "teslim etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The candidate decided to concede defeat when the final votes were counted.",
+    "exampleTranslation": "Aday son oylar sayıldığında yenilgiyi kabullenmeye karar verdi.",
+    "synonyms": [
+      "admit",
+      "yield"
+    ],
+    "antonyms": [
+      "deny"
+    ],
+    "collocations": [
+      "concede defeat",
+      "concede a point"
+    ],
+    "wordFamily": [
+      "concession"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-condemn-v41-0035",
+    "level": "B1",
+    "word": "condemn",
+    "meanings": [
+      "kınamak",
+      "mahkum etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "World leaders gathered to condemn the senseless violence against civilians.",
+    "exampleTranslation": "Dünya liderleri sivillere yönelik anlamsız şiddeti kınamak için bir araya geldi.",
+    "synonyms": [
+      "denounce"
+    ],
+    "antonyms": [
+      "praise"
+    ],
+    "collocations": [
+      "condemn violence",
+      "strongly condemn"
+    ],
+    "wordFamily": [
+      "condemnation"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-condense-v41-0036",
+    "level": "B1",
+    "word": "condense",
+    "meanings": [
+      "yoğunlaştırmak",
+      "özetlemek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The editor managed to condense the lengthy manuscript into ten pages.",
+    "exampleTranslation": "Editör uzun elyazmasını on sayfaya özetlemeyi başardı.",
+    "synonyms": [
+      "shorten",
+      "summarize"
+    ],
+    "antonyms": [
+      "expand"
+    ],
+    "collocations": [
+      "condense into",
+      "condensed milk"
+    ],
+    "wordFamily": [
+      "condensation"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-confide-v41-0037",
+    "level": "B1",
+    "word": "confide",
+    "meanings": [
+      "sırrını açmak",
+      "güvenmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "She needed a trusted childhood friend in whom she could confide.",
+    "exampleTranslation": "Kendisine sırrını açabileceği güvenilir bir çocukluk arkadaşına ihtiyacı vardı.",
+    "synonyms": [
+      "trust"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "confide in someone",
+      "confide a secret"
+    ],
+    "wordFamily": [
+      "confidence",
+      "confidential"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conform-v41-0038",
+    "level": "B1",
+    "word": "conform",
+    "meanings": [
+      "uymak",
+      "boyun eğmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "All modern electrical devices must conform to strict safety standards.",
+    "exampleTranslation": "Tüm modern elektrikli cihazlar katı güvenlik standartlarına uymak zorundadır.",
+    "synonyms": [
+      "comply",
+      "follow"
+    ],
+    "antonyms": [
+      "rebel"
+    ],
+    "collocations": [
+      "conform to rules",
+      "conform to standards"
+    ],
+    "wordFamily": [
+      "conformity"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-confront-v41-0039",
+    "level": "B1",
+    "word": "confront",
+    "meanings": [
+      "yüzleşmek",
+      "karşı karşıya gelmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "We must courageously confront our deepest fears to overcome them.",
+    "exampleTranslation": "Onların üstesinden gelmek için en derin korkularımızla cesurca yüzleşmeliyiz.",
+    "synonyms": [
+      "face"
+    ],
+    "antonyms": [
+      "avoid"
+    ],
+    "collocations": [
+      "confront a problem",
+      "confront fear"
+    ],
+    "wordFamily": [
+      "confrontation"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-congratulate-v41-0040",
+    "level": "B1",
+    "word": "congratulate",
+    "meanings": [
+      "tebrik etmek",
+      "kutlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Friends gathered to congratulate the winning student on her scholarship.",
+    "exampleTranslation": "Arkadaşları burs kazanan öğrenciyi tebrik etmek için toplandılar.",
+    "synonyms": [
+      "applaud"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "congratulate someone on",
+      "warmly congratulate"
+    ],
+    "wordFamily": [
+      "congratulations"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-congress-v41-0041",
+    "level": "B1",
+    "word": "congress",
+    "meanings": [
+      "kongre",
+      "kurultay"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Doctors from twenty nations attended the annual medical congress.",
+    "exampleTranslation": "Yirmi ülkeden hekimler yıllık tıp kongresine katıldı.",
+    "synonyms": [
+      "convention",
+      "assembly"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "medical congress",
+      "national congress"
+    ],
+    "wordFamily": [
+      "congressional"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conquer-v41-0042",
+    "level": "B1",
+    "word": "conquer",
+    "meanings": [
+      "fethetmek",
+      "yenmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The determined athlete trained hard to conquer his fear of heights.",
+    "exampleTranslation": "Azimli sporcu yükseklik korkusunu yenmek için çok çalıştı.",
+    "synonyms": [
+      "overcome",
+      "defeat"
+    ],
+    "antonyms": [
+      "surrender"
+    ],
+    "collocations": [
+      "conquer fear",
+      "conquer a territory"
+    ],
+    "wordFamily": [
+      "conquest",
+      "conqueror"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conscience-v41-0043",
+    "level": "B1",
+    "word": "conscience",
+    "meanings": [
+      "vicdan"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He could not sleep peacefully because of a guilty conscience.",
+    "exampleTranslation": "Suçlu bir vicdan nedeniyle huzur içinde uyuyamadı.",
+    "synonyms": [
+      "moral sense"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "clear conscience",
+      "guilty conscience"
+    ],
+    "wordFamily": [
+      "conscientious"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-consecutive-v41-0044",
+    "level": "B1",
+    "word": "consecutive",
+    "meanings": [
+      "ardışık",
+      "üst üste"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The national football team won four consecutive championship matches.",
+    "exampleTranslation": "Milli futbol takımı üst üste dört şampiyonluk maçı kazandı.",
+    "synonyms": [
+      "successive"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "consecutive days",
+      "consecutive wins"
+    ],
+    "wordFamily": [
+      "consecutively"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-consensus-v41-0045",
+    "level": "B1",
+    "word": "consensus",
+    "meanings": [
+      "fikir birliği",
+      "uzlaşma"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The committee reached a general consensus after several hours of debate.",
+    "exampleTranslation": "Komite birkaç saatlik tartışmanın ardından genel bir fikir birliğine vardı.",
+    "synonyms": [
+      "agreement"
+    ],
+    "antonyms": [
+      "disagreement"
+    ],
+    "collocations": [
+      "reach a consensus",
+      "general consensus"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-consent-v41-0046",
+    "level": "B1",
+    "word": "consent",
+    "meanings": [
+      "rıza",
+      "onay"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Doctors must obtain informed written consent before performing surgery.",
+    "exampleTranslation": "Doktorlar ameliyat yapmadan önce bilgilendirilmiş yazılı rıza almalıdır.",
+    "synonyms": [
+      "permission",
+      "agreement"
+    ],
+    "antonyms": [
+      "refusal"
+    ],
+    "collocations": [
+      "give consent",
+      "informed consent"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conservation-v41-0047",
+    "level": "B1",
+    "word": "conservation",
+    "meanings": [
+      "koruma",
+      "muhafaza"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Wildlife conservation programs help protect endangered tiger species.",
+    "exampleTranslation": "Yaban hayatı koruma programları nesli tehlikedeki kaplan türlerini korumaya yardımcı olur.",
+    "synonyms": [
+      "preservation"
+    ],
+    "antonyms": [
+      "destruction"
+    ],
+    "collocations": [
+      "nature conservation",
+      "energy conservation"
+    ],
+    "wordFamily": [
+      "conserve"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conservative-v41-0048",
+    "level": "B1",
+    "word": "conservative",
+    "meanings": [
+      "muhafazakar",
+      "tutucu"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The elderly banker holds conservative views regarding investment risk.",
+    "exampleTranslation": "Yaşlı bankacı yatırım riski konusunda muhafazakar görüşlere sahiptir.",
+    "synonyms": [
+      "traditional"
+    ],
+    "antonyms": [
+      "progressive",
+      "liberal"
+    ],
+    "collocations": [
+      "conservative approach",
+      "conservative estimate"
+    ],
+    "wordFamily": [
+      "conserve"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-console-v41-0049",
+    "level": "B1",
+    "word": "console",
+    "meanings": [
+      "teselli etmek",
+      "avunmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "She tried to console her weeping friend after the tragic accident.",
+    "exampleTranslation": "Trajik kazadan sonra ağlayan arkadaşını teselli etmeye çalıştı.",
+    "synonyms": [
+      "comfort"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "console a friend",
+      "words of comfort"
+    ],
+    "wordFamily": [
+      "consolation"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-conspiracy-v41-0050",
+    "level": "B1",
+    "word": "conspiracy",
+    "meanings": [
+      "komplo",
+      "gizli anlaşma"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The corrupt politicians were charged with conspiracy to commit fraud.",
+    "exampleTranslation": "Yozlaşmış politikacılar dolandırıcılık yapmak için komplo kurmakla suçlandı.",
+    "synonyms": [
+      "plot"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "conspiracy theory",
+      "criminal conspiracy"
+    ],
+    "wordFamily": [
+      "conspire"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-constitute-v41-0051",
+    "level": "B1",
+    "word": "constitute",
+    "meanings": [
+      "oluşturmak",
+      "teşkil etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Renewable energy sources constitute twenty percent of national electricity.",
+    "exampleTranslation": "Yenilenebilir enerji kaynakları ulusal elektriğin yüzde yirmisini oluşturur.",
+    "synonyms": [
+      "form",
+      "compose"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "constitute a danger",
+      "constitute a majority"
+    ],
+    "wordFamily": [
+      "constitution"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-constrain-v41-0052",
+    "level": "B1",
+    "word": "constrain",
+    "meanings": [
+      "kısıtlamak",
+      "zorlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "A tight annual budget will constrain our ability to hire new staff.",
+    "exampleTranslation": "Dar bir yıllık bütçe yeni personel işe alma kabiliyetimizi kısıtlayacaktır.",
+    "synonyms": [
+      "restrict",
+      "limit"
+    ],
+    "antonyms": [
+      "free"
+    ],
+    "collocations": [
+      "feel constrained",
+      "constrain growth"
+    ],
+    "wordFamily": [
+      "constraint"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contemplate-v41-0053",
+    "level": "B1",
+    "word": "contemplate",
+    "meanings": [
+      "derinlemesine düşünmek",
+      "tasarlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "He sat by the calm mountain lake to contemplate his future plans.",
+    "exampleTranslation": "Gelecek planlarını derinlemesine düşünmek için sakin dağ gölünün kenarında oturdu.",
+    "synonyms": [
+      "ponder",
+      "reflect"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "contemplate the future",
+      "contemplate a decision"
+    ],
+    "wordFamily": [
+      "contemplation"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contempt-v41-0054",
+    "level": "B1",
+    "word": "contempt",
+    "meanings": [
+      "aşağılama",
+      "hor görme"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The arrogant manager looked at his junior staff with undisguised contempt.",
+    "exampleTranslation": "Kibirli müdür astlarına açık bir aşağılamayla baktı.",
+    "synonyms": [
+      "scorn",
+      "disdain"
+    ],
+    "antonyms": [
+      "respect",
+      "admiration"
+    ],
+    "collocations": [
+      "hold in contempt",
+      "beneath contempt"
+    ],
+    "wordFamily": [
+      "contemptuous"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contend-v41-0055",
+    "level": "B1",
+    "word": "contend",
+    "meanings": [
+      "iddia etmek",
+      "mücadele etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Lawyers contend that the accused client acted strictly in self-defense.",
+    "exampleTranslation": "Avukatlar suçlanan müvekkilin kesinlikle meşru müdafaa ile hareket ettiğini iddia ediyor.",
+    "synonyms": [
+      "argue",
+      "assert"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "contend that",
+      "contend with difficulties"
+    ],
+    "wordFamily": [
+      "contender",
+      "contention"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contest-v41-0056",
+    "level": "B1",
+    "word": "contest",
+    "meanings": [
+      "yarışma",
+      "müsabaka"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Over two hundred talented high school students entered the essay contest.",
+    "exampleTranslation": "İki yüzden fazla yetenekli lise öğrencisi kompozisyon yarışmasına katıldı.",
+    "synonyms": [
+      "competition"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "enter a contest",
+      "speech contest"
+    ],
+    "wordFamily": [
+      "contestant"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-continent-v41-0057",
+    "level": "B1",
+    "word": "continent",
+    "meanings": [
+      "kıta"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Asia is by far the largest and most populous continent on Earth.",
+    "exampleTranslation": "Asya yeryüzündeki açık ara en büyük ve en kalabalık kıtadır.",
+    "synonyms": [
+      "landmass"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "African continent",
+      "across the continent"
+    ],
+    "wordFamily": [
+      "continental"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contingency-v41-0058",
+    "level": "B1",
+    "word": "contingency",
+    "meanings": [
+      "beklenmedik durum",
+      "ihtimal"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Every organization needs a robust contingency plan for natural disasters.",
+    "exampleTranslation": "Her kuruluşun doğal afetler için sağlam bir acil durum planına ihtiyacı vardır.",
+    "synonyms": [
+      "emergency",
+      "eventuality"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "contingency plan",
+      "prepare for contingencies"
+    ],
+    "wordFamily": [
+      "contingent"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-continuity-v41-0059",
+    "level": "B1",
+    "word": "continuity",
+    "meanings": [
+      "süreklilik",
+      "devamlılık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "There is a noticeable historical continuity between the two cultures.",
+    "exampleTranslation": "İki kültür arasında fark edilir bir tarihi süreklilik vardır.",
+    "synonyms": [
+      "persistence"
+    ],
+    "antonyms": [
+      "interruption"
+    ],
+    "collocations": [
+      "ensure continuity",
+      "cultural continuity"
+    ],
+    "wordFamily": [
+      "continue",
+      "continuous"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contradict-v41-0060",
+    "level": "B1",
+    "word": "contradict",
+    "meanings": [
+      "çelişmek",
+      "yalanlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The fresh eyewitness testimony appears to contradict earlier police reports.",
+    "exampleTranslation": "Yeni tanık ifadesi daha önceki polis raporlarıyla çelişiyor gibi görünüyor.",
+    "synonyms": [
+      "conflict with"
+    ],
+    "antonyms": [
+      "support",
+      "confirm"
+    ],
+    "collocations": [
+      "contradict evidence",
+      "directly contradict"
+    ],
+    "wordFamily": [
+      "contradiction",
+      "contradictory"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contrary-v41-0061",
+    "level": "B1",
+    "word": "contrary",
+    "meanings": [
+      "aksine",
+      "zıt"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "Contrary to general public belief, snakes usually avoid attacking humans.",
+    "exampleTranslation": "Genel kamuoyu inancının aksine yılanlar genellikle insanlara saldırmaktan kaçınır.",
+    "synonyms": [
+      "opposite",
+      "conflicting"
+    ],
+    "antonyms": [
+      "similar"
+    ],
+    "collocations": [
+      "on the contrary",
+      "contrary to popular belief"
+    ],
+    "wordFamily": [],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-contrast-v41-0062",
+    "level": "B1",
+    "word": "contrast",
+    "meanings": [
+      "karşıtlık",
+      "fark",
+      "karşılaştırmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "There is a striking contrast between the wealthy and impoverished neighborhoods.",
+    "exampleTranslation": "Zengin ve yoksul mahalleler arasında çarpıcı bir karşıtlık vardır.",
+    "synonyms": [
+      "difference"
+    ],
+    "antonyms": [
+      "similarity"
+    ],
+    "collocations": [
+      "sharp contrast",
+      "in contrast to"
+    ],
+    "wordFamily": [
+      "contrastive"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-controversy-v41-0063",
+    "level": "B1",
+    "word": "controversy",
+    "meanings": [
+      "anlaşmazlık",
+      "tartışma"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The proposed new tax policy generated fierce public controversy across the country.",
+    "exampleTranslation": "Önerilen yeni vergi politikası ülke çapında şiddetli bir kamuoyu tartışmasına yol açtı.",
+    "synonyms": [
+      "dispute",
+      "debate"
+    ],
+    "antonyms": [
+      "agreement"
+    ],
+    "collocations": [
+      "cause controversy",
+      "spark controversy"
+    ],
+    "wordFamily": [
+      "controversial"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-converge-v41-0064",
+    "level": "B1",
+    "word": "converge",
+    "meanings": [
+      "birleşmek",
+      "aynı noktada buluşmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Two major rivers converge near the city to form a massive waterway.",
+    "exampleTranslation": "Şehrin yakınında iki büyük nehir birleşerek devasa bir su yolu oluşturur.",
+    "synonyms": [
+      "merge",
+      "meet"
+    ],
+    "antonyms": [
+      "diverge"
+    ],
+    "collocations": [
+      "converge on a point",
+      "roads converge"
+    ],
+    "wordFamily": [
+      "convergence"
+    ],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-convey-v41-0065",
+    "level": "B1",
+    "word": "convey",
+    "meanings": [
+      "iletmek",
+      "aktarmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Words alone cannot adequately convey my sincere gratitude for your help.",
+    "exampleTranslation": "Yalnızca kelimeler yardımınız için duyduğum içten şükranı yeterince iletemez.",
+    "synonyms": [
+      "communicate",
+      "express"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "convey a message",
+      "convey feelings"
+    ],
+    "wordFamily": [
+      "conveyance"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-convict-v41-0066",
+    "level": "B1",
+    "word": "convict",
+    "meanings": [
+      "suçlu bulmak",
+      "mahkum etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The jury had sufficient forensic evidence to convict the suspect of fraud.",
+    "exampleTranslation": "Jürinin şüpheliyi dolandırıcılıktan suçlu bulmak için yeterli adli kanıtı vardı.",
+    "synonyms": [
+      "sentence",
+      "find guilty"
+    ],
+    "antonyms": [
+      "acquit"
+    ],
+    "collocations": [
+      "convict of a crime",
+      "convicted felon"
+    ],
+    "wordFamily": [
+      "conviction"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cooperate-v41-0067",
+    "level": "B1",
+    "word": "cooperate",
+    "meanings": [
+      "iş birliği yapmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Both regional governments agreed to cooperate on cross-border pollution control.",
+    "exampleTranslation": "Her iki bölgesel hükümet de sınır ötesi kirlilik kontrolünde iş birliği yapmayı kabul etti.",
+    "synonyms": [
+      "collaborate"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "cooperate closely",
+      "refuse to cooperate"
+    ],
+    "wordFamily": [
+      "cooperation",
+      "cooperative"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-coordinate-v41-0068",
+    "level": "B1",
+    "word": "coordinate",
+    "meanings": [
+      "koordine etmek",
+      "eşgüdüm sağlamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "She was appointed to coordinate relief efforts after the devastating flood.",
+    "exampleTranslation": "Yıkıcı selden sonra yardım çalışmalarını koordine etmek üzere görevlendirildi.",
+    "synonyms": [
+      "organize"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "coordinate activities",
+      "coordinate a project"
+    ],
+    "wordFamily": [
+      "coordination",
+      "coordinator"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-core-v41-0069",
+    "level": "B1",
+    "word": "core",
+    "meanings": [
+      "çekirdek",
+      "öz",
+      "temel"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Critical analytical thinking is at the very core of university education.",
+    "exampleTranslation": "Eleştirel analitik düşünme üniversite eğitiminin tam merkezinde yer alır.",
+    "synonyms": [
+      "heart",
+      "center"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "core values",
+      "core principles"
+    ],
+    "wordFamily": [],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-corporate-v41-0070",
+    "level": "B1",
+    "word": "corporate",
+    "meanings": [
+      "kurumsal",
+      "şirkete ait"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "He works as a senior financial analyst in the corporate headquarters.",
+    "exampleTranslation": "Kurumsal merkez binada kıdemli bir finansal analist olarak çalışıyor.",
+    "synonyms": [
+      "company"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "corporate culture",
+      "corporate identity"
+    ],
+    "wordFamily": [
+      "corporation"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-correlate-v41-0071",
+    "level": "B1",
+    "word": "correlate",
+    "meanings": [
+      "ilişkilendirmek",
+      "bağlantılı olmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Higher educational levels strongly correlate with improved lifetime earnings.",
+    "exampleTranslation": "Daha yüksek eğitim seviyeleri yaşam boyu artan kazançla güçlü bir şekilde ilişkilidir.",
+    "synonyms": [
+      "relate",
+      "connect"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "correlate with",
+      "closely correlate"
+    ],
+    "wordFamily": [
+      "correlation"
+    ],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-correspond-v41-0072",
+    "level": "B1",
+    "word": "correspond",
+    "meanings": [
+      "karşılık gelmek",
+      "yazışmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The numbers in the research report do not correspond with our raw data.",
+    "exampleTranslation": "Araştırma raporundaki sayılar bizim ham verilerimizle uyuşmuyor.",
+    "synonyms": [
+      "match",
+      "communicate"
+    ],
+    "antonyms": [
+      "differ"
+    ],
+    "collocations": [
+      "correspond with",
+      "closely correspond"
+    ],
+    "wordFamily": [
+      "correspondence"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-corrupt-v41-0073",
+    "level": "B1",
+    "word": "corrupt",
+    "meanings": [
+      "yozlaşmış",
+      "rüşvetçi",
+      "yozlaştırmak"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "Independent investigative journalists exposed the corrupt city council members.",
+    "exampleTranslation": "Bağımsız araştırmacı gazeteciler yozlaşmış belediye meclisi üyelerini ifşa etti.",
+    "synonyms": [
+      "dishonest"
+    ],
+    "antonyms": [
+      "honest",
+      "pure"
+    ],
+    "collocations": [
+      "corrupt official",
+      "corrupt practice"
+    ],
+    "wordFamily": [
+      "corruption"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-counsel-v41-0074",
+    "level": "B1",
+    "word": "counsel",
+    "meanings": [
+      "danışmanlık yapmak",
+      "öğüt vermek",
+      "hukuk danışmanı"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Experienced psychologists counsel students dealing with anxiety and depression.",
+    "exampleTranslation": "Deneyimli psikologlar kaygı ve depresyonla mücadele eden öğrencilere danışmanlık yapar.",
+    "synonyms": [
+      "advise"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "counsel patients",
+      "legal counsel"
+    ],
+    "wordFamily": [
+      "counselor"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-counterpart-v41-0075",
+    "level": "B1",
+    "word": "counterpart",
+    "meanings": [
+      "mevkidaş",
+      "emsal"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The foreign minister met with his German counterpart in Berlin today.",
+    "exampleTranslation": "Dışişleri bakanı bugün Berlin'de Alman mevkidaşı ile bir araya geldi.",
+    "synonyms": [
+      "equivalent",
+      "peer"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "foreign counterpart",
+      "professional counterpart"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-courage-v41-0076",
+    "level": "B1",
+    "word": "courage",
+    "meanings": [
+      "cesaret",
+      "yüreklilik"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "It takes enormous moral courage to speak out against injustice.",
+    "exampleTranslation": "Adaletsizliğe karşı ses çıkarmak muazzam bir ahlaki cesaret gerektirir.",
+    "synonyms": [
+      "bravery"
+    ],
+    "antonyms": [
+      "fear",
+      "cowardice"
+    ],
+    "collocations": [
+      "have the courage",
+      "moral courage"
+    ],
+    "wordFamily": [
+      "courageous"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-courier-v41-0077",
+    "level": "B1",
+    "word": "courier",
+    "meanings": [
+      "kurye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "An urgent legal document was delivered directly by motorbike courier.",
+    "exampleTranslation": "Acil bir yasal belge motosikletli kurye tarafından doğrudan teslim edildi.",
+    "synonyms": [
+      "messenger"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "express courier",
+      "courier service"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-courtesy-v41-0078",
+    "level": "B1",
+    "word": "courtesy",
+    "meanings": [
+      "nezaket",
+      "kibarlık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Treating fellow commuters with respect and courtesy makes travel pleasant.",
+    "exampleTranslation": "Yolculara saygı ve nezaketle davranmak yolculuğu keyifli hale getirir.",
+    "synonyms": [
+      "politeness"
+    ],
+    "antonyms": [
+      "rudeness"
+    ],
+    "collocations": [
+      "show courtesy",
+      "professional courtesy"
+    ],
+    "wordFamily": [
+      "courteous"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-coverage-v41-0079",
+    "level": "B1",
+    "word": "coverage",
+    "meanings": [
+      "kapsam",
+      "haber yayını"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The television channel provided round-the-clock live coverage of the election.",
+    "exampleTranslation": "Televizyon kanalı seçimlerin gün boyu canlı yayınını sağladı.",
+    "synonyms": [
+      "reporting"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "media coverage",
+      "insurance coverage"
+    ],
+    "wordFamily": [
+      "cover"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-craft-v41-0080",
+    "level": "B1",
+    "word": "craft",
+    "meanings": [
+      "zanaat",
+      "el sanatı",
+      "özenle yapmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Traditional carpet weaving is a respected ancient craft in this region.",
+    "exampleTranslation": "Geleneksel halı dokuma bu bölgede saygı duyulan kadim bir zanaattır.",
+    "synonyms": [
+      "artisanry"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "learn a craft",
+      "arts and crafts"
+    ],
+    "wordFamily": [
+      "craftsman"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cramp-v41-0081",
+    "level": "B1",
+    "word": "cramp",
+    "meanings": [
+      "kramp",
+      "kas spazmı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The swimmer had to leave the pool because of a painful leg cramp.",
+    "exampleTranslation": "Yüzücü ağrılı bir bacak krampı nedeniyle havuzdan çıkmak zorunda kaldı.",
+    "synonyms": [
+      "spasm"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "muscle cramp",
+      "stomach cramp"
+    ],
+    "wordFamily": [],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crane-v41-0082",
+    "level": "B1",
+    "word": "crane",
+    "meanings": [
+      "vinç",
+      "turna kuşu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A massive yellow construction crane lifted heavy steel beams to the top floor.",
+    "exampleTranslation": "Büyük sarı bir inşaat vinci ağır çelik kirişleri en üst kata kaldırdı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "construction crane",
+      "tower crane"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-craving-v41-0083",
+    "level": "B1",
+    "word": "craving",
+    "meanings": [
+      "aşırı istek",
+      "can çekmesi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Pregnant women often experience a strong craving for unusual food combinations.",
+    "exampleTranslation": "Hamile kadınlar sıklıkla alışılmadık yemek kombinasyonlarına karşı güçlü bir istek duyarlar.",
+    "synonyms": [
+      "longing",
+      "yearning"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "craving for sweets",
+      "satisfy a craving"
+    ],
+    "wordFamily": [
+      "crave"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-credential-v41-0084",
+    "level": "B1",
+    "word": "credential",
+    "meanings": [
+      "yeterlilik belgesi",
+      "referans"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The candidate possesses impressive academic credential degrees from top universities.",
+    "exampleTranslation": "Aday en iyi üniversitelerden etkileyici akademik yeterlilik belgelerine sahiptir.",
+    "synonyms": [
+      "qualification"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "check credentials",
+      "academic credentials"
+    ],
+    "wordFamily": [],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-credit-v41-0085",
+    "level": "B1",
+    "word": "credit",
+    "meanings": [
+      "kredi",
+      "övgü",
+      "itibar"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The bank approved our small business credit loan application yesterday.",
+    "exampleTranslation": "Banka dün küçük işletme kredi başvurumuzu onayladı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "bank credit",
+      "give credit"
+    ],
+    "wordFamily": [
+      "credible"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-creep-v41-0086",
+    "level": "B1",
+    "word": "creep",
+    "meanings": [
+      "sessizce sokulmak",
+      "sürünmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The cat tried to creep silently toward the small bird on the grass.",
+    "exampleTranslation": "Kedi çimlerin üzerindeki küçük kuşa sessizce sokulmaya çalıştı.",
+    "synonyms": [
+      "sneak",
+      "crawl"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "creep quietly",
+      "creep into"
+    ],
+    "wordFamily": [
+      "creepy"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-criterion-v41-0087",
+    "level": "B1",
+    "word": "criterion",
+    "meanings": [
+      "kriter",
+      "ölçüt"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "High academic performance is the primary criterion for this prestigious award.",
+    "exampleTranslation": "Yüksek akademik performans bu prestijli ödül için birincil kriterdir.",
+    "synonyms": [
+      "standard",
+      "benchmark"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "strict criterion",
+      "selection criterion"
+    ],
+    "wordFamily": [
+      "criteria"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-critic-v41-0088",
+    "level": "B1",
+    "word": "critic",
+    "meanings": [
+      "eleştirmen"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The demanding film critic gave the new historical drama a glowing review.",
+    "exampleTranslation": "Titiz film eleştirmeni yeni tarihi dramaya övgü dolu bir inceleme yaptı.",
+    "synonyms": [
+      "reviewer"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "film critic",
+      "art critic"
+    ],
+    "wordFamily": [
+      "criticism",
+      "critical"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-criticize-v41-0089",
+    "level": "B1",
+    "word": "criticize",
+    "meanings": [
+      "eleştirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "It is very easy to criticize others without understanding their difficulties.",
+    "exampleTranslation": "Zorluklarını anlamadan başkalarını eleştirmek çok kolaydır.",
+    "synonyms": [
+      "judge",
+      "fault"
+    ],
+    "antonyms": [
+      "praise"
+    ],
+    "collocations": [
+      "criticize unfairly",
+      "openly criticize"
+    ],
+    "wordFamily": [
+      "critic",
+      "criticism"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [
+      "criticise"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crude-v41-0090",
+    "level": "B1",
+    "word": "crude",
+    "meanings": [
+      "ham",
+      "işlenmemiş",
+      "kaba"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "Global oil refineries process millions of barrels of crude petroleum daily.",
+    "exampleTranslation": "Küresel petrol rafinerileri her gün milyonlarca varil ham petrol işler.",
+    "synonyms": [
+      "unrefined",
+      "raw"
+    ],
+    "antonyms": [
+      "refined"
+    ],
+    "collocations": [
+      "crude oil",
+      "crude estimate"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cruelty-v41-0091",
+    "level": "B1",
+    "word": "cruelty",
+    "meanings": [
+      "zalimlik",
+      "acımasızlık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Animal welfare organizations fight against all forms of cruelty to animals.",
+    "exampleTranslation": "Hayvan refahı örgütleri hayvanlara yönelik her türlü zalimliğe karşı mücadele eder.",
+    "synonyms": [
+      "brutality"
+    ],
+    "antonyms": [
+      "kindness"
+    ],
+    "collocations": [
+      "cruelty to animals",
+      "act of cruelty"
+    ],
+    "wordFamily": [
+      "cruel"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crumble-v41-0092",
+    "level": "B1",
+    "word": "crumble",
+    "meanings": [
+      "ufalanmak",
+      "dağılmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The dry homemade biscuit will crumble into tiny pieces if you press it.",
+    "exampleTranslation": "Kuru ev yapımı bisküviye bastırırsanız minik parçalara ufalanacaktır.",
+    "synonyms": [
+      "disintegrate"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "crumble to pieces",
+      "crumble easily"
+    ],
+    "wordFamily": [
+      "crumb"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crunch-v41-0093",
+    "level": "B1",
+    "word": "crunch",
+    "meanings": [
+      "çıtırdamak",
+      "çıtırtı",
+      "kriz"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "We could hear dry leaves crunch under our boots as we walked.",
+    "exampleTranslation": "Yürürken botlarımızın altında kuru yaprakların çıtırdadığını duyabiliyorduk.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "crunch leaves",
+      "crunch numbers"
+    ],
+    "wordFamily": [
+      "crunchy"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crush-v41-0094",
+    "level": "B1",
+    "word": "crush",
+    "meanings": [
+      "ezmek",
+      "kırmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Use a heavy mortar and pestle to crush fresh peppercorns finely.",
+    "exampleTranslation": "Taze karabiber tanelerini ince bir şekilde ezmek için ağır bir havan kullanın.",
+    "synonyms": [
+      "smash",
+      "grind"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "crush completely",
+      "crush ice"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crust-v41-0095",
+    "level": "B1",
+    "word": "crust",
+    "meanings": [
+      "ekmek kabuğu",
+      "kabuk"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Some young children prefer to cut off the brown crust of their bread.",
+    "exampleTranslation": "Bazı küçük çocuklar ekmeklerinin kahverengi kabuğunu kesmeyi tercih ederler.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "bread crust",
+      "earth's crust"
+    ],
+    "wordFamily": [
+      "crusty"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-crystal-v41-0096",
+    "level": "B1",
+    "word": "crystal",
+    "meanings": [
+      "kristal"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The delicate snowflake had a perfectly symmetrical ice crystal structure.",
+    "exampleTranslation": "Narin kar tanesi mükemmel simetrik bir buz kristali yapısına sahipti.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "crystal clear",
+      "crystal glass"
+    ],
+    "wordFamily": [
+      "crystalline"
+    ],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cube-v41-0097",
+    "level": "B1",
+    "word": "cube",
+    "meanings": [
+      "küp"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Add one small sugar cube to your morning cup of black coffee.",
+    "exampleTranslation": "Sabah içtiğiniz bir fincan sade kahvenize küçük bir küp şeker ekleyin.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "ice cube",
+      "sugar cube"
+    ],
+    "wordFamily": [
+      "cubic"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cue-v41-0098",
+    "level": "B1",
+    "word": "cue",
+    "meanings": [
+      "ipucu",
+      "işaret"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Visual cue hints can help language learners remember new vocabulary items.",
+    "exampleTranslation": "Görsel ipucu işaretleri dil öğrenenlerin yeni kelimeleri hatırlamasına yardımcı olabilir.",
+    "synonyms": [
+      "signal",
+      "hint"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "visual cue",
+      "on cue"
+    ],
+    "wordFamily": [],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cuisine-v41-0099",
+    "level": "B1",
+    "word": "cuisine",
+    "meanings": [
+      "mutfak",
+      "yemek kültürü"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Traditional Italian cuisine is world-famous for its delicious pasta dishes.",
+    "exampleTranslation": "Geleneksel İtalyan mutfağı lezzetli makarna yemekleriyle dünyaca ünlüdür.",
+    "synonyms": [
+      "cookery",
+      "gastronomy"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "local cuisine",
+      "international cuisine"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cultivate-v41-0100",
+    "level": "B1",
+    "word": "cultivate",
+    "meanings": [
+      "yetiştirmek",
+      "geliştirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Farmers in the sunny Mediterranean region cultivate olives and sweet oranges.",
+    "exampleTranslation": "Güneşli Akdeniz bölgesindeki çiftçiler zeytin ve tatlı portakal yetiştirirler.",
+    "synonyms": [
+      "grow",
+      "foster"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "cultivate crops",
+      "cultivate relationships"
+    ],
+    "wordFamily": [
+      "cultivation"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-curiosity-v41-0101",
+    "level": "B1",
+    "word": "curiosity",
+    "meanings": [
+      "merak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Scientific curiosity drives researchers to explore the mysteries of deep space.",
+    "exampleTranslation": "Bilimsel merak araştırmacıları derin uzayın gizemlerini keşfetmeye yönlendirir.",
+    "synonyms": [
+      "inquisitiveness"
+    ],
+    "antonyms": [
+      "apathy"
+    ],
+    "collocations": [
+      "intellectual curiosity",
+      "satisfy curiosity"
+    ],
+    "wordFamily": [
+      "curious"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-curriculum-v41-0102",
+    "level": "B1",
+    "word": "curriculum",
+    "meanings": [
+      "müfredat"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The modern school curriculum emphasizes science, technology, and foreign languages.",
+    "exampleTranslation": "Modern okul müfredatı fen, teknoloji ve yabancı dillere vurgu yapmaktadır.",
+    "synonyms": [
+      "syllabus"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "school curriculum",
+      "core curriculum"
+    ],
+    "wordFamily": [
+      "curricular"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-cynical-v41-0103",
+    "level": "B1",
+    "word": "cynical",
+    "meanings": [
+      "alaycı",
+      "şüpheci",
+      "insanlara güvenmeyen"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "He became cynical about political promises after years of disappointment.",
+    "exampleTranslation": "Yıllar süren hayal kırıklığının ardından siyasi vaatler konusunda şüpheci oldu.",
+    "synonyms": [
+      "skeptical"
+    ],
+    "antonyms": [
+      "optimistic"
+    ],
+    "collocations": [
+      "cynical attitude",
+      "cynical view"
+    ],
+    "wordFamily": [
+      "cynicism"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-deficit-v41-0104",
+    "level": "B1",
+    "word": "deficit",
+    "meanings": [
+      "açık",
+      "bütçe açığı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The government is trying to reduce the national trade deficit this fiscal year.",
+    "exampleTranslation": "Hükümet bu mali yılda ulusal ticaret açığını azaltmaya çalışıyor.",
+    "synonyms": [
+      "shortfall"
+    ],
+    "antonyms": [
+      "surplus"
+    ],
+    "collocations": [
+      "budget deficit",
+      "trade deficit"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-depict-v41-0105",
+    "level": "B1",
+    "word": "depict",
+    "meanings": [
+      "tasvir etmek",
+      "betimlemek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The ancient cave paintings depict tribal hunters pursuing wild bison.",
+    "exampleTranslation": "Eski mağara resimleri vahşi bizonları kovalayan kabile avcılarını tasvir eder.",
+    "synonyms": [
+      "portray",
+      "represent"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "depict accurately",
+      "vividly depict"
+    ],
+    "wordFamily": [
+      "depiction"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-descendant-v41-0106",
+    "level": "B1",
+    "word": "descendant",
+    "meanings": [
+      "torun",
+      "soyundan gelen"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She is a direct descendant of the famous nineteenth-century poet.",
+    "exampleTranslation": "O ünlü on dokuzuncu yüzyıl şairinin doğrudan soyundan gelen biridir.",
+    "synonyms": [
+      "offspring"
+    ],
+    "antonyms": [
+      "ancestor"
+    ],
+    "collocations": [
+      "direct descendant",
+      "future descendants"
+    ],
+    "wordFamily": [
+      "descend"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-despair-v41-0107",
+    "level": "B1",
+    "word": "despair",
+    "meanings": [
+      "çaresizlik",
+      "umutsuzluk"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Never give in to despair even when facing the hardest obstacles.",
+    "exampleTranslation": "En zor engellerle karşılaştığınızda bile asla umutsuzluğa kapılmayın.",
+    "synonyms": [
+      "hopelessness"
+    ],
+    "antonyms": [
+      "hope"
+    ],
+    "collocations": [
+      "in despair",
+      "deep despair"
+    ],
+    "wordFamily": [
+      "desperate"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-deteriorate-v41-0108",
+    "level": "B1",
+    "word": "deteriorate",
+    "meanings": [
+      "kötüleşmek",
+      "bozulmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The patient's physical condition began to deteriorate rapidly overnight.",
+    "exampleTranslation": "Hastanın fiziksel durumu gece boyunca hızla kötüleşmeye başladı.",
+    "synonyms": [
+      "worsen",
+      "decline"
+    ],
+    "antonyms": [
+      "improve"
+    ],
+    "collocations": [
+      "deteriorate rapidly",
+      "health deteriorates"
+    ],
+    "wordFamily": [
+      "deterioration"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-devise-v41-0109",
+    "level": "B1",
+    "word": "devise",
+    "meanings": [
+      "tasarlamak",
+      "geliştirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The engineering team managed to devise an ingenious method to purify water.",
+    "exampleTranslation": "Mühendislik ekibi suyu arıtmak için dahice bir yöntem geliştirmeyi başardı.",
+    "synonyms": [
+      "invent",
+      "formulate"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "devise a plan",
+      "devise a strategy"
+    ],
+    "wordFamily": [],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-dignity-v41-0110",
+    "level": "B1",
+    "word": "dignity",
+    "meanings": [
+      "onur",
+      "haysiyet",
+      "itibar"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Every human being has an inherent right to live with freedom and dignity.",
+    "exampleTranslation": "Her insanın özgürlük ve onur içinde yaşama konusunda doğuştan gelen bir hakkı vardır.",
+    "synonyms": [
+      "self-respect",
+      "honor"
+    ],
+    "antonyms": [
+      "shame"
+    ],
+    "collocations": [
+      "human dignity",
+      "maintain dignity"
+    ],
+    "wordFamily": [
+      "dignified"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-diligent-v41-0111",
+    "level": "B1",
+    "word": "diligent",
+    "meanings": [
+      "çalışkan",
+      "gayretli"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The diligent student studied vocabulary every evening without skipping a day.",
+    "exampleTranslation": "Çalışkan öğrenci bir gün bile atlamadan her akşam kelime çalıştı.",
+    "synonyms": [
+      "hardworking",
+      "industrious"
+    ],
+    "antonyms": [
+      "lazy"
+    ],
+    "collocations": [
+      "diligent student",
+      "diligent effort"
+    ],
+    "wordFamily": [
+      "diligence"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-diminish-v41-0112",
+    "level": "B1",
+    "word": "diminish",
+    "meanings": [
+      "azalmak",
+      "azaltmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The medicine will diminish your joint pain within twenty minutes.",
+    "exampleTranslation": "İlaç yirmi dakika içinde eklem ağrınızı azaltacaktır.",
+    "synonyms": [
+      "decrease",
+      "lessen"
+    ],
+    "antonyms": [
+      "increase"
+    ],
+    "collocations": [
+      "diminish over time",
+      "diminish importance"
+    ],
+    "wordFamily": [],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-disability-v41-0113",
+    "level": "B1",
+    "word": "disability",
+    "meanings": [
+      "engellilik",
+      "sakatlık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The modern university provides equal campus access to students with a disability.",
+    "exampleTranslation": "Modern üniversite engelliliği olan öğrencilere eşit kampüs erişimi sağlar.",
+    "synonyms": [
+      "handicap",
+      "impairment"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "physical disability",
+      "learning disability"
+    ],
+    "wordFamily": [
+      "disabled"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-disclose-v41-0114",
+    "level": "B1",
+    "word": "disclose",
+    "meanings": [
+      "açıklamak",
+      "ifşa etmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The company refused to disclose the exact terms of the financial agreement.",
+    "exampleTranslation": "Şirket mali anlaşmanın kesin şartlarını açıklamayı reddetti.",
+    "synonyms": [
+      "reveal"
+    ],
+    "antonyms": [
+      "conceal"
+    ],
+    "collocations": [
+      "disclose information",
+      "refuse to disclose"
+    ],
+    "wordFamily": [
+      "disclosure"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-discourage-v41-0115",
+    "level": "B1",
+    "word": "discourage",
+    "meanings": [
+      "cesaretini kırmak",
+      "vazgeçirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Difficult initial results should not discourage you from pursuing your goal.",
+    "exampleTranslation": "Zor ilk sonuçlar sizi hedefinize ulaşmaktan vazgeçirmemelidir.",
+    "synonyms": [
+      "deter"
+    ],
+    "antonyms": [
+      "encourage"
+    ],
+    "collocations": [
+      "discourage from",
+      "easily discouraged"
+    ],
+    "wordFamily": [
+      "discouragement"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-disguise-v41-0116",
+    "level": "B1",
+    "word": "disguise",
+    "meanings": [
+      "kamufle etmek",
+      "gizlemek",
+      "kılık değiştirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "He wore dark sunglasses and a hat to disguise his identity in public.",
+    "exampleTranslation": "Halk arasında kimliğini gizlemek için koyu renkli güneş gözlüğü ve şapka taktı.",
+    "synonyms": [
+      "camouflage",
+      "mask"
+    ],
+    "antonyms": [
+      "reveal"
+    ],
+    "collocations": [
+      "disguise oneself",
+      "in disguise"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-dismantle-v41-0117",
+    "level": "B1",
+    "word": "dismantle",
+    "meanings": [
+      "sökmek",
+      "parçalarına ayırmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The technician had to dismantle the motor to replace the broken gear.",
+    "exampleTranslation": "Teknisyen kırık dişliyi değiştirmek için motoru parçalarına ayırmak zorunda kaldı.",
+    "synonyms": [
+      "disassemble"
+    ],
+    "antonyms": [
+      "assemble"
+    ],
+    "collocations": [
+      "dismantle a machine",
+      "dismantle completely"
+    ],
+    "wordFamily": [
+      "dismantling"
+    ],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-disregard-v41-0118",
+    "level": "B1",
+    "word": "disregard",
+    "meanings": [
+      "göz ardı etmek",
+      "aldırmamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "You cannot simply disregard the explicit safety warnings on the label.",
+    "exampleTranslation": "Etiketteki açık güvenlik uyarılarını öylece göz ardı edemezsiniz.",
+    "synonyms": [
+      "ignore"
+    ],
+    "antonyms": [
+      "heed",
+      "respect"
+    ],
+    "collocations": [
+      "disregard advice",
+      "total disregard"
+    ],
+    "wordFamily": [],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-disrupt-v41-0119",
+    "level": "B1",
+    "word": "disrupt",
+    "meanings": [
+      "aksatmak",
+      "bozmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Severe winter storms could disrupt transportation services across the country.",
+    "exampleTranslation": "Şiddetli kış fırtınaları ülke genelinde ulaşım hizmetlerini aksatabilir.",
+    "synonyms": [
+      "interrupt"
+    ],
+    "antonyms": [
+      "maintain"
+    ],
+    "collocations": [
+      "disrupt traffic",
+      "disrupt services"
+    ],
+    "wordFamily": [
+      "disruption",
+      "disruptive"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-dissolve-v41-0120",
+    "level": "B1",
+    "word": "dissolve",
+    "meanings": [
+      "çözünmek",
+      "eritmek",
+      "feshetmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Add a spoonful of sugar and stir until the crystals dissolve in the tea.",
+    "exampleTranslation": "Bir kaşık şeker ekleyin ve kristaller çayın içinde çözünene kadar karıştırın.",
+    "synonyms": [
+      "melt"
+    ],
+    "antonyms": [
+      "solidify"
+    ],
+    "collocations": [
+      "dissolve completely",
+      "dissolve in water"
+    ],
+    "wordFamily": [
+      "dissolution"
+    ],
+    "category": "Science",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-distort-v41-0121",
+    "level": "B1",
+    "word": "distort",
+    "meanings": [
+      "çarpıtmak",
+      "bozmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Biased news media can easily distort historical facts to mislead citizens.",
+    "exampleTranslation": "Taraflı haber medyası vatandaşları yanıltmak için tarihi gerçekleri kolayca çarpıtabilir.",
+    "synonyms": [
+      "misrepresent"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "distort facts",
+      "distort the truth"
+    ],
+    "wordFamily": [
+      "distortion"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-distress-v41-0122",
+    "level": "B1",
+    "word": "distress",
+    "meanings": [
+      "keder",
+      "sıkıntı",
+      "tehlike"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The family suffered deep emotional distress after losing their home in the fire.",
+    "exampleTranslation": "Aile evlerini yangında kaybettikten sonra derin bir duygusal sıkıntı yaşadı.",
+    "synonyms": [
+      "anguish",
+      "pain"
+    ],
+    "antonyms": [
+      "comfort"
+    ],
+    "collocations": [
+      "emotional distress",
+      "in distress"
+    ],
+    "wordFamily": [
+      "distressing"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-divert-v41-0123",
+    "level": "B1",
+    "word": "divert",
+    "meanings": [
+      "başka yöne çevirmek",
+      "saptırmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Police had to divert traffic to side streets due to the highway repair work.",
+    "exampleTranslation": "Otoyol onarım çalışması nedeniyle polis trafiği yan sokaklara saptırmak zorunda kaldı.",
+    "synonyms": [
+      "redirect"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "divert attention",
+      "divert traffic"
+    ],
+    "wordFamily": [
+      "diversion"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-domain-v41-0124",
+    "level": "B1",
+    "word": "domain",
+    "meanings": [
+      "alan",
+      "faaliyet sahası"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Medical ethics is a specialized domain that requires extensive legal study.",
+    "exampleTranslation": "Tıp etiği kapsamlı bir hukuk çalışması gerektiren uzmanlaşmış bir alandır.",
+    "synonyms": [
+      "field",
+      "realm"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "public domain",
+      "knowledge domain"
+    ],
+    "wordFamily": [],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-drastic-v41-0125",
+    "level": "B1",
+    "word": "drastic",
+    "meanings": [
+      "köklü",
+      "sert",
+      "radikal"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The government took drastic measures to curb rising inflation this winter.",
+    "exampleTranslation": "Hükümet bu kış artan enflasyonu dizginlemek için köklü tedbirler aldı.",
+    "synonyms": [
+      "radical",
+      "severe"
+    ],
+    "antonyms": [
+      "mild"
+    ],
+    "collocations": [
+      "drastic measures",
+      "drastic change"
+    ],
+    "wordFamily": [
+      "drastically"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-drought-v41-0126",
+    "level": "B1",
+    "word": "drought",
+    "meanings": [
+      "kuraklık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A prolonged severe drought has damaged agricultural crops across the south.",
+    "exampleTranslation": "Uzun süren şiddetli bir kuraklık güneydeki tarım ürünlerine zarar verdi.",
+    "synonyms": [
+      "dry spell"
+    ],
+    "antonyms": [
+      "flood"
+    ],
+    "collocations": [
+      "severe drought",
+      "suffer from drought"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-dwell-v41-0127",
+    "level": "B1",
+    "word": "dwell",
+    "meanings": [
+      "ikamet etmek",
+      "üzerinde durmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Nomadic tribes dwell in temporary tents as they travel across the desert.",
+    "exampleTranslation": "Göçebe kabileler çöl boyunca seyahat ederken geçici çadırlarda ikamet ederler.",
+    "synonyms": [
+      "reside",
+      "live"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "dwell in",
+      "dwell on mistakes"
+    ],
+    "wordFamily": [
+      "dwelling",
+      "dweller"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-dynamic-v41-0128",
+    "level": "B1",
+    "word": "dynamic",
+    "meanings": [
+      "dinamik",
+      "hareketli"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "Modern business requires a dynamic leadership approach to meet challenges.",
+    "exampleTranslation": "Modern iş dünyası zorlukları karşılamak için dinamik bir liderlik yaklaşımı gerektirir.",
+    "synonyms": [
+      "energetic",
+      "active"
+    ],
+    "antonyms": [
+      "static"
+    ],
+    "collocations": [
+      "dynamic environment",
+      "dynamic personality"
+    ],
+    "wordFamily": [
+      "dynamically"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-eccentric-v41-0129",
+    "level": "B1",
+    "word": "eccentric",
+    "meanings": [
+      "tuhaf",
+      "nev-i şahsına münhasır"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The eccentric old artist lived alone in a house filled with antique clocks.",
+    "exampleTranslation": "Tuhaf yaşlı sanatçı antika saatlerle dolu bir evde tek başına yaşıyordu.",
+    "synonyms": [
+      "odd",
+      "peculiar"
+    ],
+    "antonyms": [
+      "conventional"
+    ],
+    "collocations": [
+      "eccentric behavior",
+      "eccentric habits"
+    ],
+    "wordFamily": [
+      "eccentricity"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-ecology-v41-0130",
+    "level": "B1",
+    "word": "ecology",
+    "meanings": [
+      "ekoloji",
+      "çevre bilimi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Students study marine ecology to understand the complex life of coral reefs.",
+    "exampleTranslation": "Öğrenciler mercan resiflerinin karmaşık yaşamını anlamak için deniz ekolojisi çalışırlar.",
+    "synonyms": [
+      "environmental science"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "marine ecology",
+      "balance of ecology"
+    ],
+    "wordFamily": [
+      "ecological",
+      "ecologist"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-elaborate-v41-0131",
+    "level": "B1",
+    "word": "elaborate",
+    "meanings": [
+      "ayrıntılı",
+      "detaylandırmak"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The architect prepared an elaborate blueprint for the modern library complex.",
+    "exampleTranslation": "Mimar modern kütüphane kompleksi için ayrıntılı bir plan hazırladı.",
+    "synonyms": [
+      "detailed",
+      "complex"
+    ],
+    "antonyms": [
+      "simple"
+    ],
+    "collocations": [
+      "elaborate plan",
+      "elaborate design"
+    ],
+    "wordFamily": [
+      "elaborately",
+      "elaboration"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-elevate-v41-0132",
+    "level": "B1",
+    "word": "elevate",
+    "meanings": [
+      "yükseltmek",
+      "terfi ettirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "You should elevate your sprained ankle above your heart to reduce swelling.",
+    "exampleTranslation": "Şişliği azaltmak için burkulan ayak bileğinizi kalbinizin üzerine yükseltmelisiniz.",
+    "synonyms": [
+      "raise",
+      "lift"
+    ],
+    "antonyms": [
+      "lower"
+    ],
+    "collocations": [
+      "elevate status",
+      "elevate position"
+    ],
+    "wordFamily": [
+      "elevation",
+      "elevator"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-embrace-v41-0133",
+    "level": "B1",
+    "word": "embrace",
+    "meanings": [
+      "kucaklamak",
+      "benimsemek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Forward-thinking companies embrace new technologies to boost productivity.",
+    "exampleTranslation": "İleri görüşlü şirketler üretkenliği artırmak için yeni teknolojileri benimserler.",
+    "synonyms": [
+      "adopt",
+      "accept"
+    ],
+    "antonyms": [
+      "reject"
+    ],
+    "collocations": [
+      "embrace change",
+      "warm embrace"
+    ],
+    "wordFamily": [],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-emission-v41-0134",
+    "level": "B1",
+    "word": "emission",
+    "meanings": [
+      "salım",
+      "emisyon"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Many countries have pledged to reduce carbon emission levels by fifty percent.",
+    "exampleTranslation": "Birçok ülke karbon salım seviyelerini yüzde elli oranında azaltmayı taahhüt etti.",
+    "synonyms": [
+      "discharge"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "carbon emission",
+      "greenhouse gas emissions"
+    ],
+    "wordFamily": [
+      "emit"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-enact-v41-0135",
+    "level": "B1",
+    "word": "enact",
+    "meanings": [
+      "yasalaştırmak",
+      "yürürlüğe koymak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Parliament voted to enact strict new environmental protection laws today.",
+    "exampleTranslation": "Parlamento bugün katı yeni çevre koruma yasalarını yürürlüğe koymayı oyladı.",
+    "synonyms": [
+      "legislate",
+      "pass"
+    ],
+    "antonyms": [
+      "repeal"
+    ],
+    "collocations": [
+      "enact a law",
+      "enact legislation"
+    ],
+    "wordFamily": [
+      "enactment"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-encounter-v41-0136",
+    "level": "B1",
+    "word": "encounter",
+    "meanings": [
+      "karşılaşmak",
+      "rastlamak",
+      "karşılaşma"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Travelers may encounter unexpected language difficulties in remote rural areas.",
+    "exampleTranslation": "Gezginler uzak kırsal bölgelerde beklenmedik dil zorluklarıyla karşılaşabilirler.",
+    "synonyms": [
+      "meet",
+      "face"
+    ],
+    "antonyms": [
+      "avoid"
+    ],
+    "collocations": [
+      "encounter problems",
+      "chance encounter"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-endorse-v41-0137",
+    "level": "B1",
+    "word": "endorse",
+    "meanings": [
+      "desteklemek",
+      "onaylamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Several famous athletes agreed to endorse the new brand of sports shoes.",
+    "exampleTranslation": "Birkaç ünlü atlet yeni spor ayakkabı markasını desteklemeyi kabul etti.",
+    "synonyms": [
+      "support",
+      "back"
+    ],
+    "antonyms": [
+      "oppose"
+    ],
+    "collocations": [
+      "endorse a product",
+      "publicly endorse"
+    ],
+    "wordFamily": [
+      "endorsement"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-endure-v41-0138",
+    "level": "B1",
+    "word": "endure",
+    "meanings": [
+      "katlanmak",
+      "dayanmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The brave explorers had to endure extreme sub-zero cold during the trek.",
+    "exampleTranslation": "Cesur kaşifler yürüyüş sırasında sıfırın altındaki aşırı soğuğa katlanmak zorunda kaldılar.",
+    "synonyms": [
+      "tolerate",
+      "bear"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "endure pain",
+      "endure hardships"
+    ],
+    "wordFamily": [
+      "endurance"
+    ],
+    "category": "Psychology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-enforce-v41-0139",
+    "level": "B1",
+    "word": "enforce",
+    "meanings": [
+      "uygulamak",
+      "zorla yaptırmak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Traffic police officers strictly enforce speed limits in school zones.",
+    "exampleTranslation": "Trafik polisleri okul bölgelerinde hız sınırlarını sıkı bir şekilde uygular.",
+    "synonyms": [
+      "implement",
+      "apply"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "enforce laws",
+      "strictly enforce"
+    ],
+    "wordFamily": [
+      "enforcement"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-enlarge-v41-0140",
+    "level": "B1",
+    "word": "enlarge",
+    "meanings": [
+      "büyütmek",
+      "genişletmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "The photographer had to enlarge the digital image to see fine background details.",
+    "exampleTranslation": "Fotoğrafçı arka plandaki ince detayları görmek için dijital resmi büyütmek zorunda kaldı.",
+    "synonyms": [
+      "expand"
+    ],
+    "antonyms": [
+      "shrink"
+    ],
+    "collocations": [
+      "enlarge a photograph",
+      "enlarge capacity"
+    ],
+    "wordFamily": [
+      "enlargement"
+    ],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-enrich-v41-0141",
+    "level": "B1",
+    "word": "enrich",
+    "meanings": [
+      "zenginleştirmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Studying foreign literature can deeply enrich your cultural understanding.",
+    "exampleTranslation": "Yabancı edebiyat çalışmak kültürel anlayışınızı derinlemesine zenginleştirebilir.",
+    "synonyms": [
+      "enhance"
+    ],
+    "antonyms": [
+      "impoverish"
+    ],
+    "collocations": [
+      "enrich lives",
+      "enrich knowledge"
+    ],
+    "wordFamily": [
+      "enrichment",
+      "rich"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-enroll-v41-0142",
+    "level": "B1",
+    "word": "enroll",
+    "meanings": [
+      "kaydolmak",
+      "kaydetmek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Over three hundred students decided to enroll in the advanced coding seminar.",
+    "exampleTranslation": "Üç yüzden fazla öğrenci ileri düzey kodlama seminerine kaydolmaya karar verdi.",
+    "synonyms": [
+      "register",
+      "sign up"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "enroll in a course",
+      "enroll at university"
+    ],
+    "wordFamily": [
+      "enrollment"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [
+      "enrol"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-entail-v41-0143",
+    "level": "B1",
+    "word": "entail",
+    "meanings": [
+      "gerektirmek",
+      "kapsamak"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Taking on managerial responsibilities will entail working longer hours.",
+    "exampleTranslation": "Yöneticilik sorumluluklarını üstlenmek daha uzun saatler çalışmayı gerektirecektir.",
+    "synonyms": [
+      "involve",
+      "require"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "entail risk",
+      "entail sacrifices"
+    ],
+    "wordFamily": [],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-enterprise-v41-0144",
+    "level": "B1",
+    "word": "enterprise",
+    "meanings": [
+      "girişim",
+      "kuruluş"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Starting a successful commercial enterprise requires vision, capital, and grit.",
+    "exampleTranslation": "Başarılı bir ticari girişim başlatmak vizyon, sermaye ve kararlılık gerektirir.",
+    "synonyms": [
+      "business",
+      "venture"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "commercial enterprise",
+      "private enterprise"
+    ],
+    "wordFamily": [
+      "enterprising"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-entitle-v41-0145",
+    "level": "B1",
+    "word": "entitle",
+    "meanings": [
+      "hak tanımak",
+      "yetki vermek"
+    ],
+    "partOfSpeech": "verb",
+    "pronunciation": "",
+    "exampleSentence": "Purchasing a premium membership card will entitle you to free museum entry.",
+    "exampleTranslation": "Seçkin bir üyelik kartı satın almak size ücretsiz müze giriş hakkı tanıyacaktır.",
+    "synonyms": [
+      "qualify",
+      "authorize"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "entitle to",
+      "feel entitled"
+    ],
+    "wordFamily": [
+      "entitlement"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-epidemic-v41-0146",
+    "level": "B1",
+    "word": "epidemic",
+    "meanings": [
+      "salgın",
+      "salgın hastalık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Public health officials worked tirelessly to contain the flu epidemic.",
+    "exampleTranslation": "Halk sağlığı yetkilileri grip salgınını kontrol altına almak için yorulmadan çalıştı.",
+    "synonyms": [
+      "outbreak"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "flu epidemic",
+      "fight an epidemic"
+    ],
+    "wordFamily": [],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-equality-v41-0147",
+    "level": "B1",
+    "word": "equality",
+    "meanings": [
+      "eşitlik"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The civil rights movement campaigned for racial and gender equality.",
+    "exampleTranslation": "Sivil haklar hareketi ırk ve cinsiyet eşitliği için kampanya yürüttü.",
+    "synonyms": [
+      "fairness"
+    ],
+    "antonyms": [
+      "inequality"
+    ],
+    "collocations": [
+      "gender equality",
+      "racial equality"
+    ],
+    "wordFamily": [
+      "equal"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-equator-v41-0148",
+    "level": "B1",
+    "word": "equator",
+    "meanings": [
+      "ekvator"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Countries situated along the Earth's equator experience warm weather all year.",
+    "exampleTranslation": "Dünya'nın ekvatoru boyunca yer alan ülkeler tüm yıl boyunca sıcak hava yaşar.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "near the equator",
+      "cross the equator"
+    ],
+    "wordFamily": [
+      "equatorial"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "b1-equivalent-v41-0149",
+    "level": "B1",
+    "word": "equivalent",
+    "meanings": [
+      "eşdeğer",
+      "karşılık"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "A master's degree with experience is equivalent to five years of work.",
+    "exampleTranslation": "Deneyimli bir yüksek lisans derecesi beş yıllık çalışmaya eşdeğerdir.",
+    "synonyms": [
+      "equal",
+      "comparable"
+    ],
+    "antonyms": [
+      "different"
+    ],
+    "collocations": [
+      "equivalent to",
+      "functional equivalent"
+    ],
+    "wordFamily": [
+      "equivalence"
+    ],
+    "category": "Academic Vocabulary",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
   }
 ]

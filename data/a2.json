@@ -13294,5 +13294,5893 @@
     "isDraft": false,
     "reviewRequired": false,
     "reviewNote": "A2 seviye, sözcük türü ve örnek cümle/çeviri uyumu doğrulandı."
+  },
+  {
+    "id": "a2-album-v41-0001",
+    "level": "A2",
+    "word": "album",
+    "meanings": [
+      "albüm"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She showed me her old family photo album yesterday.",
+    "exampleTranslation": "Dün bana eski aile fotoğraf albümünü gösterdi.",
+    "synonyms": [
+      "record"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "photo album",
+      "music album"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-ankle-v41-0002",
+    "level": "A2",
+    "word": "ankle",
+    "meanings": [
+      "ayak bileği"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He hurt his ankle while playing football in the park.",
+    "exampleTranslation": "Parkta futbol oynarken ayak bileğini incitti.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "sprained ankle",
+      "swollen ankle"
+    ],
+    "wordFamily": [],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bakery-v41-0003",
+    "level": "A2",
+    "word": "bakery",
+    "meanings": [
+      "fırın",
+      "pastane"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I buy fresh bread from the local bakery every morning.",
+    "exampleTranslation": "Her sabah yerel fırından taze ekmek satın alırım.",
+    "synonyms": [
+      "bakehouse"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "local bakery",
+      "fresh bakery products"
+    ],
+    "wordFamily": [
+      "bake",
+      "baker"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-balcony-v41-0004",
+    "level": "A2",
+    "word": "balcony",
+    "meanings": [
+      "balkon"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We sat on the balcony and enjoyed the sunset.",
+    "exampleTranslation": "Balkonda oturduk ve gün batımının tadını çıkardık.",
+    "synonyms": [
+      "terrace"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "small balcony",
+      "sit on the balcony"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-barbecue-v41-0005",
+    "level": "A2",
+    "word": "barbecue",
+    "meanings": [
+      "mangal",
+      "barbekü"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We invited our friends for a barbecue in the garden.",
+    "exampleTranslation": "Bahçede mangal yapmak için arkadaşlarımızı davet ettik.",
+    "synonyms": [
+      "grill"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "have a barbecue",
+      "barbecue sauce"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bookcase-v41-0006",
+    "level": "A2",
+    "word": "bookcase",
+    "meanings": [
+      "kitaplık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He placed the new novels on the wooden bookcase.",
+    "exampleTranslation": "Yeni romanları ahşap kitaplığa yerleştirdi.",
+    "synonyms": [
+      "bookshelf"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wooden bookcase",
+      "tall bookcase"
+    ],
+    "wordFamily": [
+      "book"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bookshelf-v41-0007",
+    "level": "A2",
+    "word": "bookshelf",
+    "meanings": [
+      "kitap rafı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "There is a small bookshelf next to my study desk.",
+    "exampleTranslation": "Çalışma masamın yanında küçük bir kitap rafı var.",
+    "synonyms": [
+      "bookcase"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "on the bookshelf",
+      "tidy bookshelf"
+    ],
+    "wordFamily": [
+      "book",
+      "shelf"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-boots-v41-0008",
+    "level": "A2",
+    "word": "boots",
+    "meanings": [
+      "bot",
+      "çizme"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "You should wear warm boots because it is snowing.",
+    "exampleTranslation": "Kar yağdığı için sıcak botlar giymelisin.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "winter boots",
+      "leather boots"
+    ],
+    "wordFamily": [
+      "boot"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bracelet-v41-0009",
+    "level": "A2",
+    "word": "bracelet",
+    "meanings": [
+      "bilezik",
+      "bileklik"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Her grandmother gave her a beautiful silver bracelet.",
+    "exampleTranslation": "Büyükannesi ona güzel bir gümüş bileklik hediye etti.",
+    "synonyms": [
+      "bangle"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "silver bracelet",
+      "gold bracelet"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bread-v41-0010",
+    "level": "A2",
+    "word": "bread",
+    "meanings": [
+      "ekmek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We bought a loaf of whole grain bread from the local bakery.",
+    "exampleTranslation": "Yerel fırından bir somun tam tahıllı ekmek satın aldık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "loaf of bread",
+      "slice of bread"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-candle-v41-0011",
+    "level": "A2",
+    "word": "candle",
+    "meanings": [
+      "mum"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She lit a scented candle on the dining table.",
+    "exampleTranslation": "Yemek masasında kokulu bir mum yaktı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "light a candle",
+      "scented candle"
+    ],
+    "wordFamily": [
+      "candlelight"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-chalk-v41-0012",
+    "level": "A2",
+    "word": "chalk",
+    "meanings": [
+      "tebeşir"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The teacher wrote the new grammar rule with chalk.",
+    "exampleTranslation": "Öğretmen yeni dilbilgisi kuralını tebeşirle yazdı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "piece of chalk",
+      "white chalk"
+    ],
+    "wordFamily": [],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-chess-v41-0013",
+    "level": "A2",
+    "word": "chess",
+    "meanings": [
+      "satranç"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My brother and I often play chess on Sunday evenings.",
+    "exampleTranslation": "Kardeşim ve ben pazar akşamları sık sık satranç oynarız.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "play chess",
+      "game of chess"
+    ],
+    "wordFamily": [
+      "chess player"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-clerk-v41-0014",
+    "level": "A2",
+    "word": "clerk",
+    "meanings": [
+      "katip",
+      "tezgahtar",
+      "memur"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The bank clerk checked my passport and signed the form.",
+    "exampleTranslation": "Banka memuru pasaportumu kontrol etti ve formu imzaladı.",
+    "synonyms": [
+      "officer"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "bank clerk",
+      "hotel clerk"
+    ],
+    "wordFamily": [],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-closet-v41-0015",
+    "level": "A2",
+    "word": "closet",
+    "meanings": [
+      "dolap",
+      "gömme dolap"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Hang your winter coats inside the hallway closet.",
+    "exampleTranslation": "Kışlık montlarınızı koridordaki dolabın içine asın.",
+    "synonyms": [
+      "wardrobe",
+      "cupboard"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "walk-in closet",
+      "hallway closet"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-collar-v41-0016",
+    "level": "A2",
+    "word": "collar",
+    "meanings": [
+      "yaka",
+      "tasma"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The small dog wore a bright red collar with a bell.",
+    "exampleTranslation": "Küçük köpek çıngıraklı parlak kırmızı bir tasma takıyordu.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "shirt collar",
+      "dog collar"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-comb-v41-0017",
+    "level": "A2",
+    "word": "comb",
+    "meanings": [
+      "tarak",
+      "taramak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He always carries a small comb in his pocket.",
+    "exampleTranslation": "Cebinde her zaman küçük bir tarak taşır.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "hair comb",
+      "comb your hair"
+    ],
+    "wordFamily": [
+      "combed"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-compass-v41-0018",
+    "level": "A2",
+    "word": "compass",
+    "meanings": [
+      "pusula"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The hikers used a compass to find their way in the forest.",
+    "exampleTranslation": "Yürüyüşçüler ormanda yollarını bulmak için pusula kullandılar.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "magnetic compass",
+      "use a compass"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-corridor-v41-0019",
+    "level": "A2",
+    "word": "corridor",
+    "meanings": [
+      "koridor"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Walk down the long corridor and take the first door.",
+    "exampleTranslation": "Uzun koridor boyunca yürüyün ve ilk kapıdan girin.",
+    "synonyms": [
+      "hallway"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "down the corridor",
+      "long corridor"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-costume-v41-0020",
+    "level": "A2",
+    "word": "costume",
+    "meanings": [
+      "kostüm",
+      "özel kıyafet"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The children wore colorful costume masks for the school play.",
+    "exampleTranslation": "Çocuklar okul piyesi için renkli kostüm maskeleri taktılar.",
+    "synonyms": [
+      "outfit"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wear a costume",
+      "fancy dress costume"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-dessert-v41-0021",
+    "level": "A2",
+    "word": "dessert",
+    "meanings": [
+      "tatlı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We ordered chocolate cake for dessert after our meal.",
+    "exampleTranslation": "Yemekten sonra tatlı olarak çikolatalı pasta sipariş ettik.",
+    "synonyms": [
+      "sweet"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "for dessert",
+      "delicious dessert"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-diary-v41-0022",
+    "level": "A2",
+    "word": "diary",
+    "meanings": [
+      "günlük",
+      "ajanda"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She writes her personal thoughts in a secret diary.",
+    "exampleTranslation": "Kişisel düşüncelerini gizli bir günlüğe yazar.",
+    "synonyms": [
+      "journal"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "keep a diary",
+      "write in a diary"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-drawer-v41-0023",
+    "level": "A2",
+    "word": "drawer",
+    "meanings": [
+      "çekmece"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I keep my passport and keys in the top desk drawer.",
+    "exampleTranslation": "Pasaportumu ve anahtarlarımı masanın üst çekmecesinde tutarım.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "desk drawer",
+      "top drawer"
+    ],
+    "wordFamily": [
+      "draw"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-dust-v41-0024",
+    "level": "A2",
+    "word": "dust",
+    "meanings": [
+      "toz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "There was a thick layer of dust on the old bookshelves.",
+    "exampleTranslation": "Eski kitap raflarının üzerinde kalın bir toz tabakası vardı.",
+    "synonyms": [
+      "dirt"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "layer of dust",
+      "wipe the dust"
+    ],
+    "wordFamily": [
+      "dusty",
+      "duster"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-envelope-v41-0025",
+    "level": "A2",
+    "word": "envelope",
+    "meanings": [
+      "zarf"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She put the letter inside a white envelope and sealed it.",
+    "exampleTranslation": "Mektubu beyaz bir zarfın içine koydu ve yapıştırdı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "sealed envelope",
+      "put in an envelope"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-escalator-v41-0026",
+    "level": "A2",
+    "word": "escalator",
+    "meanings": [
+      "yürüyen merdiven"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Take the escalator to the second floor of the shopping mall.",
+    "exampleTranslation": "Alışveriş merkezinin ikinci katına çıkmak için yürüyen merdivene binin.",
+    "synonyms": [
+      "moving stairs"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "take the escalator",
+      "on the escalator"
+    ],
+    "wordFamily": [
+      "escalate"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-eraser-v41-0027",
+    "level": "A2",
+    "word": "eraser",
+    "meanings": [
+      "silgi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The student corrected his spelling mistake with an eraser.",
+    "exampleTranslation": "Öğrenci yazım hatasını bir silgiyle düzeltti.",
+    "synonyms": [
+      "rubber"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pencil and eraser",
+      "use an eraser"
+    ],
+    "wordFamily": [
+      "erase"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-exit-v41-0028",
+    "level": "A2",
+    "word": "exit",
+    "meanings": [
+      "çıkış"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Emergency exit signs are visible in every hallway.",
+    "exampleTranslation": "Acil çıkış tabelaları her koridorda görünür durumdadır.",
+    "synonyms": [
+      "way out"
+    ],
+    "antonyms": [
+      "entrance"
+    ],
+    "collocations": [
+      "emergency exit",
+      "nearest exit"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-feather-v41-0029",
+    "level": "A2",
+    "word": "feather",
+    "meanings": [
+      "kuş tüyü"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The bird dropped a soft white feather on the grass.",
+    "exampleTranslation": "Kuş çimlerin üzerine yumuşak beyaz bir tüy düşürdü.",
+    "synonyms": [
+      "plume"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "bird feather",
+      "light as a feather"
+    ],
+    "wordFamily": [
+      "feathery"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-fence-v41-0030",
+    "level": "A2",
+    "word": "fence",
+    "meanings": [
+      "çit"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A wooden fence surrounds their lovely front garden.",
+    "exampleTranslation": "Güzel ön bahçelerini ahşap bir çit çevreliyor.",
+    "synonyms": [
+      "barrier"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wooden fence",
+      "garden fence"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-fever-v41-0031",
+    "level": "A2",
+    "word": "fever",
+    "meanings": [
+      "yüksek ateş"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The doctor advised me to rest because I had a high fever.",
+    "exampleTranslation": "Yüksek ateşim olduğu için doktor bana dinlenmemi tavsiye etti.",
+    "synonyms": [
+      "temperature"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "high fever",
+      "have a fever"
+    ],
+    "wordFamily": [
+      "feverish"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-firefighter-v41-0032",
+    "level": "A2",
+    "word": "firefighter",
+    "meanings": [
+      "itfaiyeci"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A brave firefighter rescued the cat from the tall tree.",
+    "exampleTranslation": "Cesur bir itfaiyeci kediyi yüksek ağaçtan kurtardı.",
+    "synonyms": [
+      "fireman"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "brave firefighter",
+      "call the firefighter"
+    ],
+    "wordFamily": [
+      "fire"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-firework-v41-0033",
+    "level": "A2",
+    "word": "firework",
+    "meanings": [
+      "havai fişek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We watched the spectacular firework show on New Year's Eve.",
+    "exampleTranslation": "Yılbaşı gecesi muhteşem havai fişek gösterisini izledik.",
+    "synonyms": [
+      "pyrotechnic"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "firework display",
+      "watch fireworks"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-flute-v41-0034",
+    "level": "A2",
+    "word": "flute",
+    "meanings": [
+      "flüt"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She plays the classical flute in the school music orchestra.",
+    "exampleTranslation": "Okul müzik orkestrasında klasik flüt çalıyor.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "play the flute",
+      "wooden flute"
+    ],
+    "wordFamily": [
+      "flutist"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-fork-v41-0035",
+    "level": "A2",
+    "word": "fork",
+    "meanings": [
+      "çatal"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Place the fork on the left side of the dinner plate.",
+    "exampleTranslation": "Çatalı yemek tabağının sol tarafına yerleştirin.",
+    "synonyms": [],
+    "antonyms": [
+      "knife"
+    ],
+    "collocations": [
+      "knife and fork",
+      "use a fork"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-freezer-v41-0036",
+    "level": "A2",
+    "word": "freezer",
+    "meanings": [
+      "dondurucu",
+      "derin dondurucu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Put the fresh ice cream into the freezer immediately.",
+    "exampleTranslation": "Taze dondurmayı hemen dondurucuya koyun.",
+    "synonyms": [
+      "deep freeze"
+    ],
+    "antonyms": [
+      "refrigerator"
+    ],
+    "collocations": [
+      "in the freezer",
+      "chest freezer"
+    ],
+    "wordFamily": [
+      "freeze",
+      "frozen"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-garage-v41-0037",
+    "level": "A2",
+    "word": "garage",
+    "meanings": [
+      "garaj"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He parked his car in the garage behind the family home.",
+    "exampleTranslation": "Arabasını aile evinin arkasındaki garaja park etti.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "park in the garage",
+      "garage door"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-gardener-v41-0038",
+    "level": "A2",
+    "word": "gardener",
+    "meanings": [
+      "bahçıvan"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The skilled gardener waters the flowers every morning.",
+    "exampleTranslation": "Becerikli bahçıvan her sabah çiçekleri sular.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "skilled gardener",
+      "hire a gardener"
+    ],
+    "wordFamily": [
+      "garden",
+      "gardening"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-gate-v41-0039",
+    "level": "A2",
+    "word": "gate",
+    "meanings": [
+      "bahçe kapısı",
+      "kapı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Please close the front gate so the dog cannot run away.",
+    "exampleTranslation": "Köpek kaçamasın diye lütfen ön kapıyı kapatın.",
+    "synonyms": [
+      "door",
+      "entrance"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "front gate",
+      "airport gate"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-gloves-v41-0040",
+    "level": "A2",
+    "word": "gloves",
+    "meanings": [
+      "eldiven"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Put on your warm gloves because it is very cold outside.",
+    "exampleTranslation": "Dışarısı çok soğuk olduğu için sıcak eldivenlerini giy.",
+    "synonyms": [
+      "mittens"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pair of gloves",
+      "leather gloves"
+    ],
+    "wordFamily": [
+      "glove"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-glue-v41-0041",
+    "level": "A2",
+    "word": "glue",
+    "meanings": [
+      "yapıştırıcı",
+      "yapıştırmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Use strong paper glue to fix the torn page of your book.",
+    "exampleTranslation": "Kitabının yırtık sayfasını yapıştırmak için güçlü kağıt yapıştırıcısı kullan.",
+    "synonyms": [
+      "adhesive"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "super glue",
+      "stick with glue"
+    ],
+    "wordFamily": [
+      "glued"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-guitarist-v41-0042",
+    "level": "A2",
+    "word": "guitarist",
+    "meanings": [
+      "gitarist"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The talented guitarist played a beautiful Spanish song.",
+    "exampleTranslation": "Yetenekli gitarist güzel bir İspanyol şarkısı çaldı.",
+    "synonyms": [
+      "musician"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "lead guitarist",
+      "talented guitarist"
+    ],
+    "wordFamily": [
+      "guitar"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-hairdresser-v41-0043",
+    "level": "A2",
+    "word": "hairdresser",
+    "meanings": [
+      "kuaför",
+      "berber"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I made an appointment with my hairdresser for Friday.",
+    "exampleTranslation": "Cuma günü için kuaförümden bir randevu aldım.",
+    "synonyms": [
+      "barber"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "go to the hairdresser",
+      "skilled hairdresser"
+    ],
+    "wordFamily": [
+      "hair"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-hallway-v41-0044",
+    "level": "A2",
+    "word": "hallway",
+    "meanings": [
+      "koridor",
+      "antre"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Leave your muddy shoes on the mat in the hallway.",
+    "exampleTranslation": "Çamurlu ayakkabılarınızı antredeki paspasın üzerine bırakın.",
+    "synonyms": [
+      "corridor",
+      "hall"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "in the hallway",
+      "long hallway"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-hammer-v41-0045",
+    "level": "A2",
+    "word": "hammer",
+    "meanings": [
+      "çekiç"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He used a steel hammer to hit the nail into the wall.",
+    "exampleTranslation": "Çiviyi duvara çakmak için çelik bir çekiç kullandı.",
+    "synonyms": [
+      "mallet"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "use a hammer",
+      "heavy hammer"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-handbag-v41-0046",
+    "level": "A2",
+    "word": "handbag",
+    "meanings": [
+      "el çantası"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She took her car keys out of her leather handbag.",
+    "exampleTranslation": "Deri el çantasından araba anahtarlarını çıkardı.",
+    "synonyms": [
+      "purse"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "leather handbag",
+      "carry a handbag"
+    ],
+    "wordFamily": [
+      "bag"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-headache-v41-0047",
+    "level": "A2",
+    "word": "headache",
+    "meanings": [
+      "baş ağrısı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I took an aspirin because I had a severe headache.",
+    "exampleTranslation": "Şiddetli bir baş ağrım olduğu için bir aspirin aldım.",
+    "synonyms": [
+      "migraine"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "have a headache",
+      "severe headache"
+    ],
+    "wordFamily": [
+      "head",
+      "ache"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-heater-v41-0048",
+    "level": "A2",
+    "word": "heater",
+    "meanings": [
+      "ısıtıcı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Turn on the electric heater because the room is cold.",
+    "exampleTranslation": "Oda soğuk olduğu için elektrikli ısıtıcıyı açın.",
+    "synonyms": [
+      "radiator"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "electric heater",
+      "turn on the heater"
+    ],
+    "wordFamily": [
+      "heat"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-highway-v41-0049",
+    "level": "A2",
+    "word": "highway",
+    "meanings": [
+      "otoyol"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The cars were driving very fast on the modern highway.",
+    "exampleTranslation": "Arabalar modern otoyolda çok hızlı gidiyordu.",
+    "synonyms": [
+      "motorway",
+      "freeway"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "drive on the highway",
+      "highway traffic"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-hospital-v41-0050",
+    "level": "A2",
+    "word": "hospital",
+    "meanings": [
+      "hastane"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The patient was taken to the hospital by an ambulance.",
+    "exampleTranslation": "Hasta bir ambulansla hastaneye götürüldü.",
+    "synonyms": [
+      "clinic"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "go to hospital",
+      "general hospital"
+    ],
+    "wordFamily": [
+      "hospitality"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-insect-v41-0051",
+    "level": "A2",
+    "word": "insect",
+    "meanings": [
+      "böcek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We saw an interesting insect on the leaf in the park.",
+    "exampleTranslation": "Parktaki yaprağın üzerinde ilginç bir böcek gördük.",
+    "synonyms": [
+      "bug"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "flying insect",
+      "bitten by an insect"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-island-v41-0052",
+    "level": "A2",
+    "word": "island",
+    "meanings": [
+      "ada"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "They sailed across the sea to visit a tropical island.",
+    "exampleTranslation": "Tropikal bir adayı ziyaret etmek için deniz boyunca yelken açtılar.",
+    "synonyms": [
+      "isle"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "desert island",
+      "tropical island"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-jacket-v41-0053",
+    "level": "A2",
+    "word": "jacket",
+    "meanings": [
+      "ceket"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He put on his warm winter jacket before going outside.",
+    "exampleTranslation": "Dışarı çıkmadan önce sıcak kışlık ceketini giydi.",
+    "synonyms": [
+      "coat"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "leather jacket",
+      "wear a jacket"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-jam-v41-0054",
+    "level": "A2",
+    "word": "jam",
+    "meanings": [
+      "reçel",
+      "sıkışıklık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She spread sweet strawberry jam on her morning toast.",
+    "exampleTranslation": "Sabah kızarmış ekmeğinin üzerine tatlı çilek reçeli sürdü.",
+    "synonyms": [
+      "marmalade"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "strawberry jam",
+      "traffic jam"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-jewellery-v41-0055",
+    "level": "A2",
+    "word": "jewellery",
+    "meanings": [
+      "mücevherat",
+      "takı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The shop sells handmade silver jewellery at good prices.",
+    "exampleTranslation": "Mağaza el yapımı gümüş takıları uygun fiyatlarla satıyor.",
+    "synonyms": [
+      "jewelry"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "gold jewellery",
+      "wear jewellery"
+    ],
+    "wordFamily": [
+      "jewel"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "jewelry"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-kettle-v41-0056",
+    "level": "A2",
+    "word": "kettle",
+    "meanings": [
+      "su ısıtıcısı",
+      "çaydanlık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She boiled water in the electric kettle to make tea.",
+    "exampleTranslation": "Çay yapmak için elektrikli su ısıtıcısında su kaynattı.",
+    "synonyms": [
+      "teapot"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "boil the kettle",
+      "electric kettle"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-keyboard-v41-0057",
+    "level": "A2",
+    "word": "keyboard",
+    "meanings": [
+      "klavye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I bought an ergonomic wireless keyboard for my office computer.",
+    "exampleTranslation": "Ofis bilgisayarım için ergonomik kablosuz bir klavye satın aldım.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "computer keyboard",
+      "wireless keyboard"
+    ],
+    "wordFamily": [
+      "key"
+    ],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-kitchen-v41-0058",
+    "level": "A2",
+    "word": "kitchen",
+    "meanings": [
+      "mutfak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My father is preparing a delicious soup in the kitchen.",
+    "exampleTranslation": "Babam mutfakta lezzetli bir çorba hazırlıyor.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "modern kitchen",
+      "in the kitchen"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-knife-v41-0059",
+    "level": "A2",
+    "word": "knife",
+    "meanings": [
+      "bıçak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Be careful when using that sharp kitchen knife to cut meat.",
+    "exampleTranslation": "Et keserken o keskin mutfak bıçağını kullanırken dikkatli ol.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "sharp knife",
+      "knife and fork"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-ladder-v41-0060",
+    "level": "A2",
+    "word": "ladder",
+    "meanings": [
+      "merdiven",
+      "el merdiveni"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The painter climbed up the wooden ladder to reach the roof.",
+    "exampleTranslation": "Boyacı çatıya ulaşmak için ahşap merdivene tırmandı.",
+    "synonyms": [
+      "steps"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "climb a ladder",
+      "wooden ladder"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-lamp-v41-0061",
+    "level": "A2",
+    "word": "lamp",
+    "meanings": [
+      "lamba"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He turned on the desk lamp to read his book at night.",
+    "exampleTranslation": "Geceleyin kitabını okumak için masa lambasını yaktı.",
+    "synonyms": [
+      "light"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "desk lamp",
+      "street lamp"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-lawyer-v41-0062",
+    "level": "A2",
+    "word": "lawyer",
+    "meanings": [
+      "avukat"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She consulted a professional lawyer before signing the contract.",
+    "exampleTranslation": "Sözleşmeyi imzalamadan önce profesyonel bir avukata danıştı.",
+    "synonyms": [
+      "attorney",
+      "solicitor"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "hire a lawyer",
+      "defense lawyer"
+    ],
+    "wordFamily": [
+      "law"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-leather-v41-0063",
+    "level": "A2",
+    "word": "leather",
+    "meanings": [
+      "deri"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He bought a high quality brown leather jacket in Rome.",
+    "exampleTranslation": "Roma'da kaliteli kahverengi bir deri ceket satın aldı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "genuine leather",
+      "leather shoes"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-lemonade-v41-0064",
+    "level": "A2",
+    "word": "lemonade",
+    "meanings": [
+      "limonata"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We drank fresh homemade lemonade on a hot summer afternoon.",
+    "exampleTranslation": "Sıcak bir yaz öğleden sonrasında taze ev yapımı limonata içtik.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "fresh lemonade",
+      "glass of lemonade"
+    ],
+    "wordFamily": [
+      "lemon"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-librarian-v41-0065",
+    "level": "A2",
+    "word": "librarian",
+    "meanings": [
+      "kütüphaneci"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The helpful librarian helped me find the reference book.",
+    "exampleTranslation": "Yardımsever kütüphaneci referans kitabını bulmama yardımcı oldu.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "school librarian",
+      "ask the librarian"
+    ],
+    "wordFamily": [
+      "library"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-lock-v41-0066",
+    "level": "A2",
+    "word": "lock",
+    "meanings": [
+      "kilit",
+      "kilitlemek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Make sure you turn the door lock before leaving the house.",
+    "exampleTranslation": "Evden çıkmadan önce kapı kilidini çevirdiğinizden emin olun.",
+    "synonyms": [
+      "padlock"
+    ],
+    "antonyms": [
+      "key"
+    ],
+    "collocations": [
+      "door lock",
+      "change the lock"
+    ],
+    "wordFamily": [
+      "locked",
+      "unlock"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-luggage-v41-0067",
+    "level": "A2",
+    "word": "luggage",
+    "meanings": [
+      "bagaj",
+      "valizler"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The airline lost my luggage on our trip to London.",
+    "exampleTranslation": "Londra seyahatimizde havayolu şirketi bagajımı kaybetti.",
+    "synonyms": [
+      "baggage",
+      "suitcases"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "hand luggage",
+      "carry luggage"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-magician-v41-0068",
+    "level": "A2",
+    "word": "magician",
+    "meanings": [
+      "sihirbaz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The magician pulled a white rabbit out of his tall black hat.",
+    "exampleTranslation": "Sihirbaz uzun siyah şapkasından beyaz bir tavşan çıkardı.",
+    "synonyms": [
+      "illusionist"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "talented magician",
+      "stage magician"
+    ],
+    "wordFamily": [
+      "magic"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-mailbox-v41-0069",
+    "level": "A2",
+    "word": "mailbox",
+    "meanings": [
+      "posta kutusu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He checked the mailbox outside his house for letters.",
+    "exampleTranslation": "Mektup var mı diye evinin dışındaki posta kutusunu kontrol etti.",
+    "synonyms": [
+      "postbox"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "check the mailbox",
+      "empty mailbox"
+    ],
+    "wordFamily": [
+      "mail",
+      "box"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-manager-v41-0070",
+    "level": "A2",
+    "word": "manager",
+    "meanings": [
+      "müdür",
+      "yönetici"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The project manager explained the new targets to the team.",
+    "exampleTranslation": "Proje yöneticisi yeni hedefleri ekibe açıkladı.",
+    "synonyms": [
+      "director",
+      "supervisor"
+    ],
+    "antonyms": [
+      "subordinate"
+    ],
+    "collocations": [
+      "general manager",
+      "hotel manager"
+    ],
+    "wordFamily": [
+      "manage",
+      "management"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-match-v41-0071",
+    "level": "A2",
+    "word": "match",
+    "meanings": [
+      "maç",
+      "kibrit",
+      "eşleşmek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Our school team won the football match yesterday afternoon.",
+    "exampleTranslation": "Okul takımımız dün öğleden sonra futbol maçını kazandı.",
+    "synonyms": [
+      "game",
+      "contest"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "football match",
+      "box of matches"
+    ],
+    "wordFamily": [
+      "matched"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-mechanic-v41-0072",
+    "level": "A2",
+    "word": "mechanic",
+    "meanings": [
+      "tamirci",
+      "makinist"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The experienced mechanic fixed our broken car engine.",
+    "exampleTranslation": "Deneyimli tamirci bozulan araba motorumuzu tamir etti.",
+    "synonyms": [
+      "technician"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "car mechanic",
+      "skilled mechanic"
+    ],
+    "wordFamily": [
+      "mechanical"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-medal-v41-0073",
+    "level": "A2",
+    "word": "medal",
+    "meanings": [
+      "madalya"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The runner received a gold medal for winning the race.",
+    "exampleTranslation": "Koşucu yarışı kazandığı için bir altın madalya aldı.",
+    "synonyms": [
+      "award"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "gold medal",
+      "win a medal"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-melon-v41-0074",
+    "level": "A2",
+    "word": "melon",
+    "meanings": [
+      "kavun"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We enjoyed sweet slices of cold melon on a hot day.",
+    "exampleTranslation": "Sıcak bir günde tatlı soğuk kavun dilimlerinin tadını çıkardık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "sweet melon",
+      "slice of melon"
+    ],
+    "wordFamily": [
+      "watermelon"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-microwave-v41-0075",
+    "level": "A2",
+    "word": "microwave",
+    "meanings": [
+      "mikrodalga fırın"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She heated the leftovers in the microwave for two minutes.",
+    "exampleTranslation": "Kalan yemekleri mikrodalga fırında iki dakika ısıttı.",
+    "synonyms": [
+      "microwave oven"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "in the microwave",
+      "microwave meal"
+    ],
+    "wordFamily": [],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-mirror-v41-0076",
+    "level": "A2",
+    "word": "mirror",
+    "meanings": [
+      "ayna"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She looked at her reflection in the bathroom mirror.",
+    "exampleTranslation": "Banyo aynasındaki yansımasına baktı.",
+    "synonyms": [
+      "looking-glass"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "bathroom mirror",
+      "rearview mirror"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-motorcycle-v41-0077",
+    "level": "A2",
+    "word": "motorcycle",
+    "meanings": [
+      "motosiklet"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He rides his modern motorcycle to university every day.",
+    "exampleTranslation": "Her gün üniversiteye modern motosikletiyle gider.",
+    "synonyms": [
+      "motorbike",
+      "bike"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "ride a motorcycle",
+      "motorcycle helmet"
+    ],
+    "wordFamily": [
+      "motor"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-museum-v41-0078",
+    "level": "A2",
+    "word": "museum",
+    "meanings": [
+      "müze"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We spent the afternoon visiting the national history museum.",
+    "exampleTranslation": "Öğleden sonrayı ulusal tarih müzesini ziyaret ederek geçirdik.",
+    "synonyms": [
+      "gallery"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "art museum",
+      "visit a museum"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-musician-v41-0079",
+    "level": "A2",
+    "word": "musician",
+    "meanings": [
+      "müzisyen"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The street musician played the guitar and sang cheerful songs.",
+    "exampleTranslation": "Sokak müzisyeni gitar çaldı ve neşeli şarkılar söyledi.",
+    "synonyms": [
+      "performer"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "talented musician",
+      "street musician"
+    ],
+    "wordFamily": [
+      "music",
+      "musical"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-napkin-v41-0080",
+    "level": "A2",
+    "word": "napkin",
+    "meanings": [
+      "peçete"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She wiped her hands with a clean paper napkin after dinner.",
+    "exampleTranslation": "Yemekten sonra ellerini temiz bir kağıt peçeteyle sildi.",
+    "synonyms": [
+      "serviette"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "paper napkin",
+      "cloth napkin"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-necklace-v41-0081",
+    "level": "A2",
+    "word": "necklace",
+    "meanings": [
+      "kolye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She wore an elegant pearl necklace to the formal party.",
+    "exampleTranslation": "Resmi partiye şık bir inci kolye taktı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pearl necklace",
+      "gold necklace"
+    ],
+    "wordFamily": [
+      "neck"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-needle-v41-0082",
+    "level": "A2",
+    "word": "needle",
+    "meanings": [
+      "iğne"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My grandmother threaded the sewing needle with blue thread.",
+    "exampleTranslation": "Büyükannem dikiş iğnesine mavi iplik geçirdi.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "sewing needle",
+      "sharp needle"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-nephew-v41-0083",
+    "level": "A2",
+    "word": "nephew",
+    "meanings": [
+      "erkek yeğen"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I bought a cool toy car for my five-year-old nephew.",
+    "exampleTranslation": "Beş yaşındaki erkek yeğenim için havalı bir oyuncak araba aldım.",
+    "synonyms": [],
+    "antonyms": [
+      "niece"
+    ],
+    "collocations": [
+      "favorite nephew",
+      "young nephew"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-niece-v41-0084",
+    "level": "A2",
+    "word": "niece",
+    "meanings": [
+      "kız yeğen"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My niece started learning to play the violin this term.",
+    "exampleTranslation": "Kız yeğenim bu dönem keman çalmayı öğrenmeye başladı.",
+    "synonyms": [],
+    "antonyms": [
+      "nephew"
+    ],
+    "collocations": [
+      "clever niece",
+      "little niece"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-notebook-v41-0085",
+    "level": "A2",
+    "word": "notebook",
+    "meanings": [
+      "not defteri"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The student wrote down the vocabulary words in his notebook.",
+    "exampleTranslation": "Öğrenci kelimeleri not defterine yazdı.",
+    "synonyms": [
+      "pad",
+      "notepad"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "spiral notebook",
+      "write in a notebook"
+    ],
+    "wordFamily": [
+      "note",
+      "book"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-nurse-v41-0086",
+    "level": "A2",
+    "word": "nurse",
+    "meanings": [
+      "hemşire"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The kind nurse checked the patient's blood pressure carefully.",
+    "exampleTranslation": "Nazik hemşire hastanın tansiyonunu dikkatlice ölçtü.",
+    "synonyms": [
+      "caregiver"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "hospital nurse",
+      "kind nurse"
+    ],
+    "wordFamily": [
+      "nursing"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-onion-v41-0087",
+    "level": "A2",
+    "word": "onion",
+    "meanings": [
+      "soğan"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Chop an onion into small pieces for the tomato soup.",
+    "exampleTranslation": "Domates çorbası için bir soğanı küçük parçalar halinde doğrayın.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "chop an onion",
+      "red onion"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-oven-v41-0088",
+    "level": "A2",
+    "word": "oven",
+    "meanings": [
+      "fırın"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She baked delicious chocolate cookies in the electric oven.",
+    "exampleTranslation": "Elektrikli fırında lezzetli çikolatalı kurabiyeler pişirdi.",
+    "synonyms": [
+      "stove"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "preheat the oven",
+      "in the oven"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-package-v41-0089",
+    "level": "A2",
+    "word": "package",
+    "meanings": [
+      "paket",
+      "koli"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The postman delivered a heavy package to our doorstep.",
+    "exampleTranslation": "Postacı kapımızın önüne ağır bir paket teslim etti.",
+    "synonyms": [
+      "parcel",
+      "packet"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "deliver a package",
+      "wrap a package"
+    ],
+    "wordFamily": [
+      "pack"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-palace-v41-0090",
+    "level": "A2",
+    "word": "palace",
+    "meanings": [
+      "saray"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The royal family lived in a grand palace in the capital.",
+    "exampleTranslation": "Kraliyet ailesi başkentteki görkemli bir sarayda yaşıyordu.",
+    "synonyms": [
+      "castle",
+      "mansion"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "royal palace",
+      "visit the palace"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-painter-v41-0091",
+    "level": "A2",
+    "word": "painter",
+    "meanings": [
+      "ressam",
+      "boyacı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The famous painter created a beautiful landscape of the mountains.",
+    "exampleTranslation": "Ünlü ressam dağların güzel bir manzara resmini yaptı.",
+    "synonyms": [
+      "artist"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "famous painter",
+      "house painter"
+    ],
+    "wordFamily": [
+      "paint",
+      "painting"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pajamas-v41-0092",
+    "level": "A2",
+    "word": "pajamas",
+    "meanings": [
+      "pijama"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The child put on soft pajamas before going to sleep.",
+    "exampleTranslation": "Çocuk uyumadan önce yumuşak pijamalarını giydi.",
+    "synonyms": [
+      "nightwear"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pair of pajamas",
+      "cotton pajamas"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "pyjamas"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pan-v41-0093",
+    "level": "A2",
+    "word": "pan",
+    "meanings": [
+      "tava",
+      "tencere"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Heat some olive oil in the frying pan over medium heat.",
+    "exampleTranslation": "Kızartma tavasında orta ateşte biraz zeytinyağı ısıtın.",
+    "synonyms": [
+      "frying pan",
+      "saucepan"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "frying pan",
+      "non-stick pan"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-passport-v41-0094",
+    "level": "A2",
+    "word": "passport",
+    "meanings": [
+      "pasaport"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "You need to show a valid passport when traveling abroad.",
+    "exampleTranslation": "Yurtdışına seyahat ederken geçerli bir pasaport göstermeniz gerekir.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "valid passport",
+      "passport control"
+    ],
+    "wordFamily": [
+      "pass",
+      "port"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-path-v41-0095",
+    "level": "A2",
+    "word": "path",
+    "meanings": [
+      "patika",
+      "yol"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We followed a narrow stone path through the quiet woods.",
+    "exampleTranslation": "Sessiz korunun içinden geçen dar bir taş patikayı takip ettik.",
+    "synonyms": [
+      "trail",
+      "track"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "narrow path",
+      "follow a path"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pavement-v41-0096",
+    "level": "A2",
+    "word": "pavement",
+    "meanings": [
+      "kaldırım"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Pedestrians should always walk safely on the concrete pavement.",
+    "exampleTranslation": "Yayalar her zaman beton kaldırımda güvenle yürümelidir.",
+    "synonyms": [
+      "sidewalk"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "walk on the pavement",
+      "concrete pavement"
+    ],
+    "wordFamily": [
+      "pave"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-peacock-v41-0097",
+    "level": "A2",
+    "word": "peacock",
+    "meanings": [
+      "tavus kuşu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The colorful peacock showed off its brilliant green and blue feathers.",
+    "exampleTranslation": "Renkli tavus kuşu parlak yeşil ve mavi tüylerini sergiledi.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "male peacock",
+      "peacock feathers"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-peanut-v41-0098",
+    "level": "A2",
+    "word": "peanut",
+    "meanings": [
+      "yer fıstığı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Some children have a serious allergic reaction to peanut butter.",
+    "exampleTranslation": "Bazı çocukların fıstık ezmesine karşı ciddi bir alerjik reaksiyonu vardır.",
+    "synonyms": [
+      "groundnut"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "peanut butter",
+      "roasted peanuts"
+    ],
+    "wordFamily": [
+      "nut"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pear-v41-0099",
+    "level": "A2",
+    "word": "pear",
+    "meanings": [
+      "armut"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She picked a sweet ripe pear from the tree in the garden.",
+    "exampleTranslation": "Bahçedeki ağaçtan tatlı, olgun bir armut kopardı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "ripe pear",
+      "slice of pear"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pedestrian-v41-0100",
+    "level": "A2",
+    "word": "pedestrian",
+    "meanings": [
+      "yaya"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Drivers must yield the right of way to every pedestrian.",
+    "exampleTranslation": "Sürücüler her yayaya geçiş üstünlüğü vermelidir.",
+    "synonyms": [
+      "walker"
+    ],
+    "antonyms": [
+      "driver"
+    ],
+    "collocations": [
+      "pedestrian crossing",
+      "pedestrian zone"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pepper-v41-0101",
+    "level": "A2",
+    "word": "pepper",
+    "meanings": [
+      "biber",
+      "karabiber"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Add a pinch of black pepper and salt to the tomato sauce.",
+    "exampleTranslation": "Domates sosuna bir tutam karabiber ve tuz ekleyin.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "black pepper",
+      "bell pepper"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pharmacy-v41-0102",
+    "level": "A2",
+    "word": "pharmacy",
+    "meanings": [
+      "eczane"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I need to go to the pharmacy to get my medicine.",
+    "exampleTranslation": "İlacımı almak için eczaneye gitmem gerekiyor.",
+    "synonyms": [
+      "chemist",
+      "drugstore"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "local pharmacy",
+      "duty pharmacy"
+    ],
+    "wordFamily": [
+      "pharmacist"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-photographer-v41-0103",
+    "level": "A2",
+    "word": "photographer",
+    "meanings": [
+      "fotoğrafçı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The professional photographer took stunning photos at the wedding.",
+    "exampleTranslation": "Profesyonel fotoğrafçı düğünde çarpıcı fotoğraflar çekti.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "professional photographer",
+      "hire a photographer"
+    ],
+    "wordFamily": [
+      "photo",
+      "photography"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-picnic-v41-0104",
+    "level": "A2",
+    "word": "picnic",
+    "meanings": [
+      "piknik"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We packed sandwiches and fruit for a family picnic in the park.",
+    "exampleTranslation": "Parkta ailece piknik yapmak için sandviç ve meyve hazırladık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "have a picnic",
+      "picnic basket"
+    ],
+    "wordFamily": [
+      "picnicking"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pillow-v41-0105",
+    "level": "A2",
+    "word": "pillow",
+    "meanings": [
+      "yastık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He laid his tired head on the soft pillow and fell asleep.",
+    "exampleTranslation": "Yorgun başını yumuşak yastığa koydu ve uykuya daldı.",
+    "synonyms": [
+      "cushion"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "soft pillow",
+      "pillow cover"
+    ],
+    "wordFamily": [
+      "pillowcase"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pilot-v41-0106",
+    "level": "A2",
+    "word": "pilot",
+    "meanings": [
+      "pilot"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The experienced airline pilot landed the plane safely in the fog.",
+    "exampleTranslation": "Deneyimli havayolu pilotu uçağı siste güvenli bir şekilde indirdi.",
+    "synonyms": [
+      "aviator"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "airline pilot",
+      "fighter pilot"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pitcher-v41-0107",
+    "level": "A2",
+    "word": "pitcher",
+    "meanings": [
+      "sürahi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The waiter placed a tall glass pitcher of cold water on the table.",
+    "exampleTranslation": "Garson masaya uzun bir cam soğuk su sürahisi koydu.",
+    "synonyms": [
+      "jug"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pitcher of water",
+      "glass pitcher"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-plate-v41-0108",
+    "level": "A2",
+    "word": "plate",
+    "meanings": [
+      "tabak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She served the hot pasta on a large white plate.",
+    "exampleTranslation": "Sıcak makarnayı büyük beyaz bir tabakta servis etti.",
+    "synonyms": [
+      "dish"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "dinner plate",
+      "empty plate"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-platform-v41-0109",
+    "level": "A2",
+    "word": "platform",
+    "meanings": [
+      "peron",
+      "platform"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The train to Istanbul will depart from platform four.",
+    "exampleTranslation": "İstanbul treni dördüncü perondan hareket edecek.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "train platform",
+      "stand on the platform"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-playground-v41-0110",
+    "level": "A2",
+    "word": "playground",
+    "meanings": [
+      "çocuk parkı",
+      "oyun alanı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Children were laughing and playing happily in the school playground.",
+    "exampleTranslation": "Çocuklar okul bahçesindeki oyun alanında neşeyle gülüyor ve oynuyorlardı.",
+    "synonyms": [
+      "play area"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "school playground",
+      "children's playground"
+    ],
+    "wordFamily": [
+      "play",
+      "ground"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pliers-v41-0111",
+    "level": "A2",
+    "word": "pliers",
+    "meanings": [
+      "pense"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The electrician used a pair of pliers to cut the copper wire.",
+    "exampleTranslation": "Elektrikçi bakır teli kesmek için bir pense kullandı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pair of pliers",
+      "use pliers"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-plumber-v41-0112",
+    "level": "A2",
+    "word": "plumber",
+    "meanings": [
+      "su tesisatçısı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We called an emergency plumber when the kitchen pipe burst.",
+    "exampleTranslation": "Mutfak borusu patlayınca acil su tesisatçısı çağırdık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "call a plumber",
+      "licensed plumber"
+    ],
+    "wordFamily": [
+      "plumbing"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pocket-v41-0113",
+    "level": "A2",
+    "word": "pocket",
+    "meanings": [
+      "cep"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He put his wallet and mobile phone into his coat pocket.",
+    "exampleTranslation": "Cüzdanını ve cep telefonunu montunun cebine koydu.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "coat pocket",
+      "in your pocket"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-policeman-v41-0114",
+    "level": "A2",
+    "word": "policeman",
+    "meanings": [
+      "erkek polis"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The policeman helped the lost tourist find the subway station.",
+    "exampleTranslation": "Polis kaybolan turistin metro istasyonunu bulmasına yardım etti.",
+    "synonyms": [
+      "police officer",
+      "cop"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "traffic policeman",
+      "local policeman"
+    ],
+    "wordFamily": [
+      "police"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-postage-v41-0115",
+    "level": "A2",
+    "word": "postage",
+    "meanings": [
+      "posta ücreti",
+      "posta bedeli"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "How much is the postage for sending a postcard to Germany?",
+    "exampleTranslation": "Almanya'ya kartpostal göndermenin posta ücreti ne kadar?",
+    "synonyms": [
+      "postal charge"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "postage stamp",
+      "pay the postage"
+    ],
+    "wordFamily": [
+      "post",
+      "postal"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-poster-v41-0116",
+    "level": "A2",
+    "word": "poster",
+    "meanings": [
+      "afiş",
+      "poster"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The students put up a colorful poster on the classroom wall.",
+    "exampleTranslation": "Öğrenciler sınıf duvarına renkli bir afiş astılar.",
+    "synonyms": [
+      "placard",
+      "notice"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "movie poster",
+      "hang a poster"
+    ],
+    "wordFamily": [
+      "post"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-pot-v41-0117",
+    "level": "A2",
+    "word": "pot",
+    "meanings": [
+      "tencere",
+      "çömlek",
+      "saksı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My mother cooked hot soup in a large ceramic pot.",
+    "exampleTranslation": "Annem büyük bir seramik tencerede sıcak çorba pişirdi.",
+    "synonyms": [
+      "pan",
+      "saucepan"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "flower pot",
+      "cooking pot"
+    ],
+    "wordFamily": [
+      "pottery"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-potato-v41-0118",
+    "level": "A2",
+    "word": "potato",
+    "meanings": [
+      "patates"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He ordered a side of roasted potato slices with his steak.",
+    "exampleTranslation": "Bifteğinin yanına fırınlanmış patates dilimleri sipariş etti.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "mashed potato",
+      "baked potato"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-presentation-v41-0119",
+    "level": "A2",
+    "word": "presentation",
+    "meanings": [
+      "sunum"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She gave an excellent presentation about renewable energy yesterday.",
+    "exampleTranslation": "Dün yenilenebilir enerji hakkında mükemmel bir sunum yaptı.",
+    "synonyms": [
+      "talk",
+      "speech"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "give a presentation",
+      "slide presentation"
+    ],
+    "wordFamily": [
+      "present",
+      "presenter"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-printer-v41-0120",
+    "level": "A2",
+    "word": "printer",
+    "meanings": [
+      "yazıcı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Our office printer ran out of black ink this morning.",
+    "exampleTranslation": "Ofis yazıcımızın bu sabah siyah mürekkebi bitti.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "laser printer",
+      "color printer"
+    ],
+    "wordFamily": [
+      "print"
+    ],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-purse-v41-0121",
+    "level": "A2",
+    "word": "purse",
+    "meanings": [
+      "cüzdan",
+      "kadın cüzdanı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She took a few coins from her purse to pay the bus fare.",
+    "exampleTranslation": "Otobüs ücretini ödemek için cüzdanından birkaç bozuk para çıkardı.",
+    "synonyms": [
+      "wallet",
+      "handbag"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "coin purse",
+      "leather purse"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-puzzle-v41-0122",
+    "level": "A2",
+    "word": "puzzle",
+    "meanings": [
+      "bulmaca",
+      "yapboz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My grandfather loves solving the daily crossword puzzle in the paper.",
+    "exampleTranslation": "Büyükbabam gazetede günlük bulmacayı çözmeyi çok sever.",
+    "synonyms": [
+      "riddle"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "crossword puzzle",
+      "jigsaw puzzle"
+    ],
+    "wordFamily": [
+      "puzzling"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-railway-v41-0123",
+    "level": "A2",
+    "word": "railway",
+    "meanings": [
+      "demiryolu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The modern railway connects several major European capital cities.",
+    "exampleTranslation": "Modern demiryolu birçok büyük Avrupa başkentini birbirine bağlar.",
+    "synonyms": [
+      "railroad"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "railway station",
+      "railway network"
+    ],
+    "wordFamily": [
+      "rail",
+      "way"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-rainbow-v41-0124",
+    "level": "A2",
+    "word": "rainbow",
+    "meanings": [
+      "gökkuşağı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "After the rain stopped, a colorful rainbow appeared in the sky.",
+    "exampleTranslation": "Yağmur dindikten sonra gökyüzünde rengarenk bir gökkuşağı belirdi.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "double rainbow",
+      "colors of the rainbow"
+    ],
+    "wordFamily": [
+      "rain",
+      "bow"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-receipt-v41-0125",
+    "level": "A2",
+    "word": "receipt",
+    "meanings": [
+      "fiş",
+      "makbuz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Always keep your store receipt in case you want to return an item.",
+    "exampleTranslation": "Bir ürünü iade etmek istemeniz ihtimaline karşı mağaza fişinizi daima saklayın.",
+    "synonyms": [
+      "bill",
+      "proof of purchase"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "keep the receipt",
+      "sales receipt"
+    ],
+    "wordFamily": [
+      "receive"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-recipe-v41-0126",
+    "level": "A2",
+    "word": "recipe",
+    "meanings": [
+      "yemek tarifi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I followed my grandmother's secret recipe to bake this pie.",
+    "exampleTranslation": "Bu turtayı pişirmek için büyükannemin gizli tarifini uyguladım.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "follow a recipe",
+      "cake recipe"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-referee-v41-0127",
+    "level": "A2",
+    "word": "referee",
+    "meanings": [
+      "hakem"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The referee blew the whistle to signal the end of the match.",
+    "exampleTranslation": "Hakem maçın bittiğini bildirmek için düdüğü çaldı.",
+    "synonyms": [
+      "umpire",
+      "judge"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "football referee",
+      "match referee"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-refrigerator-v41-0128",
+    "level": "A2",
+    "word": "refrigerator",
+    "meanings": [
+      "buzdolabı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Please keep milk and cheese inside the refrigerator so they stay cold.",
+    "exampleTranslation": "Soğuk kalmaları için lütfen süt ve peyniri buzdolabının içinde tutun.",
+    "synonyms": [
+      "fridge"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "in the refrigerator",
+      "open the refrigerator"
+    ],
+    "wordFamily": [
+      "fridge"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "fridge"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-ribbon-v41-0129",
+    "level": "A2",
+    "word": "ribbon",
+    "meanings": [
+      "kurdele"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She tied the birthday gift with a shiny red ribbon.",
+    "exampleTranslation": "Doğum günü hediyesini parlak kırmızı bir kurdeleyle bağladı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "tie a ribbon",
+      "silk ribbon"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-rope-v41-0130",
+    "level": "A2",
+    "word": "rope",
+    "meanings": [
+      "ip",
+      "halat"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The sailors used a thick nylon rope to secure the boat.",
+    "exampleTranslation": "Denizciler tekneyi sabitlemek için kalın bir naylon halat kullandılar.",
+    "synonyms": [
+      "cord",
+      "cable"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "climbing rope",
+      "jump rope"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-rug-v41-0131",
+    "level": "A2",
+    "word": "rug",
+    "meanings": [
+      "küçük halı",
+      "kilim"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "There is a colorful handmade wool rug on the wooden floor.",
+    "exampleTranslation": "Ahşap zeminde renkli, el yapımı yün bir kilim var.",
+    "synonyms": [
+      "carpet",
+      "mat"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wool rug",
+      "area rug"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-ruler-v41-0132",
+    "level": "A2",
+    "word": "ruler",
+    "meanings": [
+      "cetvel"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Use a plastic ruler to draw a straight line in your notebook.",
+    "exampleTranslation": "Defterine düz bir çizgi çizmek için plastik bir cetvel kullan.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "measure with a ruler",
+      "straight ruler"
+    ],
+    "wordFamily": [
+      "rule"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sailor-v41-0133",
+    "level": "A2",
+    "word": "sailor",
+    "meanings": [
+      "denizci"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The brave sailor spent six months navigating across the ocean.",
+    "exampleTranslation": "Cesur denizci okyanusu aşarak altı ay yol aldı.",
+    "synonyms": [
+      "seaman",
+      "mariner"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "experienced sailor",
+      "navy sailor"
+    ],
+    "wordFamily": [
+      "sail",
+      "sailing"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-salad-v41-0134",
+    "level": "A2",
+    "word": "salad",
+    "meanings": [
+      "salata"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We prepared a fresh green salad with tomatoes and olive oil.",
+    "exampleTranslation": "Domates ve zeytinyağı ile taze yeşil bir salata hazırladık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "green salad",
+      "make a salad"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sandwich-v41-0135",
+    "level": "A2",
+    "word": "sandwich",
+    "meanings": [
+      "sandviç"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He made a cheese and tomato sandwich for his lunch break.",
+    "exampleTranslation": "Öğle molası için peynirli ve domatesli bir sandviç yaptı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "ham sandwich",
+      "eat a sandwich"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sauce-v41-0136",
+    "level": "A2",
+    "word": "sauce",
+    "meanings": [
+      "sos"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The chef made a delicious garlic and cream sauce for the pasta.",
+    "exampleTranslation": "Şef makarna için lezzetli bir sarımsak ve krema sosu yaptı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "tomato sauce",
+      "pasta sauce"
+    ],
+    "wordFamily": [
+      "saucy"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-saucepan-v41-0137",
+    "level": "A2",
+    "word": "saucepan",
+    "meanings": [
+      "tencere",
+      "sos tenceresi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Boil the eggs in a small saucepan of salted water.",
+    "exampleTranslation": "Yumurtaları tuzlu su dolu küçük bir tencerede kaynatın.",
+    "synonyms": [
+      "pan",
+      "pot"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "small saucepan",
+      "in a saucepan"
+    ],
+    "wordFamily": [
+      "sauce",
+      "pan"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-scarf-v41-0138",
+    "level": "A2",
+    "word": "scarf",
+    "meanings": [
+      "atkı",
+      "eşarp"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Wrap a warm wool scarf around your neck before going out.",
+    "exampleTranslation": "Dışarı çıkmadan önce boynuna sıcak bir yün atkı sar.",
+    "synonyms": [
+      "shawl"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wool scarf",
+      "wear a scarf"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-scissors-v41-0139",
+    "level": "A2",
+    "word": "scissors",
+    "meanings": [
+      "makas"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Use sharp scissors to cut the wrapping paper neatly.",
+    "exampleTranslation": "Hediye paket kağıdını düzgünce kesmek için keskin makas kullanın.",
+    "synonyms": [
+      "shears"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pair of scissors",
+      "use scissors"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-scooter-v41-0140",
+    "level": "A2",
+    "word": "scooter",
+    "meanings": [
+      "skuter",
+      "küçük motosiklet"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He rides an electric scooter to work to avoid heavy traffic.",
+    "exampleTranslation": "Yoğun trafikten kaçınmak için işe elektrikli skuter ile gidiyor.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "electric scooter",
+      "ride a scooter"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-screen-v41-0141",
+    "level": "A2",
+    "word": "screen",
+    "meanings": [
+      "ekran"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Staring at a computer screen all day can strain your eyes.",
+    "exampleTranslation": "Bütün gün bilgisayar ekranına bakmak gözlerinizi yorabilir.",
+    "synonyms": [
+      "monitor",
+      "display"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "computer screen",
+      "touch screen"
+    ],
+    "wordFamily": [],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sculpture-v41-0142",
+    "level": "A2",
+    "word": "sculpture",
+    "meanings": [
+      "heykel"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The museum displays a beautiful marble sculpture from ancient Greece.",
+    "exampleTranslation": "Müze antik Yunan'dan kalma güzel bir mermer heykeli sergiliyor.",
+    "synonyms": [
+      "statue"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "marble sculpture",
+      "modern sculpture"
+    ],
+    "wordFamily": [
+      "sculptor"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-seatbelt-v41-0143",
+    "level": "A2",
+    "word": "seatbelt",
+    "meanings": [
+      "emniyet kemeri"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Fasten your seatbelt before the driver starts the car engine.",
+    "exampleTranslation": "Sürücü araba motorunu çalıştırmadan önce emniyet kemerinizi bağlayın.",
+    "synonyms": [
+      "safety belt"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "fasten your seatbelt",
+      "wear a seatbelt"
+    ],
+    "wordFamily": [
+      "seat",
+      "belt"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-shampoo-v41-0144",
+    "level": "A2",
+    "word": "shampoo",
+    "meanings": [
+      "şampuan"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She bought herbal shampoo and conditioner at the chemist.",
+    "exampleTranslation": "Eczaneden bitkisel şampuan ve saç kremi satın aldı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "bottle of shampoo",
+      "anti-dandruff shampoo"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-shelf-v41-0145",
+    "level": "A2",
+    "word": "shelf",
+    "meanings": [
+      "raf"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Put the new books back on the top wooden shelf.",
+    "exampleTranslation": "Yeni kitapları en üstteki ahşap rafa geri koyun.",
+    "synonyms": [
+      "bookshelf"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "top shelf",
+      "empty shelf"
+    ],
+    "wordFamily": [
+      "shelves"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-ship-v41-0146",
+    "level": "A2",
+    "word": "ship",
+    "meanings": [
+      "gemi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A large cargo ship entered the busy harbor this morning.",
+    "exampleTranslation": "Bu sabah yoğun limana büyük bir yük gemisi girdi.",
+    "synonyms": [
+      "vessel",
+      "boat"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "cargo ship",
+      "cruise ship"
+    ],
+    "wordFamily": [
+      "shipping"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-shoelace-v41-0147",
+    "level": "A2",
+    "word": "shoelace",
+    "meanings": [
+      "ayakkabı bağcığı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Tie your shoelace properly before you trip and fall down.",
+    "exampleTranslation": "Ayağın takılıp düşmeden önce ayakkabı bağcığını düzgünce bağla.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "tie your shoelace",
+      "untied shoelace"
+    ],
+    "wordFamily": [
+      "shoe",
+      "lace"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-shopkeeper-v41-0148",
+    "level": "A2",
+    "word": "shopkeeper",
+    "meanings": [
+      "dükkan sahibi",
+      "esnaf"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The friendly shopkeeper greeted every customer with a broad smile.",
+    "exampleTranslation": "Güler yüzlü dükkan sahibi her müşteriyi geniş bir gülümsemeyle karşıladı.",
+    "synonyms": [
+      "storekeeper",
+      "merchant"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "local shopkeeper",
+      "friendly shopkeeper"
+    ],
+    "wordFamily": [
+      "shop",
+      "keep"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-shorts-v41-0149",
+    "level": "A2",
+    "word": "shorts",
+    "meanings": [
+      "şort"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He wore sports shorts and a light t-shirt for running.",
+    "exampleTranslation": "Koşu için spor şort ve hafif bir tişört giydi.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pair of shorts",
+      "running shorts"
+    ],
+    "wordFamily": [
+      "short"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-shower-v41-0150",
+    "level": "A2",
+    "word": "shower",
+    "meanings": [
+      "duş"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I always take a warm shower immediately after waking up.",
+    "exampleTranslation": "Uyandıktan hemen sonra her zaman ılık bir duş alırım.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "take a shower",
+      "cold shower"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sink-v41-0151",
+    "level": "A2",
+    "word": "sink",
+    "meanings": [
+      "lavabo",
+      "evye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She washed the dirty plates in the kitchen sink with soap.",
+    "exampleTranslation": "Kirli tabakları mutfak lavabosunda sabunla yıkadı.",
+    "synonyms": [
+      "basin"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "kitchen sink",
+      "wash in the sink"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-skate-v41-0152",
+    "level": "A2",
+    "word": "skate",
+    "meanings": [
+      "paten",
+      "paten yapmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The children love to skate on the frozen lake in winter.",
+    "exampleTranslation": "Çocuklar kışın donmuş gölde paten kaymayı çok severler.",
+    "synonyms": [
+      "ice skate",
+      "roller skate"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "ice skate",
+      "figure skate"
+    ],
+    "wordFamily": [
+      "skating",
+      "skater"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-skirt-v41-0153",
+    "level": "A2",
+    "word": "skirt",
+    "meanings": [
+      "etek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She wore an elegant pleated skirt to the graduation ceremony.",
+    "exampleTranslation": "Mezuniyet törenine şık, pileli bir etek giydi.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pleated skirt",
+      "long skirt"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-slippers-v41-0154",
+    "level": "A2",
+    "word": "slippers",
+    "meanings": [
+      "terlik"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Take off your outdoor shoes and wear these soft warm slippers.",
+    "exampleTranslation": "Dışarı ayakkabılarını çıkar ve bu yumuşak sıcak terlikleri giy.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pair of slippers",
+      "wear slippers"
+    ],
+    "wordFamily": [
+      "slip"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-soap-v41-0155",
+    "level": "A2",
+    "word": "soap",
+    "meanings": [
+      "sabun"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Always wash your hands thoroughly with warm water and soap.",
+    "exampleTranslation": "Ellerinizi daima ılık su ve sabunla iyice yıkayın.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "bar of soap",
+      "liquid soap"
+    ],
+    "wordFamily": [
+      "soapy"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-socket-v41-0156",
+    "level": "A2",
+    "word": "socket",
+    "meanings": [
+      "priz",
+      "soket"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Plug the laptop charger into the wall socket near your desk.",
+    "exampleTranslation": "Dizüstü şarj aletini masanızın yakınındaki duvar prizine takın.",
+    "synonyms": [
+      "outlet"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wall socket",
+      "plug into a socket"
+    ],
+    "wordFamily": [],
+    "category": "Technology",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sock-v41-0157",
+    "level": "A2",
+    "word": "sock",
+    "meanings": [
+      "çorap"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I bought a pair of thick wool sock for the winter.",
+    "exampleTranslation": "Kış için bir çift kalın yün çorap aldım.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pair of socks",
+      "wool sock"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-soup-v41-0158",
+    "level": "A2",
+    "word": "soup",
+    "meanings": [
+      "çorba"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A bowl of hot chicken soup will make you feel much better.",
+    "exampleTranslation": "Bir kase sıcak tavuk çorbası seni çok daha iyi hissettirecektir.",
+    "synonyms": [
+      "broth"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "hot soup",
+      "bowl of soup"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-souvenir-v41-0159",
+    "level": "A2",
+    "word": "souvenir",
+    "meanings": [
+      "hediyelik eşya",
+      "anı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We bought a handmade souvenir from the craft market in Rome.",
+    "exampleTranslation": "Roma'daki el sanatları pazarından el yapımı bir hediyelik eşya aldık.",
+    "synonyms": [
+      "keepsake",
+      "memento"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "buy a souvenir",
+      "souvenir shop"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-spoon-v41-0160",
+    "level": "A2",
+    "word": "spoon",
+    "meanings": [
+      "kaşık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Use a metal spoon to stir the sugar into your tea.",
+    "exampleTranslation": "Çayındaki şekeri karıştırmak için metal bir kaşık kullan.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "teaspoon",
+      "soup spoon"
+    ],
+    "wordFamily": [
+      "spoonful"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-stadium-v41-0161",
+    "level": "A2",
+    "word": "stadium",
+    "meanings": [
+      "stadyum"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Thousands of enthusiastic fans gathered in the football stadium.",
+    "exampleTranslation": "Binlerce coşkulu taraftar futbol stadyumunda toplandı.",
+    "synonyms": [
+      "arena"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "sports stadium",
+      "in the stadium"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-stairs-v41-0162",
+    "level": "A2",
+    "word": "stairs",
+    "meanings": [
+      "merdiven",
+      "basamaklar"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He walked up the flight of stairs instead of taking the elevator.",
+    "exampleTranslation": "Asansöre binmek yerine merdivenlerden yukarı yürüdü.",
+    "synonyms": [
+      "steps",
+      "staircase"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "climb the stairs",
+      "flight of stairs"
+    ],
+    "wordFamily": [
+      "stair"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-stamp-v41-0163",
+    "level": "A2",
+    "word": "stamp",
+    "meanings": [
+      "pul",
+      "posta pulu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Stick a postage stamp on the top right corner of the envelope.",
+    "exampleTranslation": "Zarfın sağ üst köşesine bir posta pulu yapıştırın.",
+    "synonyms": [
+      "postage stamp"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "postage stamp",
+      "collect stamps"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-statue-v41-0164",
+    "level": "A2",
+    "word": "statue",
+    "meanings": [
+      "heykel"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A bronze statue of the historical hero stands in the public square.",
+    "exampleTranslation": "Meydanda tarihi kahramanın bronz bir heykeli duruyor.",
+    "synonyms": [
+      "monument",
+      "sculpture"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "bronze statue",
+      "marble statue"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-steep-v41-0165",
+    "level": "A2",
+    "word": "steep",
+    "meanings": [
+      "dik",
+      "sarp"
+    ],
+    "partOfSpeech": "adjective",
+    "pronunciation": "",
+    "exampleSentence": "The hikers climbed up the steep mountain slope very carefully.",
+    "exampleTranslation": "Yürüyüşçüler dik dağ yamacına çok dikkatli bir şekilde tırmandılar.",
+    "synonyms": [
+      "sharp"
+    ],
+    "antonyms": [
+      "flat",
+      "gentle"
+    ],
+    "collocations": [
+      "steep hill",
+      "steep climb"
+    ],
+    "wordFamily": [
+      "steeply"
+    ],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-strawberry-v41-0166",
+    "level": "A2",
+    "word": "strawberry",
+    "meanings": [
+      "çilek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We picked sweet fresh strawberry from our garden this morning.",
+    "exampleTranslation": "Bu sabah bahçemizden tatlı taze çilek topladık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "fresh strawberry",
+      "strawberry jam"
+    ],
+    "wordFamily": [
+      "berry"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-street-v41-0167",
+    "level": "A2",
+    "word": "street",
+    "meanings": [
+      "sokak",
+      "cadde"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "They live in a quiet tree-lined street near the city park.",
+    "exampleTranslation": "Şehir parkının yakınında sakin, ağaçlıklı bir sokakta yaşıyorlar.",
+    "synonyms": [
+      "road",
+      "avenue"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "main street",
+      "quiet street"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-suitcase-v41-0168",
+    "level": "A2",
+    "word": "suitcase",
+    "meanings": [
+      "bavul",
+      "valiz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She packed her heavy suitcase with clothes for her summer holiday.",
+    "exampleTranslation": "Yaz tatili için ağır bavuluna kıyafetlerini doldurdu.",
+    "synonyms": [
+      "bag",
+      "luggage"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pack a suitcase",
+      "heavy suitcase"
+    ],
+    "wordFamily": [
+      "suit",
+      "case"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sunglasses-v41-0169",
+    "level": "A2",
+    "word": "sunglasses",
+    "meanings": [
+      "güneş gözlüğü"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Wear dark sunglasses to protect your sensitive eyes from the bright sun.",
+    "exampleTranslation": "Hassas gözlerinizi parlak güneşten korumak için koyu renkli güneş gözlüğü takın.",
+    "synonyms": [
+      "shades"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "pair of sunglasses",
+      "wear sunglasses"
+    ],
+    "wordFamily": [
+      "sun",
+      "glasses"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-sweater-v41-0170",
+    "level": "A2",
+    "word": "sweater",
+    "meanings": [
+      "kazak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He put on a thick wool sweater because the wind was icy cold.",
+    "exampleTranslation": "Rüzgar buz gibi soğuk olduğu için kalın bir yün kazak giydi.",
+    "synonyms": [
+      "jumper",
+      "pullover"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wool sweater",
+      "warm sweater"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-tablecloth-v41-0171",
+    "level": "A2",
+    "word": "tablecloth",
+    "meanings": [
+      "masa örtüsü"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She spread a clean white tablecloth over the large dining table.",
+    "exampleTranslation": "Büyük yemek masasının üzerine temiz beyaz bir masa örtüsü serdi.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "clean tablecloth",
+      "linen tablecloth"
+    ],
+    "wordFamily": [
+      "table",
+      "cloth"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-tape-v41-0172",
+    "level": "A2",
+    "word": "tape",
+    "meanings": [
+      "bant",
+      "şerit"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Use sticky tape to seal the cardboard shipping box properly.",
+    "exampleTranslation": "Karton nakliye kutusunu düzgünce kapatmak için yapışkan bant kullanın.",
+    "synonyms": [
+      "adhesive tape"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "sticky tape",
+      "duct tape"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-taxi-v41-0173",
+    "level": "A2",
+    "word": "taxi",
+    "meanings": [
+      "taksi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We took a yellow taxi from the central station to the hotel.",
+    "exampleTranslation": "Merkez istasyondan otele gitmek için sarı bir taksiye bindik.",
+    "synonyms": [
+      "cab"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "take a taxi",
+      "call a taxi"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-teapot-v41-0174",
+    "level": "A2",
+    "word": "teapot",
+    "meanings": [
+      "çaydanlık"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She poured steaming hot tea from the ceramic teapot into the cups.",
+    "exampleTranslation": "Seramik çaydanlıktan fincanlara dumanı tüten sıcak çay doldurdu.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "ceramic teapot",
+      "pour from a teapot"
+    ],
+    "wordFamily": [
+      "tea",
+      "pot"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-tent-v41-0175",
+    "level": "A2",
+    "word": "tent",
+    "meanings": [
+      "çadır"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We pitched our camping tent by the calm lake before night fell.",
+    "exampleTranslation": "Gece çökmeden önce sakin gölün kenarına kamp çadırımızı kurduk.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "pitch a tent",
+      "camping tent"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-theater-v41-0176",
+    "level": "A2",
+    "word": "theater",
+    "meanings": [
+      "tiyatro"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "They bought tickets to see a comedy play at the local theater.",
+    "exampleTranslation": "Yerel tiyatroda bir komedi oyunu izlemek için bilet aldılar.",
+    "synonyms": [
+      "playhouse"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "movie theater",
+      "go to the theater"
+    ],
+    "wordFamily": [
+      "theatrical"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [
+      "theatre"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-thermometer-v41-0177",
+    "level": "A2",
+    "word": "thermometer",
+    "meanings": [
+      "termometre"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The nurse used a digital thermometer to measure the patient's temperature.",
+    "exampleTranslation": "Hemşire hastanın ateşini ölçmek için dijital bir termometre kullandı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "digital thermometer",
+      "check with a thermometer"
+    ],
+    "wordFamily": [],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-ticket-v41-0178",
+    "level": "A2",
+    "word": "ticket",
+    "meanings": [
+      "bilet"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Show your train ticket to the conductor when he passes by.",
+    "exampleTranslation": "Kondüktör yanınızdan geçerken tren biletinizi gösterin.",
+    "synonyms": [
+      "pass"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "train ticket",
+      "buy a ticket"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-towel-v41-0179",
+    "level": "A2",
+    "word": "towel",
+    "meanings": [
+      "havlu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Dry your hands on the clean cotton towel hanging in the bathroom.",
+    "exampleTranslation": "Ellerinizi banyoda asılı duran temiz pamuklu havluyla kurulayın.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "bath towel",
+      "paper towel"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-tray-v41-0180",
+    "level": "A2",
+    "word": "tray",
+    "meanings": [
+      "tepsi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The waiter carried the drinks and desserts on a round silver tray.",
+    "exampleTranslation": "Garson içecekleri ve tatlıları yuvarlak gümüş bir tepside taşıdı.",
+    "synonyms": [
+      "platter"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "serving tray",
+      "carry a tray"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-trophy-v41-0181",
+    "level": "A2",
+    "word": "trophy",
+    "meanings": [
+      "kupa",
+      "ödül"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The winning team proudly lifted the gold championship trophy.",
+    "exampleTranslation": "Kazanan takım gururla altın şampiyonluk kupasını havaya kaldırdı.",
+    "synonyms": [
+      "cup",
+      "award"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "championship trophy",
+      "win a trophy"
+    ],
+    "wordFamily": [],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-tunnel-v41-0182",
+    "level": "A2",
+    "word": "tunnel",
+    "meanings": [
+      "tünel"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The passenger train entered a long dark tunnel through the mountain.",
+    "exampleTranslation": "Yolcu treni dağın içinden geçen uzun, karanlık bir tünele girdi.",
+    "synonyms": [
+      "underpass"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "through the tunnel",
+      "railway tunnel"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-umbrella-v41-0183",
+    "level": "A2",
+    "word": "umbrella",
+    "meanings": [
+      "şemsiye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Take an umbrella with you because dark rain clouds are coming.",
+    "exampleTranslation": "Yanına bir şemsiye al çünkü kara yağmur bulutları yaklaşıyor.",
+    "synonyms": [
+      "parasol"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "open an umbrella",
+      "rain umbrella"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-uniform-v41-0184",
+    "level": "A2",
+    "word": "uniform",
+    "meanings": [
+      "üniforma"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Students are required to wear a neat school uniform every day.",
+    "exampleTranslation": "Öğrencilerin her gün düzgün bir okul üniforması giymeleri zorunludur.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "school uniform",
+      "wear a uniform"
+    ],
+    "wordFamily": [],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-vacuum-v41-0185",
+    "level": "A2",
+    "word": "vacuum",
+    "meanings": [
+      "elektrik süpürgesi",
+      "süpürmek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She cleaned the living room carpet thoroughly with a vacuum cleaner.",
+    "exampleTranslation": "Oturma odasının halısını elektrik süpürgesiyle iyice temizledi.",
+    "synonyms": [
+      "hoover"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "vacuum cleaner",
+      "vacuum the floor"
+    ],
+    "wordFamily": [
+      "vacuumed"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-vase-v41-0186",
+    "level": "A2",
+    "word": "vase",
+    "meanings": [
+      "vazo"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She placed a bouquet of fresh red roses in a glass vase.",
+    "exampleTranslation": "Cam bir vazoya taze kırmızı güllerden oluşan bir buket koydu.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "glass vase",
+      "flower vase"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-vegetable-v41-0187",
+    "level": "A2",
+    "word": "vegetable",
+    "meanings": [
+      "sebze"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Eating fresh vegetable salads every day is essential for good health.",
+    "exampleTranslation": "Her gün taze sebze salataları yemek sağlık için çok önemlidir.",
+    "synonyms": [
+      "greens"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "fresh vegetable",
+      "eat vegetables"
+    ],
+    "wordFamily": [
+      "vegetarian"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-village-v41-0188",
+    "level": "A2",
+    "word": "village",
+    "meanings": [
+      "köy"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My grandparents live in a quiet farming village in the countryside.",
+    "exampleTranslation": "Büyükannem ve büyükbabam kırsalda sakin bir tarım köyünde yaşıyor.",
+    "synonyms": [
+      "hamlet"
+    ],
+    "antonyms": [
+      "city",
+      "town"
+    ],
+    "collocations": [
+      "small village",
+      "village life"
+    ],
+    "wordFamily": [
+      "villager"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-violin-v41-0189",
+    "level": "A2",
+    "word": "violin",
+    "meanings": [
+      "keman"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The young girl has been practicing the violin for three years.",
+    "exampleTranslation": "Genç kız üç yıldır keman çalışıyor.",
+    "synonyms": [
+      "fiddle"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "play the violin",
+      "violin player"
+    ],
+    "wordFamily": [
+      "violinist"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-waiter-v41-0190",
+    "level": "A2",
+    "word": "waiter",
+    "meanings": [
+      "garson",
+      "erkek garson"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The polite waiter brought our hot dinner plates to the table.",
+    "exampleTranslation": "Kibar garson sıcak yemek tabaklarımızı masaya getirdi.",
+    "synonyms": [
+      "server"
+    ],
+    "antonyms": [
+      "waitress"
+    ],
+    "collocations": [
+      "polite waiter",
+      "call the waiter"
+    ],
+    "wordFamily": [
+      "waitress",
+      "waiting"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-wallet-v41-0191",
+    "level": "A2",
+    "word": "wallet",
+    "meanings": [
+      "cüzdan",
+      "erkek cüzdanı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He opened his leather wallet to take out his credit card.",
+    "exampleTranslation": "Kredi kartını çıkarmak için deri cüzdanını açtı.",
+    "synonyms": [
+      "billfold",
+      "purse"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "leather wallet",
+      "lost wallet"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-wardrobe-v41-0192",
+    "level": "A2",
+    "word": "wardrobe",
+    "meanings": [
+      "gardırop",
+      "giysi dolabı"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She organized all her winter coats inside the wooden wardrobe.",
+    "exampleTranslation": "Bütün kışlık montlarını ahşap gardırobun içine düzenledi.",
+    "synonyms": [
+      "closet",
+      "armoire"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wooden wardrobe",
+      "open the wardrobe"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-watermelon-v41-0193",
+    "level": "A2",
+    "word": "watermelon",
+    "meanings": [
+      "karpuz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Eating cold slices of sweet watermelon is refreshing in summer.",
+    "exampleTranslation": "Yazın tatlı karpuzun soğuk dilimlerini yemek çok ferahlatıcıdır.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "slice of watermelon",
+      "sweet watermelon"
+    ],
+    "wordFamily": [
+      "melon"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-wheelchair-v41-0194",
+    "level": "A2",
+    "word": "wheelchair",
+    "meanings": [
+      "tekerlekli sandalye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The building has a special ramp designed for wheelchair access.",
+    "exampleTranslation": "Binanın tekerlekli sandalye erişimi için tasarlanmış özel bir rampası vardır.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "wheelchair access",
+      "in a wheelchair"
+    ],
+    "wordFamily": [
+      "wheel",
+      "chair"
+    ],
+    "category": "Health",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-whistle-v41-0195",
+    "level": "A2",
+    "word": "whistle",
+    "meanings": [
+      "düdük",
+      "ıslık çalmak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The referee blew his whistle to stop the play immediately.",
+    "exampleTranslation": "Hakem oyunu hemen durdurmak için düdüğünü çaldı.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "blow a whistle",
+      "loud whistle"
+    ],
+    "wordFamily": [
+      "whistled"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-windscreen-v41-0196",
+    "level": "A2",
+    "word": "windscreen",
+    "meanings": [
+      "ön cam"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He cleaned the car windscreen with a spray and a clean cloth.",
+    "exampleTranslation": "Arabanın ön camını bir sprey ve temiz bir bezle sildi.",
+    "synonyms": [
+      "windshield"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "car windscreen",
+      "clean the windscreen"
+    ],
+    "wordFamily": [
+      "wind",
+      "screen"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "windshield"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-workshop-v41-0197",
+    "level": "A2",
+    "word": "workshop",
+    "meanings": [
+      "atölye",
+      "çalıştay"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The students attended an interactive writing workshop at the library.",
+    "exampleTranslation": "Öğrenciler kütüphanede etkileşimli bir yazma çalıştayına katıldılar.",
+    "synonyms": [
+      "seminar",
+      "studio"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "attend a workshop",
+      "carpenter's workshop"
+    ],
+    "wordFamily": [
+      "work",
+      "shop"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-yarn-v41-0198",
+    "level": "A2",
+    "word": "yarn",
+    "meanings": [
+      "iplik",
+      "örgü ipi"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She bought two balls of blue wool yarn to knit a scarf.",
+    "exampleTranslation": "Bir atkı örmek için iki yumak mavi yün iplik satın aldı.",
+    "synonyms": [
+      "thread",
+      "wool"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "wool yarn",
+      "ball of yarn"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-zipper-v41-0199",
+    "level": "A2",
+    "word": "zipper",
+    "meanings": [
+      "fermuar"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The metal zipper on my winter coat got stuck this morning.",
+    "exampleTranslation": "Kışlık montumun metal fermuarı bu sabah sıkıştı.",
+    "synonyms": [
+      "zip"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "fasten a zipper",
+      "metal zipper"
+    ],
+    "wordFamily": [
+      "zip"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "zip"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-actress-v41-0200",
+    "level": "A2",
+    "word": "actress",
+    "meanings": [
+      "kadın oyuncu",
+      "aktris"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The talented actress won an award for her leading role.",
+    "exampleTranslation": "Yetenekli aktris başrolüyle bir ödül kazandı.",
+    "synonyms": [
+      "performer"
+    ],
+    "antonyms": [
+      "actor"
+    ],
+    "collocations": [
+      "talented actress",
+      "award-winning actress"
+    ],
+    "wordFamily": [
+      "act",
+      "actor",
+      "acting"
+    ],
+    "category": "Society",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-advert-v41-0201",
+    "level": "A2",
+    "word": "advert",
+    "meanings": [
+      "reklam",
+      "ilan"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "I saw an interesting advert for a language course in the magazine.",
+    "exampleTranslation": "Dergide bir dil kursu için ilginç bir ilan gördüm.",
+    "synonyms": [
+      "advertisement",
+      "ad"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "place an advert",
+      "online advert"
+    ],
+    "wordFamily": [
+      "advertise"
+    ],
+    "category": "Business",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-aeroplane-v41-0202",
+    "level": "A2",
+    "word": "aeroplane",
+    "meanings": [
+      "uçak"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We watched the aeroplane land smoothly on the airport runway.",
+    "exampleTranslation": "Uçağın havalimanı pistine sorunsuzca inişini izledik.",
+    "synonyms": [
+      "airplane",
+      "plane"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "board an aeroplane",
+      "fly by aeroplane"
+    ],
+    "wordFamily": [
+      "plane"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "airplane"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-alphabet-v41-0203",
+    "level": "A2",
+    "word": "alphabet",
+    "meanings": [
+      "alfabe"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Young children learn the English alphabet by singing a catchy song.",
+    "exampleTranslation": "Küçük çocuklar akılda kalıcı bir şarkı söyleyerek İngiliz alfabesini öğrenirler.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "English alphabet",
+      "learn the alphabet"
+    ],
+    "wordFamily": [
+      "alphabetical"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-aquarium-v41-0204",
+    "level": "A2",
+    "word": "aquarium",
+    "meanings": [
+      "akvaryum"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We saw exotic fish and small turtles at the city aquarium.",
+    "exampleTranslation": "Şehir akvaryumunda egzotik balıklar ve küçük kaplumbağalar gördük.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "visit an aquarium",
+      "glass aquarium"
+    ],
+    "wordFamily": [
+      "aqua"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-armchair-v41-0205",
+    "level": "A2",
+    "word": "armchair",
+    "meanings": [
+      "koltuk",
+      "tekli koltuk"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "My grandfather sat in his comfortable leather armchair by the fire.",
+    "exampleTranslation": "Büyükbabam şöminenin yanındaki rahat deri koltuğuna oturdu.",
+    "synonyms": [
+      "easy chair"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "comfortable armchair",
+      "sit in an armchair"
+    ],
+    "wordFamily": [
+      "arm",
+      "chair"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-badminton-v41-0206",
+    "level": "A2",
+    "word": "badminton",
+    "meanings": [
+      "badminton"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We played a friendly game of badminton in the sports hall.",
+    "exampleTranslation": "Spor salonunda dostça bir badminton maçı yaptık.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "play badminton",
+      "badminton racket"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-baseball-v41-0207",
+    "level": "A2",
+    "word": "baseball",
+    "meanings": [
+      "beyzbol"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The boys wore protective gloves to play baseball in the school yard.",
+    "exampleTranslation": "Çocuklar okul bahçesinde beyzbol oynamak için koruyucu eldivenler taktılar.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "baseball game",
+      "baseball cap"
+    ],
+    "wordFamily": [
+      "ball"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-basketball-v41-0208",
+    "level": "A2",
+    "word": "basketball",
+    "meanings": [
+      "basketbol"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "He enjoys playing basketball with his classmates after school.",
+    "exampleTranslation": "Okuldan sonra sınıf arkadaşlarıyla basketbol oynamaktan hoşlanır.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "play basketball",
+      "basketball court"
+    ],
+    "wordFamily": [
+      "basket",
+      "ball"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bathroom-v41-0209",
+    "level": "A2",
+    "word": "bathroom",
+    "meanings": [
+      "banyo"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The modern hotel room has a private bathroom with a shower.",
+    "exampleTranslation": "Modern otel odasında duşlu özel bir banyo bulunmaktadır.",
+    "synonyms": [
+      "restroom"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "in the bathroom",
+      "clean the bathroom"
+    ],
+    "wordFamily": [
+      "bath",
+      "room"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-beach-v41-0210",
+    "level": "A2",
+    "word": "beach",
+    "meanings": [
+      "kumsal",
+      "plaj"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "We walked along the sandy beach and collected white seashells.",
+    "exampleTranslation": "Kumlu plaj boyunca yürüdük ve beyaz deniz kabukları topladık.",
+    "synonyms": [
+      "seaside",
+      "shore"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "sandy beach",
+      "go to the beach"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-bedroom-v41-0211",
+    "level": "A2",
+    "word": "bedroom",
+    "meanings": [
+      "yatak odası"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Their sunny bedroom has two large windows overlooking the garden.",
+    "exampleTranslation": "Güneşli yatak odalarının bahçeye bakan iki büyük penceresi var.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "in the bedroom",
+      "master bedroom"
+    ],
+    "wordFamily": [
+      "bed",
+      "room"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-beetle-v41-0212",
+    "level": "A2",
+    "word": "beetle",
+    "meanings": [
+      "kınkanatlı böcek",
+      "böcek"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "A shiny black beetle crawled slowly across the garden path.",
+    "exampleTranslation": "Parlak siyah bir böcek bahçe patikası boyunca yavaşça süründü.",
+    "synonyms": [
+      "bug"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "black beetle",
+      "crawl like a beetle"
+    ],
+    "wordFamily": [],
+    "category": "Environment",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-biscuit-v41-0213",
+    "level": "A2",
+    "word": "biscuit",
+    "meanings": [
+      "bisküvi",
+      "kurabiye"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She offered us a cup of tea and some chocolate biscuit treats.",
+    "exampleTranslation": "Bize bir fincan çay ve çikolatalı bisküvi ikram etti.",
+    "synonyms": [
+      "cookie"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "chocolate biscuit",
+      "eat a biscuit"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [
+      "cookie"
+    ],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-blackboard-v41-0214",
+    "level": "A2",
+    "word": "blackboard",
+    "meanings": [
+      "yazı tahtası",
+      "kara tahta"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "The teacher wrote several practice questions on the blackboard.",
+    "exampleTranslation": "Öğretmen yazı tahtasına birkaç alıştırma sorusu yazdı.",
+    "synonyms": [
+      "chalkboard"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "write on the blackboard",
+      "clean the blackboard"
+    ],
+    "wordFamily": [
+      "black",
+      "board"
+    ],
+    "category": "Education",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-blouse-v41-0215",
+    "level": "A2",
+    "word": "blouse",
+    "meanings": [
+      "bluz"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "She wore an elegant silk blouse with dark trousers.",
+    "exampleTranslation": "Koyu renk pantolonla şık bir ipek bluz giydi.",
+    "synonyms": [
+      "shirt",
+      "top"
+    ],
+    "antonyms": [],
+    "collocations": [
+      "silk blouse",
+      "wear a blouse"
+    ],
+    "wordFamily": [],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
+  },
+  {
+    "id": "a2-boardgame-v41-0216",
+    "level": "A2",
+    "word": "boardgame",
+    "meanings": [
+      "kutu oyunu",
+      "masa oyunu"
+    ],
+    "partOfSpeech": "noun",
+    "pronunciation": "",
+    "exampleSentence": "Our family plays a fun boardgame together every Friday night.",
+    "exampleTranslation": "Ailemiz her cuma gecesi birlikte eğlenceli bir kutu oyunu oynar.",
+    "synonyms": [],
+    "antonyms": [],
+    "collocations": [
+      "play a boardgame",
+      "popular boardgame"
+    ],
+    "wordFamily": [
+      "board",
+      "game"
+    ],
+    "category": "Daily Life",
+    "alternativeAnswers": [],
+    "createdAt": "2026-10-23T12:00:00.000Z",
+    "updatedAt": "2026-10-23T12:00:00.000Z",
+    "isDraft": false
   }
 ]
