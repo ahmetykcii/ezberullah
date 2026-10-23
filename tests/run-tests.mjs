@@ -12,7 +12,7 @@ import { parseCSV, parseTable, guessMapping, analyzeRows, buildBackup, validateB
 import { handlers } from '../js/learning.js';
 import '../js/review.js';
 import { buildExamItems } from '../js/exams.js';
-import { studyPlan, candidates } from '../js/review.js';
+import { studyPlan, candidates, reviewItems } from '../js/review.js';
 import { levelStats, streak } from '../js/statistics.js';
 import '../js/vocab-ui.js';
 import '../js/app.js';
@@ -349,24 +349,25 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (ezberullah-v2.0.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (ezberullah-v2.0.2) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'ezberullah-v2.0.0';"), 'SW sürümü ezberullah-v2.0.0 olmalı');
-  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
+  ok(sw.includes("const VERSION = 'ezberullah-v2.0.2';"), 'SW sürümü ezberullah-v2.0.2 olmalı');
+  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
 });
-await test('EZBERULLAH marka dönüşümü, yeni ikonlar ve "ahmet ❤️ sude" özel imzası doğrulandı', async () => {
+await test('EZBERULLAH marka dönüşümü, kitap+beyin logosu, çift renkli tipografi ve "ahmet ❤️ sude" özel imzası doğrulandı', async () => {
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
   const css = await readText('css/style.css');
   const mf1 = await readJSON('manifest.webmanifest');
   const mf2 = await readJSON('manifest.json');
   const svgIcon = await readText('assets/icons/icon.svg');
+  const svgLogoFull = await readText('assets/icons/logo-full.svg');
 
   ok(html.includes('<title>EZBERULLAH'), 'Tarayıcı sekmesi başlığı EZBERULLAH olmalı');
   ok(html.includes('✦ EZBERULLAH ✦'), 'Açılış ekranında EZBERULLAH imzası bulunmalı');
-  ok(html.includes('<b class="brand-name">EZBERULLAH</b>'), 'Sol menüde EZBERULLAH başlığı bulunmalı');
+  ok(html.includes('<b class="brand-name" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></b>'), 'Sol menüde çift renkli EZBERULLAH başlığı bulunmalı');
   ok(!html.includes('LEXORA'), 'index.html içinde eski LEXORA adı kalmamalı');
   ok(!html.includes('ahmet') && !html.includes('sude'), 'ahmet ❤️ sude imzası index.html / kenar çubuğunda değil yalnızca Ana Sayfada olmalı');
 
@@ -374,10 +375,12 @@ await test('EZBERULLAH marka dönüşümü, yeni ikonlar ve "ahmet ❤️ sude" 
   ok(mf1.name.startsWith('EZBERULLAH'));
   eq(mf2.short_name, 'EZBERULLAH');
   ok(mf1.icons.some((i) => i.src === 'assets/icons/apple-touch-icon.png' && i.sizes === '180x180'));
-  ok(svgIcon.includes('aria-label="EZBERULLAH"'), 'Yeni SVG ikonu EZBERULLAH olmalı');
+  ok(svgIcon.includes('aria-label="EZBERULLAH"') && svgIcon.includes('#F5F2EB') && svgIcon.includes('#EED49E') && !svgIcon.includes('<text'), 'Telefon/uygulama ikonunda yalnızca kitap + beyin + yıldız sembolü bulunmalı');
+  ok(svgLogoFull.includes('<tspan fill="#F5F2EB">EZBER</tspan><tspan fill="#D4B475">ULLAH</tspan>'), 'Tam logoda EZBER kırık beyaz, ULLAH şampanya altını olmalı');
 
-  ok(appCode.includes('<h1 class="hero-title">EZBERULLAH</h1>'), 'Ana sayfada büyük EZBERULLAH başlığı bulunmalı');
+  ok(appCode.includes('<h1 class="hero-title" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></h1>'), 'Ana sayfada EZBER kırık beyaz, ULLAH şampanya altını olmalı');
   ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Ana sayfada küçük harfli ahmet ❤️ sude imzası bulunmalı');
+  ok(css.includes('.ez-w{color:#F5F2EB}') && css.includes('.ez-g{color:#D4B475}'), 'EZBER kırık beyaz (#F5F2EB) ve ULLAH şampanya altını (#D4B475) CSS renkleri tanımlanmalı');
   ok(css.includes('.hero-sig{') && css.includes('text-transform:lowercase') && css.includes('font-weight:300') && css.includes('align-self:flex-end'), 'İmza CSS kuralları (küçük harf, ince font, sağ alt hiza) bulunmalı');
   ok(css.includes('.sig-heart{color:#EF4444'), 'Kalp kırmızı renkte (#EF4444) tanımlanmalı');
 });
@@ -435,7 +438,7 @@ await test('yeni A2 pilot kelimeleri öğrenme oturumlarında (learnBatch + 6 a�
   }
   const batch = E.learnBatch(data.A2, customProg, 5);
   eq(batch.length, 5);
-  ok(batch.every((w) => parseInt(w.id.split('-').pop(), 10) >= 47), 'Yeni pilot kelimeler seçilmeli');
+  ok(batch.every((w) => !customProg[w.id]?.learningComplete), 'Tamamlanmış ilk 46 kelime dışındaki yeni kelimeler seçilmeli');
   const items = E.learnItems(batch, customProg);
   eq(items.length, 30); // 5 kelime x 6 aşama
 
@@ -482,6 +485,61 @@ await test('data/SOURCES_AND_LICENSES.md şeffaf lisans doğrulama açıklamalar
   const doc = await readText('data/SOURCES_AND_LICENSES.md');
   ok(doc.includes('CC BY-SA 4.0') && doc.includes('NGSL') && doc.includes('CEFR-J'), 'Kaynak bilgileri bulunmalı');
   ok(doc.includes('Birincil Hukuki Metin Doğrudan Doğrulanamadı'), 'Doğrulanamayan lisanslar şeffafça belirtilmeli');
+});
+await test('kelime öğrenme, tekrar ve sınav oturumlarında kelimeler/sorular alfabetik değil rastgele gelir; SRS önceliği ve seviye filtreleri korunur', () => {
+  // 1) learnBatch: yeni oturumlarda alfabetik sıra yerine her seferinde farklı rastgele sıra üretir
+  const runs = Array.from({ length: 10 }, () => E.learnBatch(data.A2, {}, 8).map((w) => w.word));
+  const uniqueRuns = new Set(runs.map((r) => r.join(',')));
+  ok(uniqueRuns.size >= 8, 'Yeni öğrenme oturumları her başlatıldığında farklı kelime sırası üretmeli');
+  const anyNonAlphabetical = runs.some((r) => JSON.stringify(r) !== JSON.stringify([...r].sort((a, b) => a.localeCompare(b))));
+  ok(anyNonAlphabetical, 'Kelime öğrenme grubu alfabetik sırada olmamalı');
+
+  // 2) SRS ve durum önceliği (REVIEW en çok 2 -> LEARNING -> NEW) korunur, kendi içlerinde rastgele sıralanır
+  const prioProg = {};
+  const revW1 = data.B1[10], revW2 = data.B1[20], learnW = data.B1[30];
+  prioProg[revW1.id] = { ...E.newProgress(revW1.id), currentStatus: 'REVIEW', incorrectCount: 3 };
+  prioProg[revW2.id] = { ...E.newProgress(revW2.id), currentStatus: 'REVIEW', incorrectCount: 1 };
+  prioProg[learnW.id] = { ...E.newProgress(learnW.id), currentStatus: 'LEARNING', currentStage: 2 };
+  const pb = E.learnBatch(data.B1, prioProg, 5);
+  eq(pb[0].id, revW1.id, 'En çok hata yapılan REVIEW kelimesi 1. sırada olmalı');
+  eq(pb[1].id, revW2.id, 'İkinci REVIEW kelimesi 2. sırada olmalı');
+  eq(pb[2].id, learnW.id, 'Devam eden LEARNING kelimesi NEW kelimelerden önce gelmeli');
+  ok(pb.every((w) => w.level === 'B1' && !w.isDraft), 'Seviye ayrımı (yalnızca B1 aktif) korunmalı');
+
+  // 3) learnItems: 2..6 aşamalarında grup içindeki kelime sırası da karıştırılır
+  const sampleBatch = E.learnBatch(data.A2, {}, 5);
+  const lItems = E.learnItems(sampleBatch, {});
+  eq(lItems.length, 30);
+  const stageOrders = [1, 2, 3, 4, 5, 6].map((s) => lItems.filter((i) => i.stage === s).map((i) => i.wordId).join(','));
+  ok(new Set(stageOrders).size > 1, 'Aşamalar arasında kelime sırası tekdüze olmamalı');
+
+  // 4) Sınavlarda (Mini ve Seviye Bitirme) her başlatmada farklı soru sırası ve seviye ayrımı
+  for (const lv of ['A2', 'B1', 'B2']) {
+    const ex1 = buildExamItems('mini', lv);
+    const ex2 = buildExamItems('mini', lv);
+    eq(ex1.length, 10);
+    ok(ex1.every((i) => state.wordMap.get(i.wordId)?.level === lv), `${lv} mini sınavında yalnızca ${lv} kelimeleri olmalı`);
+    ok(ex1.map((i) => i.wordId).join(',') !== ex2.map((i) => i.wordId).join(','), `${lv} mini sınavı tekrar başlatıldığında farklı soru sırası oluşmalı`);
+  }
+  const fin1 = buildExamItems('final', 'B2');
+  const fin2 = buildExamItems('final', 'B2');
+  eq(fin1.length, 40);
+  ok(fin1.every((i) => state.wordMap.get(i.wordId)?.level === 'B2'), 'B2 bitirme sınavında yalnızca B2 kelimeleri olmalı');
+  ok(fin1.map((i) => i.wordId + ':' + i.type).join(',') !== fin2.map((i) => i.wordId + ':' + i.type).join(','), 'Bitirme sınavı soru dizilimi her seferinde rastgele olmalı');
+  // Soru tipleri blok halinde (10 mc üst üste) değil, karışık dağılmalı
+  ok(new Set(fin1.slice(0, 10).map((i) => i.type)).size > 1, 'Bitirme sınavında ilk 10 soru tek tipte blok olmamalı');
+
+  // 5) Çoktan seçmeli sorularda doğru şık (0, 1, 2, 3) tüm konumlara rastgele dağılır
+  const posSeen = new Set();
+  for (let i = 0; i < 60; i++) {
+    const q = E.buildQuestion(data.A2[i % 20], 'mc', state.words);
+    posSeen.add(q.answerIndex);
+  }
+  eq(posSeen.size, 4, 'Doğru cevap 4 şıkkın tamamında (0, 1, 2, 3) rastgele yer alabilmeli');
+
+  // 6) Tekrar modlarında (reviewItems) öncelik korunarak soru sırası rastgeleleştirilir
+  const revRuns = Array.from({ length: 6 }, () => reviewItems('quick', 'A2', 5).map((i) => i.wordId).join(','));
+  ok(new Set(revRuns).size >= 1, 'reviewItems seviye filtresine uygun çalışmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

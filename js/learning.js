@@ -59,7 +59,16 @@ function renderItem() {
   if (!word) { cur.idx++; return renderItem(); } // silinmiş kelime
   const n = cur.items.length, pct = (cur.idx / n) * 100;
   const label = item.stage ? `Aşama ${item.stage}/6 · ${E.STAGES[item.stage - 1]}` : TYPE_LABEL[item.type];
-  curQ = item.type === 'card' ? null : E.buildQuestion(word, item.type, state.words);
+  if (item.type === 'card') {
+    curQ = null;
+  } else {
+    if (!item.q) {
+      const built = E.buildQuestion(word, item.type, state.words);
+      const { word: _w, ...rest } = built;
+      item.q = rest;
+    }
+    curQ = { ...item.q, word };
+  }
   if (curQ && curQ.type !== item.type) item.type = curQ.type;
   view().innerHTML = `<div class="quiz"><div class="quiz-head">
     <button class="btn ghost sm" id="q-exit">← Çık</button>

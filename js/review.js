@@ -18,19 +18,20 @@ export const MODES = {
   listening: { name: 'Dinleyerek Çalışma', desc: 'Seslendirilen kelimeyi duyup yazın.', icon: '🎧' },
 };
 
-export function candidates(mode, level = '', now = Date.now()) {
-  const ws = wordsOf(level);
+export function candidates(mode, level = '', now = Date.now(), rnd = Math.random) {
+  const ws = E.shuffle(wordsOf(level), rnd);
   if (mode === 'smart') return ws.filter((w) => E.isDue(P(w), now)).sort((a, b) => (P(b).currentStatus === 'REVIEW') - (P(a).currentStatus === 'REVIEW') || (P(a).nextReviewAt || 0) - (P(b).nextReviewAt || 0));
   if (mode === 'mistakes') return ws.filter((w) => P(w)?.incorrectCount > 0).sort((a, b) => P(b).incorrectCount - P(a).incorrectCount || (P(b).mistakeHistory.at(-1)?.at || 0) - (P(a).mistakeHistory.at(-1)?.at || 0));
-  return E.shuffle(ws.filter(seen));
+  return ws.filter(seen);
 }
 
-export function reviewItems(mode, level = '', n = 15) {
-  const c = candidates(mode, level).slice(0, mode === 'smart' ? 20 : n);
-  const mix = ['mc', 'typing', 'sentence', 'missing'];
+export function reviewItems(mode, level = '', n = 15, rnd = Math.random) {
+  const picked = candidates(mode, level, Date.now(), rnd).slice(0, mode === 'smart' ? 20 : n);
+  const c = E.shuffle(picked, rnd);
+  const mix = E.shuffle(['mc', 'typing', 'sentence', 'missing'], rnd);
   return c.map((w, i) => ({
     wordId: w.id,
-    type: mode === 'smart' ? E.reviewType(P(w)) : mode === 'quick' ? 'mc' : mode === 'writing' ? 'typing' : mode === 'listening' ? 'listening' : mix[i % 4],
+    type: mode === 'smart' ? E.reviewType(P(w), rnd) : mode === 'quick' ? 'mc' : mode === 'writing' ? 'typing' : mode === 'listening' ? 'listening' : mix[i % 4],
   }));
 }
 

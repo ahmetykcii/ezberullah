@@ -163,7 +163,8 @@ export function buildQuestion(word, type, all = [], rnd = Math.random) {
     const correct = word.meanings[0];
     const own = new Set(word.meanings.map(norm));
     const ok = (w) => w.id !== word.id && w.meanings?.[0] && !w.meanings.some((m) => own.has(norm(m)));
-    const pool = all.filter(ok);
+    const activePool = all.filter((w) => !w.isDraft && ok(w));
+    const pool = activePool.length >= 3 ? activePool : all.filter(ok);
     const order = [
       ...shuffle(pool.filter((w) => w.partOfSpeech === word.partOfSpeech && w.level === word.level), rnd),
       ...shuffle(pool.filter((w) => w.partOfSpeech === word.partOfSpeech), rnd),
@@ -214,9 +215,10 @@ export function checkAnswer(q, input) {
 
 /* ---------- Kuyruk seçimi ---------- */
 // Öğrenme grubu: yalnızca hazır (taslak olmayan, geçerli örnek cümleli) kelimeler alınır.
-// En çok 2 "hatalı" kelime + devam edenler + yeni kelimeler → tek kelime oturumu kilitleyemez.
-export function learnBatch(words, progress, size = 5) {
-  const c = words.filter((w) => isWordReady(w) && !progress[w.id]?.learningComplete);
+// Aday havuzu önce rastgele karıştırılır (alfabetik sıra önlenir); ardından öncelik korunur:
+// En çok 2 "hatalı" (REVIEW) kelime + devam edenler (LEARNING) + yeni kelimeler (NEW).
+export function learnBatch(words, progress, size = 5, rnd = Math.random) {
+  const c = shuffle(words.filter((w) => isWordReady(w) && !progress[w.id]?.learningComplete), rnd);
   const st = (w) => progress[w.id]?.currentStatus || 'NEW';
   const failing = c.filter((w) => st(w) === 'REVIEW').sort((a, b) => progress[b.id].incorrectCount - progress[a.id].incorrectCount).slice(0, 2);
   const inprog = c.filter((w) => st(w) === 'LEARNING');
@@ -224,10 +226,11 @@ export function learnBatch(words, progress, size = 5) {
   return [...failing, ...inprog, ...fresh].slice(0, size);
 }
 
-export function learnItems(batch, progress) {
+export function learnItems(batch, progress, rnd = Math.random) {
   const items = [];
   for (let s = 1; s <= 6; s++) {
-    for (const w of batch) {
+    const order = s === 1 ? batch : shuffle(batch, rnd);
+    for (const w of order) {
       const cs = progress[w.id]?.currentStage || 0;
       if (s === 1 || cs < s) items.push({ wordId: w.id, stage: s, type: STAGE_TYPES[s] });
     }

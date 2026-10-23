@@ -7,31 +7,36 @@ import { handlers, startSession, summaryHtml } from './learning.js';
 import { bumpDaily } from './statistics.js';
 
 export const PASS = 80;
-const readyWords = () => state.words.filter((w) => E.isWordReady(w));
-const studied = () => readyWords().filter((w) => (state.progress[w.id]?.currentStage || 0) >= 1);
-const mistaken = () => readyWords().filter((w) => state.progress[w.id]?.incorrectCount > 0);
+const readyWords = (lv = '') => state.words.filter((w) => E.isWordReady(w) && (!lv || w.level === lv));
+const studied = (lv = '') => readyWords(lv).filter((w) => (state.progress[w.id]?.currentStage || 0) >= 1);
+const mistaken = (lv = '') => readyWords(lv).filter((w) => state.progress[w.id]?.incorrectCount > 0);
 export const finalReady = (lv) => {
-  const ws = readyWords().filter((w) => w.level === lv);
+  const ws = readyWords(lv);
   return ws.length > 0 && ws.every((w) => state.progress[w.id]?.learningComplete);
 };
 
 export const EXAMS = {
-  mini: { name: 'Mini Sınav', desc: '10 soru. Her zaman erişilebilir.', check: () => (readyWords().length ? null : 'Kelime yok') },
-  w50: { name: '50 Kelime Sınavı', desc: '50 çalışılmış kelime ile 50 soru.', check: () => (studied().length >= 50 ? null : `${studied().length}/50 kelime çalışıldı`) },
-  w100: { name: '100 Kelime Sınavı', desc: '100 çalışılmış kelime ile 100 soru.', check: () => (studied().length >= 100 ? null : `${studied().length}/100 kelime çalışıldı`) },
-  mistakes: { name: 'Yanlış Kelimeler Sınavı', desc: 'Yanlış yaptığınız kelimelerden en çok 20 soru.', check: () => (mistaken().length ? null : 'Henüz yanlış kelime yok') },
+  mini: { name: 'Mini Sınav', desc: '10 soru. Her zaman erişilebilir.', check: (lv = '') => (readyWords(lv).length ? null : 'Kelime yok') },
+  w50: { name: '50 Kelime Sınavı', desc: '50 çalışılmış kelime ile 50 soru.', check: (lv = '') => (studied(lv).length >= 50 ? null : `${studied(lv).length}/50 kelime çalışıldı`) },
+  w100: { name: '100 Kelime Sınavı', desc: '100 çalışılmış kelime ile 100 soru.', check: (lv = '') => (studied(lv).length >= 100 ? null : `${studied(lv).length}/100 kelime çalışıldı`) },
+  mistakes: { name: 'Yanlış Kelimeler Sınavı', desc: 'Yanlış yaptığınız kelimelerden en çok 20 soru.', check: (lv = '') => (mistaken(lv).length ? null : 'Henüz yanlış kelime yok') },
 };
 
-export function buildExamItems(kind, level) {
+export function buildExamItems(kind, level = '', rnd = Math.random) {
   const cyc = ['mc', 'typing', 'sentence', 'missing'];
   if (kind === 'final') {
-    const ws = E.shuffle(readyWords().filter((w) => w.level === level));
-    return ['mc', 'typing', 'sentence', 'missing'].flatMap((t, g) => Array.from({ length: 10 }, (_, i) => ({ wordId: ws[(g * 10 + i) % ws.length].id, type: t })));
+    const ws = E.shuffle(readyWords(level), rnd);
+    const items = cyc.flatMap((t, g) => Array.from({ length: 10 }, (_, i) => ({ wordId: ws[(g * 10 + i) % ws.length].id, type: t })));
+    return E.shuffle(items, rnd);
   }
   const n = { mini: 10, w50: 50, w100: 100, mistakes: 20 }[kind];
-  let pool = kind === 'mistakes' ? mistaken() : studied();
-  if (kind === 'mini' && pool.length < n) pool = [...pool, ...E.shuffle(readyWords().filter((w) => !pool.includes(w)))];
-  return E.shuffle(pool).slice(0, n).map((w, i) => ({ wordId: w.id, type: cyc[i % 3] }));
+  let pool = E.shuffle(kind === 'mistakes' ? mistaken(level) : studied(level), rnd);
+  if (kind === 'mini' && pool.length < n) {
+    const extra = E.shuffle(readyWords(level).filter((w) => !pool.includes(w)), rnd).slice(0, n - pool.length);
+    pool = E.shuffle([...pool, ...extra], rnd);
+  }
+  const types = E.shuffle(cyc, rnd);
+  return E.shuffle(pool.slice(0, n).map((w, i) => ({ wordId: w.id, type: types[i % types.length] })), rnd);
 }
 
 export async function startExam(kind, level = '') {
@@ -67,20 +72,26 @@ handlers.exam = {
 };
 
 export function renderExams(v) {
-  const ex = Object.entries(EXAMS).map(([k, e]) => ({ k, ...e, lock: e.check() }));
-  const fin = LEVELS.map((l) => {
-    const lvReady = readyWords().filter((w) => w.level === l);
-    const lvDone = lvReady.filter((w) => state.progress[w.id]?.learningComplete).length;
-    return {
-      k: 'final', l, name: `${l} — ${LEVEL_NAMES[l]} Bitirme Sınavı`,
-      desc: '40 soru: 10 çoktan seçmeli, 10 yazma, 10 boşluk doldurma, 10 cümle tamamlama. Geçme: %80.',
-      lock: finalReady(l) ? null : `Önce ${l} seviyesindeki tüm kelimelerin 6 aşamasını tamamlayın (${lvDone}/${lvReady.length})`,
-    };
-  });
-  const card = (e) => `<div class="card"><h3>${e.name}</h3><p class="muted">${e.desc}</p>${e.lock ? `<p class="small lock">🔒 ${esc(e.lock)}</p>` : ''}<button class="btn primary sm" data-k="${e.k}" data-l="${e.l || ''}" ${e.lock ? 'disabled' : ''}>Sınava Başla</button></div>`;
+  const sel = `<select id="ex-lvl" class="input sm" aria-label="Seviye"><option value="">Tüm Seviyeler</option>${LEVELS.map((l) => `<option value="${l}">${l} — ${LEVEL_NAMES[l]}</option>`).join('')}</select>`;
   const hist = [...state.exams].reverse();
-  v.innerHTML = `<h1>Sınavlar</h1><div class="grid modes">${ex.map(card).join('')}${fin.map(card).join('')}</div>
+  v.innerHTML = `<div class="row between"><h1>Sınavlar</h1>${sel}</div><div class="grid modes" id="ex-modes"></div>
   <div class="card"><h3>Sınav Geçmişi</h3>${hist.length ? `<div class="table">${hist.map((h) => `<button class="row-item" data-h="${h.id}"><span><b>${esc(h.name)}</b><small class="muted"> ${new Date(h.date).toLocaleString('tr-TR')}</small></span><span>${h.level}</span><span class="chip ${h.passed ? '' : 'bad'}">%${h.score}</span><span class="muted">${h.correct}✓ ${h.wrong}✗ · ${fmtTime(h.seconds)}</span></button>`).join('')}</div>` : '<p class="muted">Henüz sınav çözülmedi.</p>'}</div>`;
-  $$('[data-k]', v).forEach((b) => { b.onclick = () => startExam(b.dataset.k, b.dataset.l); });
+  const draw = () => {
+    const lv = $$('#ex-lvl', v)[0].value;
+    const ex = Object.entries(EXAMS).map(([k, e]) => ({ k, l: lv, ...e, lock: e.check(lv) }));
+    const fin = LEVELS.filter((l) => !lv || l === lv).map((l) => {
+      const lvReady = readyWords(l);
+      const lvDone = lvReady.filter((w) => state.progress[w.id]?.learningComplete).length;
+      return {
+        k: 'final', l, name: `${l} — ${LEVEL_NAMES[l]} Bitirme Sınavı`,
+        desc: '40 soru: 10 çoktan seçmeli, 10 yazma, 10 boşluk doldurma, 10 cümle tamamlama. Geçme: %80.',
+        lock: finalReady(l) ? null : `Önce ${l} seviyesindeki tüm kelimelerin 6 aşamasını tamamlayın (${lvDone}/${lvReady.length})`,
+      };
+    });
+    const card = (e) => `<div class="card"><h3>${e.name}</h3><p class="muted">${e.desc}</p>${e.lock ? `<p class="small lock">🔒 ${esc(e.lock)}</p>` : ''}<button class="btn primary sm" data-k="${e.k}" data-l="${e.l || ''}" ${e.lock ? 'disabled' : ''}>Sınava Başla</button></div>`;
+    $$('#ex-modes', v)[0].innerHTML = `${ex.map(card).join('')}${fin.map(card).join('')}`;
+    $$('[data-k]', v).forEach((b) => { b.onclick = () => startExam(b.dataset.k, b.dataset.l); });
+  };
+  $$('#ex-lvl', v)[0].onchange = draw; draw();
   $$('[data-h]', v).forEach((b) => { b.onclick = () => { const h = state.exams.find((x) => x.id === b.dataset.h); openModal({ title: h.name, html: `<p><b>%${h.score}</b> — ${h.correct} doğru, ${h.wrong} yanlış, ${fmtTime(h.seconds)}</p><p>Yanlış kelimeler: ${h.wrongWords.length ? esc(h.wrongWords.map((w) => w.word).join(', ')) : '—'}</p>` }); }; });
 }
