@@ -13,7 +13,7 @@ import { handlers } from '../js/learning.js';
 import '../js/review.js';
 import { buildExamItems } from '../js/exams.js';
 import { studyPlan, candidates, reviewItems } from '../js/review.js';
-import { levelStats, streak, streakStats, todayLearnedCount, getMistakeAnalytics, bumpDaily } from '../js/statistics.js';
+import { levelStats, streak, streakStats, today, todayLearnedCount, getMistakeAnalytics, bumpDaily } from '../js/statistics.js';
 import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta, getGrammarProgress, saveGrammarProgress } from '../js/storage.js';
 import { resumeSaved } from '../js/learning.js';
 import * as G from '../js/grammar.js';
@@ -606,7 +606,7 @@ await test('v2.1 Günlük Kelime Hedefi: varsayılan hedef 10, yalnızca öğren
   eq(DEFAULT_SETTINGS.dailyGoal, 10, 'Varsayılan günlük kelime hedefi 10 olmalı');
   
   // Günlük veri durumunu temizleyelim / test nesnesi oluşturalım
-  const testDate = '2026-10-23';
+  const testDate = today().date;
   state.daily[testDate] = { date: testDate, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0, learnedWordIds: [] };
 
   // 1) Yeni bir kelime öğrenildiğinde hedefe 1 eklenir
@@ -628,7 +628,7 @@ await test('v2.1 Günlük Kelime Hedefi: varsayılan hedef 10, yalnızca öğren
   eq(state.daily[testDate].reviews, 1, 'Tekrar sayısı ayrıca tutulmalı');
 
   // 5) Farklı takvim gününde (gece yarısı sonrası) hedef sıfırdan başlar, dünün verisi silinmez
-  const nextDate = '2026-10-24';
+  const nextDate = '2099-01-01';
   const nextDay = { date: nextDate, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0, learnedWordIds: [] };
   eq(todayLearnedCount(nextDay), 0, 'Yeni günde günlük hedef sıfırdan başlamalı');
   eq(todayLearnedCount(state.daily[testDate]), 2, 'Önceki günün öğrenilen kelime sayısı korunmalı');
@@ -1654,6 +1654,35 @@ await test('Sude [8] Firebase Web Bağlantı Altyapısı ve Erişim Tanılama Ar
   // 4) Ayarlar ekranında Erişim ve Güvenlik Testi butonları tanımlı olmalı
   ok(appSrc.includes('id="test-access-btn"') && appSrc.includes('id="test-guest-btn"'), 'Ayarlar menüsünde hem yetkili hem misafir için test butonu bulunmalı');
   ok(appSrc.includes('showAccessTestModal'), 'app.js içinde tanılama modalı tanımlı olmalı');
+});
+
+await test('Sude [9] Romantik Deneyim Tasarımı: Büyütülmüş Fotoğraf (%30), Kalp Patlaması, Zengin Kalp Atmosferi ve Tipografi', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+
+  // 1) Ses Uyarısı (Sound notice)
+  ok(surpriseSrc.includes('class="jfy-sound-notice"') && surpriseSrc.includes('Telefonunun sesini açmayı unutma'), 'Açılış ekranında romantik ses uyarısı bulunmalı');
+  ok(surpriseSrc.includes('Çünkü bu sürprizin bir de şarkısı var'), 'Ses uyarısı açıklama metni bulunmalı');
+
+  // 2) Büyütülmüş Fotoğraf Alanı (340px yerine 440px)
+  ok(css.includes('.jfy-photo-container{width:100%;max-width:440px') || css.includes('max-width:440px;margin:0 auto'), 'Fotoğraf alanı genişliği 440px (~%30 daha büyük) olmalı');
+  ok(css.includes('.jfy-real-photo') && css.includes('@keyframes jfyPhotoReveal'), 'Fotoğraf reveal animasyonu tanımlı olmalı');
+
+  // 3) Kalp Patlaması (Heart Burst)
+  ok(surpriseSrc.includes('triggerHeartBurst'), 'triggerHeartBurst fonksiyonu sürpriz açılışında çağrılmalı');
+  ok(css.includes('.jfy-burst-wrap') && css.includes('.jfy-burst-particle') && css.includes('@keyframes jfyBurstAnim'), 'Kalp patlaması parçacık animasyonu tanımlı olmalı');
+
+  // 4) Zenginleştirilmiş Arka Plan Kalpleri (>= 25 adet)
+  const heartMatches = (surpriseSrc.match(/class="jfy-heart h\d+"/g) || []);
+  ok(heartMatches.length >= 25, `Arka planda en az 25 romantik kalp bulunmalı, bulunan: ${heartMatches.length}`);
+
+  // 5) Tipografi ve Mesaj Düzeni
+  ok(surpriseSrc.includes('formatRomanticMessage'), 'Mesaj için formatRomanticMessage fonksiyonu bulunmalı');
+  ok(css.includes('.jfy-msg-lead') && css.includes('.jfy-msg-divider') && css.includes('.jfy-msg-paragraphs'), 'Mesaj lead, kalp ayırıcı ve sola hizalı ferah gövde sınıfları tanımlı olmalı');
+
+  // 6) Gizlilik Garantisi: Gerçek kişisel mesaj kaynak kodda veya CSS içinde bulunmamalı
+  ok(!surpriseSrc.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj kaynak kodda sabit gömülü olmamalı');
+  ok(!css.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj CSS içine eklenmemeli');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
