@@ -9,7 +9,7 @@ import { renderStats, levelStats, today, streakStats, todayLearnedCount } from '
 import { renderVocabulary } from './vocab-ui.js';
 import { renderGrammar, nextGrammarTopic, openGrammarLesson, resetGrammarView } from './grammar.js';
 import { exportBackup, pickAndRestore } from './import-export.js';
-import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser, hasSeenSurpriseThisSession, markSurpriseSeen, login, logout } from './auth.js';
+import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser, hasSeenSurpriseThisSession, markSurpriseSeen, login, logout, testFirebaseAccess } from './auth.js';
 import { renderSurprise } from './surprise.js';
 
 const view = () => $('#view');
@@ -317,10 +317,12 @@ function renderSettings(v) {
           <li class="list-row"><span class="row-main"><b>Giriş Yapıldı</b><span class="muted small">${esc(u.email || u.displayName)}</span></span><span class="row-value ok-t">${u.isSude ? 'Sude ❤️' : (u.isAhmet ? 'Ahmet (Yönetici)' : 'Giriş Yapıldı')}</span></li>
           ${u.isAhmet ? `<li><a class="list-row linkrow" href="#/surprise?preview=1"><span class="row-main"><b>Sürprizi Önizle ❤️</b><span class="muted small">Ahmet özel önizleme modu</span></span>${ICONS.chev}</a></li>` : ''}
           ${u.isSude ? `<li><a class="list-row linkrow" href="#/surprise"><span class="row-main"><b>Sürprizimi Gör ❤️</b><span class="muted small">Just For You ekranı</span></span>${ICONS.chev}</a></li>` : ''}
+          <li><button type="button" class="list-row linkrow" id="test-access-btn"><span class="row-main"><b>Erişim ve Güvenlik Testi</b><span class="muted small">Firestore okuma yetkilerini anlık kontrol et</span></span>${ICONS.chev}</button></li>
           <li><button type="button" class="list-row linkrow danger-text" id="logout-btn"><span class="row-main"><b>Çıkış Yap</b></span></button></li>
         </ul>`
       : `<ul class="list">
           <li><button type="button" class="list-row linkrow" id="open-auth"><span class="row-main"><b>Özel Giriş (Ahmet & Sude)</b><span class="muted small">Sürpriz ve yönetici hesabı</span></span>${ICONS.chev}</button></li>
+          <li><button type="button" class="list-row linkrow" id="test-guest-btn"><span class="row-main"><b>Güvenlik Kontrolü (Misafir)</b><span class="muted small">Yabancıların erişemediğini doğrula</span></span>${ICONS.chev}</button></li>
         </ul>`;
   })()}
   <p class="group-note muted small">Normal kullanıcıların hesap oluşturması gerekmez; tüm eğitim özellikleri ücretsiz ve çevrimdışı açıktır.</p>
@@ -351,6 +353,67 @@ function renderSettings(v) {
   $('#reset', v).onclick = resetProgress;
   if ($('#open-auth', v)) $('#open-auth', v).onclick = () => openAuthModal(() => renderSettings(v));
   if ($('#logout-btn', v)) $('#logout-btn', v).onclick = async () => { await logout(); toast('Çıkış yapıldı.'); renderSettings(v); };
+  if ($('#test-access-btn', v)) $('#test-access-btn', v).onclick = showAccessTestModal;
+  if ($('#test-guest-btn', v)) $('#test-guest-btn', v).onclick = showAccessTestModal;
+}
+
+async function showAccessTestModal() {
+  const loading = openModal({
+    title: 'Erişim ve Güvenlik Testi',
+    html: `
+      <div class="center" style="padding:1.5rem">
+        <p>Firebase Firestore güvenlik kuralları ve okuma yetkileri test ediliyor…</p>
+        <span class="muted small">Lütfen bekleyin…</span>
+      </div>
+    `
+  });
+
+  const res = await testFirebaseAccess();
+  loading.close();
+
+  const userRole = res.currentUser
+    ? `${esc(res.currentUser.role)} (${esc(res.currentUser.email || res.currentUser.uid)})`
+    : 'Misafir (Giriş Yapılmamış)';
+
+  const itemsHtml = res.tests.map((t) => {
+    const isOk = t.status === 'ALLOWED';
+    const isDenied = t.status === 'DENIED';
+    const badgeClass = isOk ? 'ok-t' : (isDenied ? 'warn-t' : 'err-t');
+    const badgeText = isOk ? '✅ İZİN VERİLDİ' : (isDenied ? '🔒 ENGELLENDİ' : '⚠️ ' + t.status);
+    return `
+      <li class="list-row" style="align-items:flex-start">
+        <div class="row-main">
+          <b>${esc(t.target)}</b>
+          <span class="muted small" style="margin-top:2px">${esc(t.message)}</span>
+        </div>
+        <span class="row-value ${badgeClass}" style="white-space:nowrap;font-weight:600;font-size:0.75rem">${badgeText}</span>
+      </li>
+    `;
+  }).join('');
+
+  openModal({
+    title: 'Firestore Güvenlik ve Yetki Raporu',
+    html: `
+      <div style="margin-bottom:12px">
+        <p class="small muted" style="margin:0 0 4px"><b>Firebase Projesi:</b> <code>${esc(res.project)}</code></p>
+        <p class="small muted" style="margin:0"><b>Mevcut Oturum:</b> <b>${userRole}</b></p>
+      </div>
+      <ul class="list" style="margin-bottom:14px">
+        ${itemsHtml}
+      </ul>
+      <div class="group-note muted small" style="margin-bottom:14px">
+        ${res.currentUser && (res.currentUser.role.includes('Ahmet') || res.currentUser.role.includes('Sude'))
+          ? '✨ Yetkili hesap oturumunuz açık. Yalnızca siz özel fotoğrafa ve mesaja erişebilirsiniz.'
+          : '🛡️ Giriş yapılmamış (Misafir). Özel dokümanlara erişim sunucu tarafından başarıyla engellenmiştir (DENIED).'}
+      </div>
+      <div class="row end">
+        <button type="button" class="btn primary" data-x>Kapat</button>
+      </div>
+    `,
+    onMount(b, api) {
+      $('[data-x]', b).onclick = api.close;
+    }
+  });
 }
 
 function openAuthModal(onSuccess) {

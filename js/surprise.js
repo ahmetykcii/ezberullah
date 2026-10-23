@@ -1,7 +1,7 @@
 // VELUNO v4.3 — "Just For You ❤️" Private Romantic Surprise Screen
 // Apple benzeri zarif, pastel pembe/lavanta tonlarında, süzülen kalpler ve güvenli içerik mimarisi.
 
-import { getCurrentUser, isSude, isAhmet, isAuthorizedUser, markSurpriseSeen } from './auth.js';
+import { getCurrentUser, isSude, isAhmet, isAuthorizedUser, markSurpriseSeen, ensureFirebaseSdk } from './auth.js';
 import { isFirebaseConfigured } from './firebase-config.js';
 
 let audioPlayer = null;
@@ -197,6 +197,8 @@ async function loadSecurePrivateData(container) {
   if (!isFirebaseConfigured() || typeof window === 'undefined') return;
 
   try {
+    await ensureFirebaseSdk();
+
     // Cloud Firestore üzerinden fotoğraf ve mesaj çekme (Firebase Spark Planı — Blaze gerekmez)
     if (window.firebase && window.firebase.firestore) {
       const db = window.firebase.firestore();

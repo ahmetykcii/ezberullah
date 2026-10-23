@@ -1627,5 +1627,25 @@ await test('Sude [7] Spark Planı & Firestore Fotoğraf Depolama Mimarisi: 100% 
   ok(surpriseSrc.includes('data:${mime};base64,${pdata.imageBase64}'), 'surprise.js Data URL formatını doğru üretmeli');
 });
 
+await test('Sude [8] Firebase Web Bağlantı Altyapısı ve Erişim Tanılama Aracı (testFirebaseAccess)', async () => {
+  const fbCfg = await import('../js/firebase-config.js');
+  const authModule = await import('../js/auth.js');
+  const appSrc = await readText('js/app.js');
+
+  // 1) Proje adı veluno-private olarak ayarlı olmalı
+  eq(fbCfg.FIREBASE_CONFIG.projectId, 'veluno-private', 'projectId veluno-private olmalı');
+  eq(fbCfg.FIREBASE_CONFIG.authDomain, 'veluno-private.firebaseapp.com', 'authDomain veluno-private olmalı');
+
+  // 2) testFirebaseAccess fonksiyonu export edilmiş olmalı ve eksik yapılandırmada güvenli sonuç dönmeli
+  ok(typeof authModule.testFirebaseAccess === 'function', 'testFirebaseAccess fonksiyonu mevcut olmalı');
+  const res = await authModule.testFirebaseAccess();
+  eq(res.project, 'veluno-private', 'testFirebaseAccess doğru proje adını okumalı');
+  ok(Array.isArray(res.tests), 'test sonuçları dizi olmalı');
+
+  // 3) Ayarlar ekranında Erişim ve Güvenlik Testi butonları tanımlı olmalı
+  ok(appSrc.includes('id="test-access-btn"') && appSrc.includes('id="test-guest-btn"'), 'Ayarlar menüsünde hem yetkili hem misafir için test butonu bulunmalı');
+  ok(appSrc.includes('showAccessTestModal'), 'app.js içinde tanılama modalı tanımlı olmalı');
+});
+
 out(`\n${pass} geçti, ${fail} başarısız`);
 if (fail) { if (typeof process !== 'undefined') process.exit(1); else throw new Error('Testler başarısız'); }
