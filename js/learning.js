@@ -5,6 +5,7 @@ import * as E from './engine.js';
 import { $, $$, esc, toast, speak, sfx, hasModal, closeTopModal, confirmDialog, ICONS, successMark } from './ui.js';
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { bumpDaily, levelStats } from './statistics.js';
+import { renderVisualHtml, loadVisualsMeta } from './visuals.js';
 
 export const handlers = {}; // kind -> { onAnswer(item, ok, info), onDone(results, sess) }
 let cur = null;
@@ -19,6 +20,7 @@ let lastPct = 0;
 export function abortSession() { cur = null; if (typeof document !== 'undefined') document.body.classList.remove('focus', 'kb-open'); }
 
 export async function startSession(s) {
+  loadVisualsMeta(); // Görsel meta verilerini arka planda önbelleğe al
   cur = { feedback: true, params: {}, idx: 0, results: [], level: s.level || s.params?.level || getMeta('learnLevel') || 'A2', ...s };
   lastPct = cur.items.length ? (cur.idx / cur.items.length) * 100 : 0;
   setFocusMode(true); // oturum boyunca tek soruya odaklanan, menüsüz ekran
@@ -149,6 +151,7 @@ function bodyHtml(item, w) {
   const q = curQ;
   if (item.type === 'card') {
     return `<h2 class="word">${esc(w.word)}</h2>${w.pronunciation ? `<div class="muted">${esc(w.pronunciation)}</div>` : ''}${speakBtn(w.word)}
+      ${renderVisualHtml(w.id)}
       <div id="reveal-area"><button type="button" class="btn primary xl block" id="reveal">Anlamı Göster</button></div>`;
   }
   if (item.type === 'mc') return `<h2 class="word">${esc(q.prompt)}</h2>${speakBtn(q.prompt)}<p class="hint">Doğru Türkçe anlamı seç</p><div class="options">${q.options.map((o, i) => `<button type="button" class="opt" data-i="${i}"><span class="opt-n">${i + 1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
@@ -160,6 +163,7 @@ function bodyHtml(item, w) {
     return `<p class="hint">Bu kelimeyi içeren, en az 4 kelimelik kendi cümleni yaz</p>
       <h2 class="word">${esc(q.prompt)}</h2>
       <div class="meaning">${esc(q.meaning)}</div>
+      ${renderVisualHtml(w.id, { compact: true })}
       <div class="hint-wrap" id="hint-area">
         <button type="button" class="btn text-btn sm hint-toggle" id="btn-show-hint">💡 İpucu Göster</button>
         <div id="hint-content" class="hint-content" style="display:none;"></div>

@@ -23,6 +23,7 @@ export function toast(msg, type = 'info', ms = 3800) {
 
 const modals = [];
 export function openModal({ title, html, onMount, onClose, wide = false }) {
+  if (typeof document === 'undefined') return { el: null, close: () => {} };
   const root = document.getElementById('modal-root');
   const ov = document.createElement('div');
   ov.className = 'modal-overlay';
@@ -163,5 +164,7 @@ export const ICONS = {
   exam: svg('<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M9 12l2 2 4-4"/><path d="M8 7h8"/>'),
   chart: svg('<path d="M4 20V11M10 20V5M16 20v-7M22 20V8"/>'),
   gear: svg('<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.3" fill="var(--card)"/><circle cx="15" cy="17" r="2.3" fill="var(--card)"/>'),
+  eye: svg('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>'),
+  image: svg('<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'),
 };
 export const successMark = () => `<svg class="success-mark" viewBox="0 0 52 52" aria-hidden="true"><circle class="sm-c" cx="26" cy="26" r="23"/><path class="sm-t" d="M15 27l8 8 14-16"/></svg>`;

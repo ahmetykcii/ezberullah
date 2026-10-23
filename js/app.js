@@ -9,6 +9,7 @@ import { renderStats, levelStats, today, streakStats, todayLearnedCount } from '
 import { renderVocabulary } from './vocab-ui.js';
 import { renderGrammar, nextGrammarTopic, openGrammarLesson, resetGrammarView } from './grammar.js';
 import { exportBackup, pickAndRestore } from './import-export.js';
+import { renderVisualLibrary } from './visuals.js';
 
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
@@ -77,8 +78,8 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings };
-const MORE_GROUP = ['more', 'vocabulary', 'exams', 'statistics', 'settings'];
+const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, more: renderMore, vocabulary: renderVocabulary, visuals: renderVisualLibrary, exams: renderExams, statistics: renderStats, settings: renderSettings };
+const MORE_GROUP = ['more', 'vocabulary', 'visuals', 'exams', 'statistics', 'settings'];
 let keepGrammarView = false;
 function gotoGrammarLesson(id) {
   if (openGrammarLesson(id, null)) { keepGrammarView = true; location.hash = '#/grammar'; }
@@ -245,6 +246,7 @@ function renderMore(v) {
   v.innerHTML = `<div class="page"><h1>Diğer</h1>
   <ul class="list">
     ${item('#/vocabulary', 'stack', 'Kelime Havuzum', 'Kelimeleri ara, incele ve düzenle')}
+    ${item('#/visuals', 'image', 'Görsel Kütüphanesi', 'Hareketli ve statik görsel anlatımlar')}
     ${item('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları ve geçmiş sonuçlar')}
     ${item('#/statistics', 'chart', 'İstatistikler', 'İlerlemeni takip et')}
     ${item('#/settings', 'gear', 'Ayarlar', 'Görünüm, hedef, yedekleme')}
@@ -277,10 +279,17 @@ function renderSettings(v) {
 
   <h2 class="group-title">Ses ve Öğrenme</h2>
   <div class="list">
-    ${sw('snd', 'Ses efektleri', s.sound)}${sw('anim', 'Animasyonlar', s.animations)}${sw('red', 'Azaltılmış hareket', s.reducedMotion, 'Geçişleri ve hareketi en aza indirir')}${sw('keys', 'Klavye kısayolları', s.shortcuts)}
+    ${sw('vis', 'Görsel animasyonlar', s.visuals !== false, 'Kelimeleri hareketli ve statik görsel anlatımlarla destekler')}
+    ${sw('snd', 'Ses efektleri', s.sound)}
+    ${sw('anim', 'Arayüz animasyonları', s.animations)}
+    ${sw('red', 'Azaltılmış hareket', s.reducedMotion, 'Geçişleri ve hareketi en aza indirir')}
+    ${sw('keys', 'Klavye kısayolları', s.shortcuts)}
     <label class="list-row"><span class="row-main"><b>Telaffuz hızı</b></span><span class="row-value" id="rv">${s.ttsRate}×</span><input type="range" min="0.5" max="1.5" step="0.1" id="rate" value="${s.ttsRate}"></label>
   </div>
-  <ul class="list"><li><button type="button" class="list-row linkrow" id="tts"><span class="row-main"><b>Telaffuzu dene</b></span>${ICONS.speaker}</button></li></ul>
+  <ul class="list">
+    ${btnRow('go-vis-lib', 'Görsel Kütüphanesini İncele')}
+    <li><button type="button" class="list-row linkrow" id="tts"><span class="row-main"><b>Telaffuzu dene</b></span>${ICONS.speaker}</button></li>
+  </ul>
 
   <h2 class="group-title">Yedekleme ve Geri Yükleme</h2>
   <ul class="list">
@@ -291,7 +300,7 @@ function renderSettings(v) {
 
   <h2 class="group-title">Hakkında</h2>
   <div class="list">
-    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v3.1</span></div>
+    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v3.3</span></div>
     <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
   </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
@@ -307,7 +316,8 @@ function renderSettings(v) {
   $$('[data-set-theme]', v).forEach((btn) => {
     btn.onclick = () => updateThemeUI(btn.dataset.setTheme);
   });
-  [['#snd', 'sound'], ['#anim', 'animations'], ['#red', 'reducedMotion'], ['#keys', 'shortcuts']].forEach(([id, k]) => on(id, (e) => { setSetting(k, e.target.checked); applySettings(); }));
+  [['#vis', 'visuals'], ['#snd', 'sound'], ['#anim', 'animations'], ['#red', 'reducedMotion'], ['#keys', 'shortcuts']].forEach(([id, k]) => on(id, (e) => { setSetting(k, e.target.checked); applySettings(); }));
+  const gvl = $('#go-vis-lib', v); if (gvl) gvl.onclick = () => { location.hash = '#/visuals'; };
   on('#rate', (e) => { setSetting('ttsRate', +e.target.value); $('#rv', v).textContent = e.target.value + '×'; });
   $('#tts', v).onclick = async () => { const { speak } = await import('./ui.js'); speak('achieve'); };
   $('#exp', v).onclick = exportBackup; $('#imp', v).onclick = pickAndRestore;
