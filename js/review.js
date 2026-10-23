@@ -1,10 +1,10 @@
 // Tekrar modları (Akıllı Tekrar, Hızlı Tekrar, Yanlışlarım, Yazarak Çalışma, Dinleyerek Çalışma) ve sınav tarihine göre çalışma planı.
 import { state, getSettings, getProgress, saveProgress, getMeta } from './storage.js';
 import * as E from './engine.js';
-import { $$, esc, toast, confirmDialog } from './ui.js';
+import { $$, esc, toast, confirmDialog, ICONS } from './ui.js';
 import { LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { handlers, startSession, summaryHtml } from './learning.js';
-import { bumpDaily } from './statistics.js';
+import { bumpDaily, getMistakeAnalytics, openMistakeAnalysis } from './statistics.js';
 
 const wordsOf = (level) => state.words.filter((w) => E.isWordReady(w) && (!level || w.level === level));
 const seen = (w) => (state.progress[w.id]?.currentStage || 0) >= 1;
@@ -52,7 +52,7 @@ handlers.review = {
     const ok = results.filter((r) => r.correct).length;
     const bad = [...new Set(results.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
     return { html: summaryHtml({ title: `${sess.title} Tamamlandı`, big: `${ok}/${results.length}`, sub: 'doğru cevap',
-      extra: bad.length ? `<p>Tekrar edilmesi gerekenler: <b>${esc(bad.join(', '))}</b></p>` : '<p>Hiç hata yok. 🎉</p>', actions: '<a class="btn" href="#/review">Tekrar Modları</a>' }) };
+      verdict: bad.length ? '' : 'Hiç hata yok', extra: bad.length ? `<p>Tekrar edilmesi gerekenler: <b>${esc(bad.join(', '))}</b></p>` : '', actions: '<a class="btn primary" href="#/review">Tekrara Dön</a>' }) };
   },
 };
 
@@ -86,15 +86,36 @@ export function studyPlan(now = Date.now(), examDate = getSettings().examDate) {
 }
 
 export function renderReview(v) {
-  const sel = `<select id="lvl" class="input sm" aria-label="Seviye"><option value="">Tüm Seviyeler</option>${LEVELS.map((l) => `<option value="${l}">${l} — ${LEVEL_NAMES[l]}</option>`).join('')}</select>`;
-  v.innerHTML = `<div class="row between"><h1>Akıllı Tekrar</h1>${sel}</div><div class="grid modes" id="modes"></div>`;
+  const due = candidates('smart', '').length;
+  const mist = getMistakeAnalytics(10).totalMistakeWords;
+  const others = Object.entries(MODES).filter(([k]) => k !== 'smart');
+  let lv = '';
+  v.innerHTML = `<div class="page review-page">
+    <h1>Tekrar</h1>
+    <div class="big-count" aria-live="polite">${due}</div>
+    <p class="lead">${due ? 'kelime tekrar bekliyor. Zamanında tekrar, öğrendiklerini kalıcı hâle getirir.' : 'Şu an tekrar bekleyen kelime yok. Yeni kelimeler öğrendikçe burada görünür.'}</p>
+    <button class="btn primary xl block" id="go" ${due ? '' : 'disabled'}>Tekrara Başla</button>
+    <div class="quiet-links">
+      ${mist ? `<button type="button" class="text-btn" id="mist">Zorlandığın Kelimeler (${mist})</button>` : ''}
+    </div>
+    <details class="more">
+      <summary>Diğer tekrar modları</summary>
+      <div class="more-body">
+        <div class="seg sm" role="group" aria-label="Seviye">${['', ...LEVELS].map((l) => `<button type="button" class="seg-btn ${l === lv ? 'active' : ''}" data-lv="${l}">${l || 'Tümü'}</button>`).join('')}</div>
+        <ul class="list flush" id="modes"></ul>
+      </div>
+    </details>
+  </div>`;
+  $$('#go', v)[0].onclick = () => startReview('smart');
+  const mb = $$('#mist', v)[0]; if (mb) mb.onclick = () => openMistakeAnalysis();
   const draw = () => {
-    const lv = $$('#lvl', v)[0].value;
-    $$('#modes', v)[0].innerHTML = Object.entries(MODES).map(([k, m]) => {
+    $$('[data-lv]', v).forEach((b) => b.classList.toggle('active', b.dataset.lv === lv));
+    $$('#modes', v)[0].innerHTML = others.map(([k, m]) => {
       const n = candidates(k, lv).length;
-      return `<div class="card mode"><div class="mode-ic">${m.icon}</div><h3>${m.name}</h3><p class="muted">${m.desc}</p><div class="row between"><span class="chip ${n ? '' : 'alt'}">${k === 'smart' ? `${n} bekliyor` : `${n} kelime`}</span><button class="btn primary sm" data-m="${k}" ${n ? '' : 'disabled'}>Başlat</button></div></div>`;
+      return `<li class="list-row"><div class="row-main"><b>${m.name}</b><span class="muted small">${m.desc}</span></div><span class="muted small">${n}</span><button class="btn sm" data-m="${k}" ${n ? '' : 'disabled'}>Başlat</button></li>`;
     }).join('');
     $$('[data-m]', v).forEach((b) => { b.onclick = () => startReview(b.dataset.m, lv); });
   };
-  $$('#lvl', v)[0].onchange = draw; draw();
+  $$('[data-lv]', v).forEach((b) => { b.onclick = () => { lv = b.dataset.lv; draw(); }; });
+  draw();
 }

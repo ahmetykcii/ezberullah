@@ -1,7 +1,7 @@
 // Sınav sistemi: Mini Sınav, 50/100 Kelime Sınavı, Yanlış Kelimeler Sınavı, Seviye Bitirme Sınavı (40 soru, %80 geçme).
 import { state, saveData, getProgress, saveProgress, getMeta } from './storage.js';
 import * as E from './engine.js';
-import { $$, esc, fmtTime, openModal, confirmDialog } from './ui.js';
+import { $$, esc, fmtTime, openModal, confirmDialog, ICONS } from './ui.js';
 import { LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { handlers, startSession, summaryHtml } from './learning.js';
 import { bumpDaily } from './statistics.js';
@@ -71,32 +71,43 @@ handlers.exam = {
       wrongWords: wrongIds.map((id) => ({ id, word: state.wordMap.get(id)?.word || id })), passed: score >= PASS,
     };
     await saveData('exams', rec);
-    const list = rec.wrongWords.length ? `<p>Yanlış yapılan kelimeler: <b>${esc(rec.wrongWords.map((w) => w.word).join(', '))}</b><br><span class="muted">Bu kelimeler Tekrar Edilecek havuzuna alındı ve öncelikli tekrar listesinde.</span></p>` : '<p>Hiç yanlış yok! 🎉</p>';
-    return { html: summaryHtml({ title: rec.name, big: `%${score}`, sub: `${correct} doğru · ${total - correct} yanlış · ${fmtTime(rec.seconds)}${isFinal ? ` · ${rec.passed ? '✅ Geçtiniz' : `❌ Geçme puanı %${PASS}`}` : ''}`, extra: list, actions: '<a class="btn" href="#/exams">Sınavlar</a>' }) };
+    const list = rec.wrongWords.length ? `<p>Yanlış yapılan kelimeler: <b>${esc(rec.wrongWords.map((w) => w.word).join(', '))}</b></p><p class="muted small">Bu kelimeler Tekrar Edilecek havuzuna alındı ve öncelikli tekrar listesinde.</p>` : '<p>Hiç yanlış yok.</p>';
+    const verdict = isFinal ? (rec.passed ? 'Geçtiniz' : `Geçme puanı %${PASS}`) : (rec.passed ? 'Başarılı' : 'Geliştirilebilir');
+    return { html: summaryHtml({ title: rec.name, big: `%${score}`, verdict, mark: rec.passed, sub: `${correct} doğru · ${total - correct} yanlış · ${fmtTime(rec.seconds)}`, extra: list, actions: '<a class="btn primary" href="#/exams">Sınavlara Dön</a>' }) };
   },
 };
 
 export function renderExams(v) {
-  const sel = `<select id="ex-lvl" class="input sm" aria-label="Seviye"><option value="">Tüm Seviyeler</option>${LEVELS.map((l) => `<option value="${l}">${l} — ${LEVEL_NAMES[l]}</option>`).join('')}</select>`;
+  let lv = '';
   const hist = [...state.exams].reverse();
-  v.innerHTML = `<div class="row between"><h1>Sınavlar</h1>${sel}</div><div class="grid modes" id="ex-modes"></div>
-  <div class="card"><h3>Sınav Geçmişi</h3>${hist.length ? `<div class="table">${hist.map((h) => `<button class="row-item" data-h="${h.id}"><span><b>${esc(h.name)}</b><small class="muted"> ${new Date(h.date).toLocaleString('tr-TR')}</small></span><span>${h.level}</span><span class="chip ${h.passed ? '' : 'bad'}">%${h.score}</span><span class="muted">${h.correct}✓ ${h.wrong}✗ · ${fmtTime(h.seconds)}</span></button>`).join('')}</div>` : '<p class="muted">Henüz sınav çözülmedi.</p>'}</div>`;
+  v.innerHTML = `<div class="page">
+    <h1>Sınavlar</h1>
+    <p class="lead">Bir sınav türü seç; başlamak için dokunman yeterli.</p>
+    <div class="seg" role="group" aria-label="Seviye">${['', ...LEVELS].map((l) => `<button type="button" class="seg-btn" data-lv="${l}">${l || 'Tümü'}</button>`).join('')}</div>
+    <ul class="list" id="ex-modes"></ul>
+    <details class="more">
+      <summary>Geçmiş Sınavlar${hist.length ? ` (${hist.length})` : ''}</summary>
+      <div class="more-body">${hist.length ? `<ul class="list flush">${hist.map((h) => `<li><button class="list-row linkrow" data-h="${h.id}"><div class="row-main"><b>${esc(h.name)}</b><span class="muted small">${new Date(h.date).toLocaleDateString('tr-TR')} · ${h.level}</span></div><span class="score ${h.passed ? 'pass' : ''}">%${h.score}</span></button></li>`).join('')}</ul>` : '<p class="muted">Henüz sınav çözülmedi.</p>'}</div>
+    </details>
+  </div>`;
   const draw = () => {
-    const lv = $$('#ex-lvl', v)[0].value;
+    $$('[data-lv]', v).forEach((b) => b.classList.toggle('active', b.dataset.lv === lv));
     const ex = Object.entries(EXAMS).map(([k, e]) => ({ k, l: lv, ...e, lock: e.check(lv) }));
     const fin = LEVELS.filter((l) => !lv || l === lv).map((l) => {
       const lvReady = readyWords(l);
       const lvDone = lvReady.filter((w) => state.progress[w.id]?.learningComplete).length;
       return {
-        k: 'final', l, name: `${l} — ${LEVEL_NAMES[l]} Bitirme Sınavı`,
-        desc: '40 soru: 10 çoktan seçmeli, 10 yazma, 10 boşluk doldurma, 10 cümle tamamlama. Geçme: %80.',
-        lock: finalReady(l) ? null : `Önce ${l} seviyesindeki tüm kelimelerin 6 aşamasını tamamlayın (${lvDone}/${lvReady.length})`,
+        k: 'final', l, name: `${l} Bitirme Sınavı`,
+        desc: '40 soru · geçme %80',
+        lock: finalReady(l) ? null : `Önce ${l} kelimelerinin 6 aşamasını tamamla (${lvDone}/${lvReady.length})`,
       };
     });
-    const card = (e) => `<div class="card"><h3>${e.name}</h3><p class="muted">${e.desc}</p>${e.lock ? `<p class="small lock">🔒 ${esc(e.lock)}</p>` : ''}<button class="btn primary sm" data-k="${e.k}" data-l="${e.l || ''}" ${e.lock ? 'disabled' : ''}>Sınava Başla</button></div>`;
-    $$('#ex-modes', v)[0].innerHTML = `${ex.map(card).join('')}${fin.map(card).join('')}`;
+    const row = (e) => `<li><button class="list-row linkrow ${e.lock ? 'is-locked' : ''}" data-k="${e.k}" data-l="${e.l || ''}" ${e.lock ? 'disabled' : ''}>
+      <div class="row-main"><b>${e.name}</b><span class="muted small">${esc(e.lock || e.desc)}</span></div>${e.lock ? ICONS.lock : ICONS.chev}</button></li>`;
+    $$('#ex-modes', v)[0].innerHTML = [...ex, ...fin].map(row).join('');
     $$('[data-k]', v).forEach((b) => { b.onclick = () => startExam(b.dataset.k, b.dataset.l); });
   };
-  $$('#ex-lvl', v)[0].onchange = draw; draw();
+  $$('[data-lv]', v).forEach((b) => { b.onclick = () => { lv = b.dataset.lv; draw(); }; });
   $$('[data-h]', v).forEach((b) => { b.onclick = () => { const h = state.exams.find((x) => x.id === b.dataset.h); openModal({ title: h.name, html: `<p><b>%${h.score}</b> — ${h.correct} doğru, ${h.wrong} yanlış, ${fmtTime(h.seconds)}</p><p>Yanlış kelimeler: ${h.wrongWords.length ? esc(h.wrongWords.map((w) => w.word).join(', ')) : '—'}</p>` }); }; });
+  draw();
 }

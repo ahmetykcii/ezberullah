@@ -1,8 +1,9 @@
 // İstatistikler: günlük kayıtlar, seri, özetler, grafikler, 365 günlük takvim. Tüm değerler gerçek kayıtlardan hesaplanır.
-import { state, saveData } from './storage.js';
+import { state, saveData, getSettings } from './storage.js';
+import { GRAMMAR_TOPICS } from './grammar-data.js';
 import { dayKey, poolOf, isDue, isWordReady } from './engine.js';
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
-import { esc, fmtTime, ring } from './ui.js';
+import { esc, fmtTime, ring, openModal, $ } from './ui.js';
 
 const blank = (date) => ({
   date, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0,
@@ -169,6 +170,21 @@ function heatmap() {
   return `<div class="heat" role="img" aria-label="Son 365 günlük çalışma takvimi">${cells.join('')}</div>`;
 }
 
+/** Zorlandığın kelimeler analizi (en çok hata yapılan ilk 10) — Tekrar ve İstatistikler ekranlarından açılır. */
+export function openMistakeAnalysis() {
+  const m = getMistakeAnalytics(10);
+  openModal({
+    title: 'Zorlandığın Kelimeler', wide: true,
+    html: m.totalMistakeWords ? `<p class="muted small">En çok hata yaptığın ilk 10 kelime (gerçek çalışma geçmişine dayalıdır).</p>
+      <ul class="list flush">${m.top10.map((x) => `<li class="list-row"><div class="row-main"><b>${esc(x.word)}</b><span class="muted small">${esc(x.meaning)}</span></div><span class="muted small">${x.incorrectCount} hata${x.accuracy !== null ? ` · %${x.accuracy}` : ''}</span></li>`).join('')}</ul>
+      <div class="row end"><button class="btn primary" id="mm-review">Bu Kelimeleri Tekrar Et</button></div>` : '<p class="muted">Henüz zorlandığın bir kelime yok.</p>',
+    onMount(b, api) {
+      const r = $('#mm-review', b);
+      if (r) r.onclick = async () => { api.close(); const { startReview } = await import('./review.js'); startReview('mistakes'); };
+    },
+  });
+}
+
 export function renderStats(view) {
   const all = levelStats('');
   const rows = Object.values(state.daily);
@@ -182,25 +198,46 @@ export function renderStats(view) {
     e.c += p.correctCount; e.w += p.incorrectCount;
   }
   const pos = Object.entries(posMap).filter(([, e]) => e.c + e.w >= 5).map(([k, e]) => [k, e.w / (e.c + e.w), e.c + e.w]).sort((a, b) => b[1] - a[1]);
-  const top = state.words.filter((w) => state.progress[w.id]?.incorrectCount > 0).sort((a, b) => state.progress[b.id].incorrectCount - state.progress[a.id].incorrectCount).slice(0, 10);
   const acc = correct + wrong ? Math.round((correct / (correct + wrong)) * 100) : null;
-  const card = (t, v) => `<div class="stat"><span class="muted">${t}</span><b>${v}</b></div>`;
-  view.innerHTML = `<h1>İstatistikler</h1>
-  <div class="grid stats">${card('Toplam Kelime', all.total)}${card('Öğrenilen (6 Aşama)', all.completed)}${card(statusLabel('MASTERED'), all.MASTERED)}${card(statusLabel('REVIEW'), all.REVIEW)}${card(statusLabel('NEW'), all.NEW)}
-  ${card('Başarı Oranı', acc === null ? '—' : acc + '%')}${card('Toplam Çalışma Süresi', fmtTime(totalSeconds()))}${card('Günlük Seri', streak() + ' gün')}</div>
-  <div class="card"><div class="row between"><h3>Öğrenme Geçmişi</h3><div class="tabs" id="range">${[7, 30, 90].map((n, i) => `<button class="tab ${i ? '' : 'on'}" data-n="${n}">Son ${n} Gün</button>`).join('')}</div></div><div id="chart">${bars(lastDays(7))}</div></div>
-  <div class="grid two">
-   <div class="card"><h3>Seviye İlerlemesi</h3>${LEVELS.map((l) => { const s = levelStats(l); return `<div class="hbar"><span>${l}</span><div class="progress"><i style="width:${s.completion}%"></i></div><small>${LEVEL_NAMES[l]} · Öğrenme Tamamlanma Oranı %${Math.round(s.completion)} · Kalıcı Öğrenme Oranı %${Math.round(s.mastery)}</small></div>`; }).join('')}</div>
-   <div class="card"><h3>Doğru / Yanlış Oranı</h3>${correct + wrong ? `<div class="progress big"><i style="width:${(correct / (correct + wrong)) * 100}%"></i></div><p class="muted">${correct} doğru · ${wrong} yanlış</p>` : '<p class="muted">Henüz cevap kaydı yok.</p>'}</div>
-   <div class="card"><h3>En Çok Zorlanılan Kelime Türleri</h3>${pos.length ? pos.slice(0, 5).map(([k, r, n]) => `<div class="hbar"><span>${esc(posLabel(k))}</span><div class="progress bad"><i style="width:${r * 100}%"></i></div><small>%${Math.round(r * 100)} hata (${n} cevap)</small></div>`).join('') : '<p class="muted">Yeterli veri yok (tür başına en az 5 cevap gerekir).</p>'}</div>
-   <div class="card"><h3>En Çok Yanlış Yapılan Kelimeler</h3>${top.length ? `<ol class="plain">${top.map((w) => `<li><b>${esc(w.word)}</b> <span class="muted">${esc(w.meanings[0])}</span> <span class="chip bad">${state.progress[w.id].incorrectCount}×</span></li>`).join('')}</ol>` : '<p class="muted">Henüz yanlış yapılan kelime yok.</p>'}</div>
-  </div>
-  <div class="card"><h3>Hafıza Performansı</h3>${rt >= 20 ? `<div class="row gap">${ring((rc / rt) * 100, 96)}<p>Önceden öğrenilmiş kelimelerin <b>${rt}</b> tekrar cevabından <b>${rc}</b> tanesi doğru. Bu, gerçek tekrar sonuçlarına dayalı tahmini hatırlama başarınızdır.</p></div>` : `<p class="muted">Tahmini hatırlama başarısı için yeterli veri yok: ${rt}/20 tekrar cevabı kaydedildi. Akıllı Tekrar çözdükçe burada görünecek.</p>`}</div>
-  <div class="card"><h3>Çalışma Takvimi (365 Gün)</h3>${heatmap()}<div class="legend">Az <i class="hm l0"></i><i class="hm l1"></i><i class="hm l2"></i><i class="hm l3"></i><i class="hm l4"></i> Çok</div></div>`;
-  view.querySelectorAll('#range .tab').forEach((b) => {
+  const goal = getSettings().dailyGoal || 10;
+  const tw = todayLearnedCount(today());
+  const gDone = Object.values(state.grammarProgress || {}).filter((g) => g && g.completed).length;
+  const gTotal = GRAMMAR_TOPICS.length;
+  const gPct = gTotal ? (gDone / gTotal) * 100 : 0;
+  const mist = getMistakeAnalytics(10);
+  const metric = (label, value, pct, sub = '') => `<li class="metric"><div class="metric-head"><span>${label}</span><b>${value}</b></div><div class="progress thin"><i style="width:${Math.max(0, Math.min(100, pct))}%"></i></div>${sub ? `<span class="muted small">${sub}</span>` : ''}</li>`;
+  view.innerHTML = `<div class="page">
+  <h1>İstatistikler</h1>
+  <ul class="metrics">
+    ${metric('Genel İlerleme', `%${Math.round(all.completion)}`, all.completion, `${all.completed}/${all.total} kelime 6 aşamayı tamamladı`)}
+    ${metric('Bugünkü Hedef', `${tw}/${goal}`, (tw / goal) * 100, 'Yeni öğrenilen kelime')}
+    ${metric('Öğrenilen Kelimeler', all.completed, all.completion, LEVELS.map((l) => `${l}: ${levelStats(l).completed}`).join(' · '))}
+    ${metric('Grammar', `${gDone}/${gTotal}`, gPct, 'Tamamlanan konu')}
+  </ul>
+  <div class="mini-facts"><span>Günlük Seri <b>${streak()} gün</b></span><span>Başarı <b>${acc === null ? '—' : '%' + acc}</b></span><span>Toplam Süre <b>${fmtTime(totalSeconds())}</b></span></div>
+
+  <details class="more"><summary>Öğrenme geçmişi</summary><div class="more-body">
+    <div class="seg sm" id="range" role="group">${[7, 30, 90].map((n, i) => `<button class="seg-btn ${i ? '' : 'active'}" data-n="${n}">${n} gün</button>`).join('')}</div>
+    <div id="chart">${bars(lastDays(7))}</div></div></details>
+  <details class="more"><summary>Seviye ayrıntıları</summary><div class="more-body">
+    ${LEVELS.map((l) => { const s = levelStats(l); return `<div class="hbar"><span>${l}</span><div class="progress thin"><i style="width:${s.completion}%"></i></div><small class="muted">${LEVEL_NAMES[l]} · Tamamlanma %${Math.round(s.completion)} · Kalıcı öğrenme %${Math.round(s.mastery)}</small></div>`; }).join('')}
+    <p class="muted small">${correct} doğru · ${wrong} yanlış cevap kaydedildi.</p></div></details>
+  <details class="more"><summary>Zorlandığın kelimeler${mist.totalMistakeWords ? ` (${mist.totalMistakeWords})` : ''}</summary><div class="more-body">
+    ${mist.totalMistakeWords ? `<ul class="list flush">${mist.top10.slice(0, 5).map((x) => `<li class="list-row"><div class="row-main"><b>${esc(x.word)}</b><span class="muted small">${esc(x.meaning)}</span></div><span class="muted small">${x.incorrectCount}×</span></li>`).join('')}</ul><button class="btn sm" id="mist-all">Tüm analizi gör</button>` : '<p class="muted">Henüz yanlış yapılan kelime yok.</p>'}
+    ${pos.length ? `<h3 class="sub-h">Zorlanılan kelime türleri</h3>${pos.slice(0, 5).map(([k, r, n]) => `<div class="hbar"><span>${esc(posLabel(k))}</span><div class="progress thin bad"><i style="width:${r * 100}%"></i></div><small class="muted">%${Math.round(r * 100)} hata (${n} cevap)</small></div>`).join('')}` : ''}</div></details>
+  <details class="more"><summary>Hafıza performansı</summary><div class="more-body">${rt >= 20 ? `<div class="row gap">${ring((rc / rt) * 100, 88)}<p>Önceden öğrenilmiş kelimelerin <b>${rt}</b> tekrar cevabından <b>${rc}</b> tanesi doğru.</p></div>` : `<p class="muted">Tahmini hatırlama başarısı için yeterli veri yok: ${rt}/20 tekrar cevabı.</p>`}</div></details>
+  <details class="more"><summary>Çalışma takvimi</summary><div class="more-body">${heatmap()}<div class="legend">Az <i class="hm l0"></i><i class="hm l1"></i><i class="hm l2"></i><i class="hm l3"></i><i class="hm l4"></i> Çok</div></div></details>
+  <div id="plan"></div>
+  </div>`;
+  view.querySelectorAll('#range .seg-btn').forEach((b) => {
     b.onclick = () => {
-      view.querySelectorAll('#range .tab').forEach((x) => x.classList.toggle('on', x === b));
+      view.querySelectorAll('#range .seg-btn').forEach((x) => x.classList.toggle('active', x === b));
       view.querySelector('#chart').innerHTML = bars(lastDays(+b.dataset.n));
     };
   });
+  const ma = view.querySelector('#mist-all'); if (ma) ma.onclick = openMistakeAnalysis;
+  import('./review.js').then(({ studyPlan }) => {
+    const p = studyPlan(); const box = view.querySelector('#plan');
+    if (box && p && !p.past) box.innerHTML = `<details class="more"><summary>Sınav planı · ${p.days} gün kaldı</summary><div class="more-body"><p class="muted">${esc(p.phase)}</p><p>Öğrenilmemiş <b>${p.unlearned}</b> · Yeni/gün <b>${p.newPerDay}</b> · Tekrar/gün <b>${p.reviewPerDay}</b> · Önerilen günlük hedef <b>${p.suggested}</b></p></div></details>`;
+  }).catch(() => {});
 }

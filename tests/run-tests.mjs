@@ -22,6 +22,15 @@ import { resolveTheme } from '../js/app.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
+if (typeof globalThis.localStorage === 'undefined') {
+  const mem = new Map();
+  globalThis.localStorage = {
+    getItem: (k) => (mem.has(String(k)) ? mem.get(String(k)) : null),
+    setItem: (k, v) => mem.set(String(k), String(v)),
+    removeItem: (k) => mem.delete(String(k)),
+    clear: () => mem.clear(),
+  };
+}
 let pass = 0, fail = 0;
 const test = async (name, fn) => { try { await fn(); pass++; out('  ✓ ' + name); } catch (e) { fail++; out('  ✗ ' + name + ' → ' + (e && e.message)); } };
 const ok = (c, m = 'assert') => { if (!c) throw new Error(m); };
@@ -87,9 +96,9 @@ await test('seviye, durum, kelime türü ve kategori Türkçe etiketleri eksiksi
 await test('Ayarlar sayfasında #intro ID çakışması yok ve index.html Türkçe menü içeriyor', async () => {
   const appCode = await readText('js/app.js');
   ok(!appCode.includes('id="intro"'), 'app.js içinde id="intro" kalmamalı');
-  ok(appCode.includes('id="replay-intro"'), 'replay-intro butonu bulunmalı');
+  ok(appCode.includes("btnRow('replay-intro'") && appCode.includes("$('#replay-intro'"), 'replay-intro butonu bulunmalı');
   const html = await readText('index.html');
-  for (const label of ['Ana Sayfa', 'Kelime Öğren', 'Akıllı Tekrar', 'Kelime Havuzum', 'Sınavlar', 'İstatistikler', 'Ayarlar']) {
+  for (const label of ['Ana Sayfa', 'Kelime Öğren', 'Tekrar', 'Grammar', 'Kelime Havuzum', 'Sınavlar', 'İstatistikler', 'Ayarlar']) {
     ok(html.includes(label), 'Eksik menü etiketi: ' + label);
   }
 });
@@ -352,9 +361,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v3.0.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v3.1.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v3.0.0';"), 'SW sürümü veluno-v3.0.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v3.1.0';"), 'SW sürümü veluno-v3.1.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -410,7 +419,7 @@ await test('VELUNO Tema Sistemi: Açık tema varsayılan, Koyu ve Otomatik (Ciha
 
   // 3) Ayarlar menüsünde Açık, Koyu ve Otomatik seçenekleri bulunmalı
   ok(appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="dark"') && appCode.includes('data-set-theme="auto"'), 'Ayarlarda Açık / Koyu / Otomatik tema butonları bulunmalı');
-  ok(appCode.includes('<option value="auto"'), 'Ayarlar tema seçim kutusunda Otomatik (Cihaz Teması) seçeneği bulunmalı');
+  ok(appCode.includes('>Açık</button>') && appCode.includes('>Koyu</button>') && appCode.includes('>Otomatik</button>'), 'Ayarlarda Açık / Koyu / Otomatik etiketleri bulunmalı');
 
   // 4) Açık ve Koyu tema renk paletleri şartnameye birebir uymalı
   for (const token of ['#F7F9FC', '#FFFFFF', '#F1F4F8', '#17243B', '#738098', '#E5E9F0', '#4F8EF7', '#EAF2FF', '#2F9E66', '#D89B2B', '#D96B6B']) {
@@ -711,21 +720,70 @@ await test('v2.1 Kaldığın Yerden Devam Et: yarım kalan oturumun korunması, 
   eq(getMeta('activeSession'), null);
 });
 
-await test('v2.1 Ana sayfa ve ayarlar tasarımı: akıllı kartlar, hızlı hedef butonları, ahmet ❤️ sude imzasının ve logonun korunması', async () => {
+await test('v3.1 Ana sayfa (Learning Home): tek ana eylem, günlük hedef, devam et ve ahmet ❤️ sude imzasının korunması', async () => {
   const appCode = await readText('js/app.js');
   const css = await readText('css/style.css');
 
-  ok(appCode.includes('Bugünkü Hedefin:'), 'Ana sayfada Günlük Hedef başlığı bulunmalı');
-  ok(appCode.includes('[5, 10, 15, 20]') && appCode.includes('data-set-goal='), 'Ana sayfada 5, 10, 15, 20 hedef butonları bulunmalı');
-  ok(appCode.includes('Günlük Seri'), 'Ana sayfada Günlük Seri kartı bulunmalı');
-  ok(appCode.includes('Zorlandığın Kelimeler:'), 'Ana sayfada Zorlandığın Kelimeler hata analiz kartı bulunmalı');
-  ok(appCode.includes('▶️ Kaldığın Yerden Devam Et'), 'Ana sayfada Kaldığın Yerden Devam Et butonu bulunmalı');
+  ok(appCode.includes('Bugünkü Hedefin:'), 'Ana sayfada Günlük Hedef satırı bulunmalı');
+  ok(appCode.includes('[5, 10, 15, 20]') && appCode.includes('data-set-goal='), 'Günlük hedef seçenekleri (5, 10, 15, 20, Özel) bulunmalı');
+  ok(appCode.includes('Günlük Seri:'), 'Ana sayfada tek satırlık seri bilgisi bulunmalı');
+  ok(appCode.includes('Öğrenmeye Devam Et') && appCode.includes('Kaldığın Yerden Devam Et'), 'Ana sayfada birincil eylem bulunmalı');
   ok(appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
   ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı bulunmalı');
+  ok(!appCode.includes('class="grid stats"') && !appCode.includes('smart-grid'), 'Ana sayfada dashboard kart ızgarası kalmamalı');
+  ok(css.includes('.today{') && css.includes('.cta-block{'), 'Learning Home CSS kuralları bulunmalı');
+});
 
-  ok(css.includes('.smart-grid'), 'Akıllı öğrenme kartları CSS ızgarası bulunmalı');
-  ok(css.includes('.resume-card'), 'Kaldığın yerden devam et kartı CSS kuralı bulunmalı');
-  ok(css.includes('.goal-chip-row'), 'Hızlı hedef butonları CSS kuralı bulunmalı');
+await test('v3.1 Tasarım sistemi: gradient / cam efekti / büyük gölge yok, altın ton yok, reduced-motion destekli', async () => {
+  const css = await readText('css/style.css');
+  ok(!css.includes('backdrop-filter'), 'Cam efekti (backdrop-filter) kullanılmamalı');
+  ok(!css.includes('radial-gradient') && (css.match(/gradient\(/g) || []).length <= 2, 'Dekoratif gradient kullanılmamalı (yalnızca açılır menü oku)');
+  ok(!/box-shadow:[^;}]*\d{2}px\s+\d{2,}px/.test(css), 'Büyük gölge kullanılmamalı');
+  ok(!css.includes('#D4B475') && !css.includes('#C9A86A') && !css.includes('#EED49E'), 'Altın / sarı marka tonları geri gelmemeli');
+  ok(css.includes('prefers-reduced-motion:reduce'), 'prefers-reduced-motion desteklenmeli');
+  ok(css.includes('.path{') && css.includes('.step.active') && css.includes('.step.locked'), 'Grammar öğrenme yolu stilleri bulunmalı');
+  ok(css.includes('.success-mark') && css.includes('@keyframes draw'), 'Hafif başarı animasyonu bulunmalı');
+  ok(css.includes('.page{max-width:680px'), 'Masaüstünde içerik genişliği sınırlı olmalı');
+});
+
+await test('v3.1 Gezinme: mobil alt menüde 5 bölüm, SVG ikonlar, emoji yok, "Diğer" sayfası ile ikincil bölümlere erişim', async () => {
+  const html = await readText('index.html');
+  const appCode = await readText('js/app.js');
+  const bottom = html.slice(html.indexOf('<nav id="bottomnav"'), html.indexOf('</nav>', html.indexOf('<nav id="bottomnav"')));
+  eq((bottom.match(/data-nav=/g) || []).length, 5, 'Alt menüde tam 5 bölüm olmalı');
+  ok(bottom.includes('data-nav="more"'), 'Alt menüde Diğer bulunmalı');
+  ok(!/[\u{1F300}-\u{1FAFF}\u2699\u2600-\u27BF]/u.test(html.slice(html.indexOf('<aside'), html.indexOf('<div id="modal-root"'))), 'Navigasyonda emoji kullanılmamalı');
+  ok(bottom.includes('<svg viewBox="0 0 24 24"'), 'Alt menü SVG ikon kullanmalı');
+  for (const r of ['dashboard', 'learn', 'review', 'grammar', 'more', 'vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`${r}:`), `Rota korunmalı: ${r}`);
+  for (const r of ['vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`item('#/${r}'`), `Diğer sayfasından erişilebilmeli: ${r}`);
+});
+
+await test('v3.1 Ekran sadeleştirmeleri: Kelime odak akışı, Tekrar tek dokunuş, Sınav odak modu, Kelime Havuzu satırları, Ayarlar listesi', async () => {
+  const learn = await readText('js/learning.js');
+  const review = await readText('js/review.js');
+  const exams = await readText('js/exams.js');
+  const vocab = await readText('js/vocab-ui.js');
+  const stats = await readText('js/statistics.js');
+  const app = await readText('js/app.js');
+  ok(learn.includes('id="reveal"') && learn.includes('Anlamı Göster'), 'Kelime kartında anlam gerektiğinde gösterilmeli');
+  ok(learn.includes('class="run-top"') && learn.includes('enterkeyhint="done"') && learn.includes('stage-dots'), 'Odaklı oturum ekranı (üst ilerleme + aşama göstergesi) bulunmalı');
+  ok(learn.includes("setFocusMode(true)"), 'Oturum sırasında menü gizlenmeli (odak modu)');
+  ok(review.includes('Tekrara Başla') && review.includes('big-count') && review.includes('Diğer tekrar modları'), 'Tekrar ekranı tek eylemle sadeleşmeli');
+  ok(exams.includes('Geçmiş Sınavlar') && exams.includes('list-row'), 'Sınav türü liste satırlarından seçilmeli, geçmiş detay altında olmalı');
+  ok(vocab.includes('class="search"') && vocab.includes('openWordDetail') && vocab.includes('Filtreler'), 'Kelime Havuzu arama + kompakt filtre + satır listesi olmalı');
+  ok(stats.includes('Genel İlerleme') && stats.includes('Bugünkü Hedef') && stats.includes('Öğrenilen Kelimeler') && stats.includes('Grammar') && stats.includes('<details class="more">'), 'İstatistikler öncelikli metrikler + açılır bölümlerden oluşmalı');
+  for (const g of ['Görünüm', 'Günlük Hedef', 'Ses ve Öğrenme', 'Yedekleme ve Geri Yükleme', 'Hakkında']) ok(app.includes(`>${g}</h2>`), `Ayarlar grubu bulunmalı: ${g}`);
+});
+
+await test('v3.1 Grammar öğrenme yolculuğu: seviye seçici, dikey yol, durum göstergeleri, "Yakında" metni yok, 38 konu / 3 hazır ders korunur', async () => {
+  const g = await readText('js/grammar.js');
+  ok(g.includes('class="path"') && g.includes('data-g-level=') && g.includes('step-node'), 'Dikey öğrenme yolu ve seviye seçici bulunmalı');
+  ok(g.includes("'done'") && g.includes("'active'") && g.includes("'locked'"), 'Tamamlandı / Aktif / Kilitli durumları bulunmalı');
+  ok(!g.includes('Yakında') && !g.includes('Test Aktif Değil'), 'Kullanıcıya "Yakında" / "Test Aktif Değil" gösterilmemeli');
+  eq(G.GRAMMAR_TOPICS.length, 38);
+  eq(G.GRAMMAR_TOPICS.filter((t) => G.isTopicReady(t)).length, 3, '3 hazır ders korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 60);
+  eq(G.nextGrammarTopic().id, G.GRAMMAR_TOPICS.filter((t) => G.isTopicReady(t) && !getGrammarProgress(t.id).completed)[0].id, 'Sıradaki ders önerisi doğru olmalı');
 });
 
 // ===== EZBERULLAH v2.2 — Grammar Academy Testleri (20 Test) =====

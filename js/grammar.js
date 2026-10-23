@@ -3,7 +3,7 @@ import { GRAMMAR_LEVELS, GRAMMAR_TOPICS, GRAMMAR_QUESTIONS } from './grammar-dat
 import { getGrammarProgress, saveGrammarProgress } from './storage.js';
 import { shuffle } from './engine.js';
 import { bumpDaily } from './statistics.js';
-import { $, $$, esc, toast, speak, sfx } from './ui.js';
+import { $, $$, esc, toast, speak, sfx, ICONS, successMark } from './ui.js';
 
 export { GRAMMAR_LEVELS, GRAMMAR_TOPICS, GRAMMAR_QUESTIONS };
 
@@ -170,7 +170,7 @@ export function grammarOverallStats() {
   };
 }
 
-/* ---------- Arayüz (UI) Durumu ve Render Fonksiyonları ---------- */
+/* ---------- Arayüz (UI) Durumu ve Render Fonksiyonları — Learning Journey ---------- */
 
 let uiState = {
   selectedLevel: 'A2',
@@ -178,6 +178,28 @@ let uiState = {
   mode: 'list', // 'list' | 'lesson' | 'quiz' | 'result'
   quiz: null,
 };
+
+const setFocus = (on) => { if (typeof document !== 'undefined') document.body.classList.toggle('focus', on); };
+const pad = (n) => String(n).padStart(2, '0');
+
+/** Grammar ekranını konu listesine (öğrenme yolculuğuna) döndürür. */
+export function resetGrammarView() {
+  uiState.mode = 'list';
+  uiState.quiz = null;
+  uiState.activeTopicId = null;
+  setFocus(false);
+}
+
+/** Ana sayfanın "devam et" önerisi için: ilk hazır ve tamamlanmamış ders. */
+export function nextGrammarTopic() {
+  const levels = ['A2', 'B1', 'B2'];
+  for (const lv of levels) {
+    for (const t of getTopicsByLevel(lv)) {
+      if (isTopicReady(t) && !getGrammarProgress(t.id).completed) return t;
+    }
+  }
+  return null;
+}
 
 function fmtDateShort(ts) {
   if (!ts) return '—';
@@ -191,13 +213,14 @@ function fmtDateShort(ts) {
 export function openGrammarLesson(topicId, container = typeof document !== 'undefined' ? document.getElementById('view') : null) {
   const topic = getTopicById(topicId);
   if (!topic || !isTopicReady(topic)) {
-    if (typeof document !== 'undefined') toast('Bu ders henüz hazırlık aşamasındadır (Yakında).', 'info');
+    if (typeof document !== 'undefined') toast('Bu ders henüz hazır değil.', 'info');
     return false;
   }
   uiState.selectedLevel = topic.level;
   uiState.activeTopicId = topic.id;
   uiState.mode = 'lesson';
   uiState.quiz = null;
+  setFocus(false);
   if (container) {
     renderGrammar(container);
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
@@ -237,6 +260,7 @@ export function startGrammarQuizUI(topicId, container = typeof document !== 'und
 
 export function renderGrammar(v) {
   if (!v) return;
+  setFocus(uiState.mode === 'quiz');
   if (uiState.mode === 'lesson' && uiState.activeTopicId) {
     return renderLessonView(v, uiState.activeTopicId);
   }
@@ -250,105 +274,38 @@ export function renderGrammar(v) {
 }
 
 function renderGrammarHome(v) {
-  const overall = grammarOverallStats();
   const activeLv = ['A2', 'B1', 'B2'].includes(uiState.selectedLevel) ? uiState.selectedLevel : 'A2';
   const lvMeta = GRAMMAR_LEVELS.find((l) => l.id === activeLv);
   const topics = getTopicsByLevel(activeLv);
-  const lvStat = overall.levels[activeLv];
+  const lvStat = grammarLevelStats(activeLv);
+  const firstOpen = topics.find((t) => isTopicReady(t) && !getGrammarProgress(t.id).completed);
 
   v.innerHTML = `
-    <header class="g-hero card">
-      <div class="g-hero-top">
-        <div>
-          <div class="g-eyebrow">VELUNO EĞİTİM PLATFORMU</div>
-          <h1 class="g-title">🎓 GRAMMAR ACADEMY</h1>
-          <p class="g-subtitle">İngilizce Dil Bilgisini Adım Adım Öğren <span class="muted">· Detaylı Türkçe konu anlatımları, formüller, sınav taktikleri ve akıllı mini sınavlar.</span></p>
-        </div>
-        <div class="g-switch-actions">
-          <a class="btn sm" href="#/dashboard">📖 Vocabulary (Kelime)</a>
-        </div>
+    <div class="page">
+      <h1>Grammar</h1>
+      <p class="lead">Dil bilgisini adım adım öğren.</p>
+      <div class="seg" role="group" aria-label="Seviye">
+        ${GRAMMAR_LEVELS.map((lv) => `<button type="button" class="seg-btn ${lv.id === activeLv ? 'active' : ''}" data-g-level="${lv.id}" aria-pressed="${lv.id === activeLv}">${lv.id}</button>`).join('')}
       </div>
-      <div class="g-overall-bar">
-        <div class="row between small">
-          <span>Toplam Grammar İlerlemesi: <b>${overall.completedTopics}/${overall.totalTopics} Konu Tamamlandı</b></span>
-          <span class="muted">${overall.readyTopics} aktif ders · ${overall.totalQuestionBank} özgün sınav sorusu</span>
-        </div>
-        <div class="progress"><i style="width:${overall.pct}%"></i></div>
-      </div>
-    </header>
-
-    <section aria-label="Grammar Seviyeleri">
-      <div class="grid g-levels-grid">
-        ${GRAMMAR_LEVELS.map((lv) => {
-          const st = overall.levels[lv.id];
-          const isSel = lv.id === activeLv;
-          return `
-            <button type="button" class="card g-level-card ${isSel ? 'active' : ''}" data-g-level="${lv.id}" aria-pressed="${isSel}">
-              <div class="row between">
-                <span class="g-lv-badge">${lv.badge} — ${lv.name}</span>
-                <span class="chip ${st.completedCount > 0 ? 'ok' : 'alt'}">${st.total} Konu</span>
-              </div>
-              <p class="muted small g-lv-desc">${esc(lv.description)}</p>
-              <div class="g-lv-prog-text">
-                <b>${lv.id} Grammar: ${st.completedCount}/${st.total} Konu Tamamlandı</b>
-                <span class="muted small">%${st.pct}</span>
-              </div>
-              <div class="progress"><i style="width:${st.pct}%"></i></div>
-            </button>
-          `;
-        }).join('')}
-      </div>
-    </section>
-
-    <section aria-label="${activeLv} Grammar Konuları">
-      <div class="row between wrap g-section-head">
-        <div>
-          <h2>${lvMeta.badge} — ${lvMeta.name} (${lvMeta.trName}) Müfredatı</h2>
-          <p class="muted small">${activeLv} Grammar: ${lvStat.completedCount}/${lvStat.total} konu tamamlandı · Mini sınavda en az %80 (4/5) başarı sağlayan konular tamamlanmış sayılır.</p>
-        </div>
-      </div>
-
-      <div class="grid g-topics-grid">
+      <p class="path-meta muted small">${esc(lvMeta.name)} · ${lvStat.completedCount}/${lvStat.total} tamamlandı</p>
+      <ol class="path" aria-label="${activeLv} öğrenme yolu">
         ${topics.map((t) => {
           const ready = isTopicReady(t);
-          const gp = getGrammarProgress(t.id);
-          const qCount = getQuestionsForTopic(t.id).length;
-          return `
-            <article class="card g-topic-card ${ready ? 'is-ready' : 'is-soon'} ${gp.completed ? 'is-completed' : ''}">
-              <div>
-                <div class="row between g-topic-top">
-                  <span class="chip alt sm">${t.level} · Konu ${t.order}</span>
-                  <div class="row gap-xs">
-                    ${gp.completed ? '<span class="chip ok">✅ Tamamlandı</span>' : ''}
-                    ${ready ? `<span class="chip g-chip-gold">${qCount} Soru Havuzu</span>` : '<span class="chip alt">⏳ Yakında</span>'}
-                  </div>
-                </div>
-                <h3 class="g-topic-title">${esc(t.title)}</h3>
-                <p class="muted small g-topic-desc">${esc(t.description)}</p>
-              </div>
-
-              <div class="g-topic-footer">
-                <div class="g-topic-metrics">
-                  <div><span class="muted">Durum:</span> <b>${gp.completed ? 'Tamamlandı' : ready ? 'Ders Hazır' : 'Yakında'}</b></div>
-                  <div><span class="muted">Son Sınav:</span> <b>${gp.lastScore !== null ? '%' + gp.lastScore : '—'}</b></div>
-                  <div><span class="muted">En Yüksek:</span> <b>${gp.bestScore !== null ? '%' + gp.bestScore : '—'}</b></div>
-                </div>
-                <div class="row gap wrap g-topic-actions">
-                  ${ready ? `
-                    <button type="button" class="btn primary sm" data-open-lesson="${t.id}">📖 Derse Gir</button>
-                    <button type="button" class="btn sm" data-start-gquiz="${t.id}">📝 Mini Sınav (5 Soru)</button>
-                  ` : `
-                    <button type="button" class="btn sm" disabled aria-disabled="true">⏳ Yakında</button>
-                    <button type="button" class="btn ghost sm" disabled aria-disabled="true">Test Aktif Değil</button>
-                  `}
-                </div>
-              </div>
-            </article>
-          `;
+          const done = ready && getGrammarProgress(t.id).completed;
+          const active = firstOpen && firstOpen.id === t.id;
+          const state = done ? 'done' : active ? 'active' : ready ? 'ready' : 'locked';
+          const node = done ? ICONS.check : ready ? pad(t.order) : ICONS.lock;
+          const label = `${pad(t.order)} — ${t.title}`;
+          return `<li class="step ${state}">
+            <button type="button" class="step-btn" ${ready ? `data-open-lesson="${t.id}"` : 'disabled aria-disabled="true"'} aria-label="${esc(label)}${done ? ' (tamamlandı)' : ''}">
+              <span class="step-node" aria-hidden="true">${node}</span>
+              <span class="step-text"><span class="step-no">${pad(t.order)}</span><span class="step-title">${esc(t.title)}</span></span>
+              ${active ? '<span class="step-cta">Başla</span>' : ''}
+            </button>
+          </li>`;
         }).join('')}
-      </div>
-    </section>
-  `;
+      </ol>
+    </div>`;
 
   $$('[data-g-level]', v).forEach((b) => {
     b.onclick = () => {
@@ -358,9 +315,6 @@ function renderGrammarHome(v) {
   });
   $$('[data-open-lesson]', v).forEach((b) => {
     b.onclick = () => openGrammarLesson(b.dataset.openLesson, v);
-  });
-  $$('[data-start-gquiz]', v).forEach((b) => {
-    b.onclick = () => startGrammarQuizUI(b.dataset.startGquiz, v);
   });
 }
 
@@ -372,103 +326,57 @@ function renderLessonView(v, topicId) {
   }
   const gp = getGrammarProgress(topic.id);
   const c = topic.content;
-  const qCount = getQuestionsForTopic(topic.id).length;
 
   v.innerHTML = `
-    <div class="g-lesson-wrap">
-      <div class="row between wrap g-lesson-nav">
-        <button type="button" class="btn sm" id="g-back-list">← ${topic.level} Konu Listesine Dön</button>
-        <div class="row gap">
-          ${gp.completed ? '<span class="chip ok">✅ Tamamlandı</span>' : ''}
-          <button type="button" class="btn primary sm" id="g-top-quiz">📝 Mini Sınava Başla (5 Soru)</button>
-        </div>
-      </div>
-
-      <header class="card g-lesson-hero">
-        <div class="row between wrap">
-          <span class="chip g-chip-gold">${topic.level} · ${topic.order}. Konu</span>
-          <span class="muted small">En Yüksek Başarı: <b>${gp.bestScore !== null ? '%' + gp.bestScore : 'Henüz çözülmedi'}</b> · Son Çalışma: ${fmtDateShort(gp.lastStudiedAt)}</span>
-        </div>
-        <h1 class="g-lesson-title">${esc(topic.title)}</h1>
-        <p class="g-lesson-intro">${esc(c.intro)}</p>
+    <article class="lesson">
+      <nav class="lesson-nav"><button type="button" class="back-link" id="g-back-list">${ICONS.back}<span>Grammar</span></button>${gp.completed ? `<span class="done-tag">${ICONS.check}Tamamlandı</span>` : ''}</nav>
+      <header class="lesson-head">
+        <div class="eyebrow">${topic.level} · ${pad(topic.order)}</div>
+        <h1>${esc(topic.title)}</h1>
+        <p class="lead">${esc(c.intro)}</p>
       </header>
 
-      <section class="card g-section">
-        <h2>📘 1. Detaylı Konu Anlatımı</h2>
-        <div class="g-sections-list">
-          ${c.sections.map((s) => `
-            <div class="g-sub-block">
-              <h3>${esc(s.heading)}</h3>
-              <p class="g-preline">${esc(s.body)}</p>
-            </div>
-          `).join('')}
-        </div>
+      <section class="l-sec">
+        <h2>Konu Anlatımı</h2>
+        ${c.sections.map((s) => `<h3>${esc(s.heading)}</h3><p class="g-preline">${esc(s.body)}</p>`).join('')}
       </section>
 
-      <section class="card g-section">
-        <h2>📐 2. Grammar Formülleri (Yapı Tablosu)</h2>
-        <div class="grid g-formula-grid">
-          ${c.formulas.map((f) => `
-            <div class="g-formula-box">
-              <div class="g-formula-label">${esc(f.label)}</div>
-              <pre class="g-formula-code">${esc(f.pattern)}</pre>
-              ${f.note ? `<small class="muted">${esc(f.note)}</small>` : ''}
-            </div>
-          `).join('')}
-        </div>
+      <section class="l-sec">
+        <h2>Formüller</h2>
+        <dl class="formulas">
+          ${c.formulas.map((f) => `<div class="formula"><dt>${esc(f.label)}</dt><dd><code>${esc(f.pattern)}</code>${f.note ? `<small class="muted">${esc(f.note)}</small>` : ''}</dd></div>`).join('')}
+        </dl>
       </section>
 
-      <section class="card g-section">
-        <h2>💬 3. Örnek Cümleler ve Çevirileri</h2>
-        <div class="g-examples-list">
-          ${c.examples.map((ex) => `
-            <div class="g-example-item">
-              <div class="row between">
-                <b class="g-ex-en">${esc(ex.en)}</b>
-                <button type="button" class="btn ghost sm" data-speak-en="${esc(ex.en)}" aria-label="Cümleyi dinle">🔊 Dinle</button>
-              </div>
-              <div class="g-ex-tr">${esc(ex.tr)}</div>
-              ${ex.note ? `<small class="g-ex-note">💡 ${esc(ex.note)}</small>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </section>
-
-      <section class="card g-section">
-        <h2>⭐ 4. Önemli Kurallar ve İpuçları</h2>
-        <ul class="g-rules-list">
-          ${c.keyRules.map((r) => `<li>${esc(r)}</li>`).join('')}
+      <section class="l-sec">
+        <h2>Örnek Cümleler</h2>
+        <ul class="examples">
+          ${c.examples.map((ex) => `<li><div><b>${esc(ex.en)}</b><span class="tr">${esc(ex.tr)}</span>${ex.note ? `<small class="muted">${esc(ex.note)}</small>` : ''}</div><button type="button" class="speak-btn sm" data-speak-en="${esc(ex.en)}" aria-label="Cümleyi dinle">${ICONS.speaker}</button></li>`).join('')}
         </ul>
       </section>
 
-      <section class="card g-section">
-        <h2>⚠️ 5. Sık Yapılan Hatalar (Yanlış vs. Doğru)</h2>
-        <div class="g-mistakes-list">
-          ${c.commonMistakes.map((m) => `
-            <div class="g-mistake-card">
-              <div class="g-m-wrong">❌ <span>${esc(m.wrong)}</span></div>
-              <div class="g-m-right">✅ <span>${esc(m.right)}</span></div>
-              <p class="muted small g-m-exp"><b>Açıklama:</b> ${esc(m.explanation)}</p>
-            </div>
-          `).join('')}
-        </div>
+      <section class="l-sec">
+        <h2>Önemli Kurallar</h2>
+        <ul class="note">${c.keyRules.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>
       </section>
 
-      <section class="card g-section g-tips-card">
-        <h2>🎯 6. Sınav Taktikleri</h2>
-        <ul class="g-tips-list">
-          ${c.examTips.map((tip) => `<li>${esc(tip)}</li>`).join('')}
+      <section class="l-sec">
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul class="mistakes">
+          ${c.commonMistakes.map((m) => `<li><div class="m-wrong">${esc(m.wrong)}</div><div class="m-right">${esc(m.right)}</div><p class="muted small">${esc(m.explanation)}</p></li>`).join('')}
         </ul>
       </section>
 
-      <div class="card g-cta-card">
-        <div>
-          <h3>Konuyu Pekiştirmeye Hazır mısın?</h3>
-          <p class="muted small">Bu konuya ait <b>${qCount} özgün soruluk</b> havuzdan rastgele seçilen 5 soruluk mini sınavı çözerek bilginizi ölçün. En az 4 doğru (%80) yaptığınızda konu <b>✅ Tamamlandı</b> rozeti kazanır.</p>
-        </div>
-        <button type="button" class="btn primary" id="g-bottom-quiz">📝 Mini Sınava Başla (5 Soru) →</button>
+      <details class="more">
+        <summary>Sınav Taktikleri</summary>
+        <div class="more-body"><ul class="plain">${c.examTips.map((tip) => `<li>${esc(tip)}</li>`).join('')}</ul></div>
+      </details>
+
+      <div class="lesson-cta">
+        <button type="button" class="btn primary xl block" id="g-bottom-quiz">Mini Sınava Geç</button>
+        <p class="muted small center">5 soru · tamamlamak için en az 4 doğru${gp.bestScore !== null ? ` · En yüksek: %${gp.bestScore}` : ''}</p>
       </div>
-    </div>
+    </article>
   `;
 
   $('#g-back-list', v).onclick = () => {
@@ -476,7 +384,6 @@ function renderLessonView(v, topicId) {
     renderGrammarHome(v);
     window.scrollTo(0, 0);
   };
-  $('#g-top-quiz', v).onclick = () => startGrammarQuizUI(topic.id, v);
   $('#g-bottom-quiz', v).onclick = () => startGrammarQuizUI(topic.id, v);
   $$('[data-speak-en]', v).forEach((b) => {
     b.onclick = () => speak(b.dataset.speakEn);
@@ -488,54 +395,46 @@ function renderQuizView(v) {
   const topic = getTopicById(qState.topicId);
   const item = qState.items[qState.idx];
   const total = qState.items.length;
-  const pct = Math.round(((qState.idx + (qState.answered ? 1 : 0)) / total) * 100);
-  const letters = ['A', 'B', 'C', 'D'];
+  const pct = Math.round((qState.idx / total) * 100);
+  const nextPct = Math.round(((qState.idx + (qState.answered ? 1 : 0)) / total) * 100);
+  const picked = qState.pickedIndex;
+  const good = qState.answered && picked === item.answerIndex;
 
   v.innerHTML = `
-    <div class="quiz g-quiz-wrap">
-      <div class="quiz-head">
-        <button type="button" class="btn ghost sm" id="g-quiz-exit">← Derse Dön</button>
-        <div class="progress"><i style="width:${pct}%"></i></div>
-        <span class="muted small nowrap">${qState.idx + 1} / ${total}</span>
+    <div class="run">
+      <div class="run-top">
+        <button type="button" class="icon-btn" id="g-quiz-exit" aria-label="Derse dön">${ICONS.close}</button>
+        <div class="progress thin"><i style="width:${pct}%"></i></div>
+        <span class="run-count">${qState.idx + 1}/${total}</span>
       </div>
-
-      <div class="qcard ${qState.answered ? (qState.pickedIndex === item.answerIndex ? 'correct' : 'wrong') : ''}" id="g-qcard">
-        <div class="row between" style="width:100%">
-          <span class="chip alt">${esc(topic.level)} · ${esc(topic.title)}</span>
-          <span class="chip alt sm">Zorluk: ${DIFF_LABELS[item.difficulty] || 'Orta'}</span>
-        </div>
-
+      <div class="run-body ${qState.answered ? (good ? 'correct' : 'wrong') : ''}" id="g-qcard">
+        <div class="run-label"><span>${esc(topic.title)}</span></div>
         <h2 class="sent g-q-stem">${esc(item.question)}</h2>
-
         <div class="options" id="g-options">
           ${item.options.map((opt, i) => {
             let cls = 'opt';
             if (qState.answered) {
               if (i === item.answerIndex) cls += ' right';
-              else if (i === qState.pickedIndex) cls += ' bad picked';
+              else if (i === picked) cls += ' bad picked';
             }
-            return `
-              <button type="button" class="${cls}" data-g-opt="${i}" ${qState.answered ? 'disabled' : ''}>
-                <kbd>${letters[i]}</kbd> <span>${esc(opt)}</span>
-              </button>
-            `;
+            return `<button type="button" class="${cls}" data-g-opt="${i}" ${qState.answered ? 'disabled' : ''}><span class="opt-n">${['A', 'B', 'C', 'D'][i]}</span><span>${esc(opt)}</span></button>`;
           }).join('')}
         </div>
-
         ${qState.answered ? `
-          <div class="feedback ${qState.pickedIndex === item.answerIndex ? 'ok' : 'no'} g-q-feedback">
-            <div><b>${qState.pickedIndex === item.answerIndex ? '✓ Doğru Cevap!' : `✗ Yanlış Cevap · Doğru Seçenek: ${letters[item.answerIndex]}) ${esc(item.correctAnswer)}`}</b></div>
-            <p style="margin:.4rem 0 0;color:var(--tx)">💡 <b>Çözüm Açıklaması:</b> ${esc(item.explanation)}</p>
+          <div class="feedback ${good ? 'ok' : 'no'}" role="status">
+            <b>${good ? 'Doğru' : 'Yanlış'}</b>
+            ${good ? '' : `<span>Doğru cevap: ${esc(item.correctAnswer)}</span>`}
+            <small>${esc(item.explanation)}</small>
           </div>
-          <div class="row end" style="width:100%">
-            <button type="button" class="btn primary" id="g-quiz-next">
-              ${qState.idx + 1 < total ? 'Sonraki Soru →' : 'Sınav Sonucunu Gör →'}
-            </button>
-          </div>
+          <button type="button" class="btn primary xl block" id="g-quiz-next">${qState.idx + 1 < total ? 'Devam' : 'Sonucu Gör'}</button>
         ` : ''}
       </div>
     </div>
   `;
+  if (qState.answered) {
+    const bar = $('.progress i', v);
+    if (bar) { bar.style.width = pct + '%'; requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = nextPct + '%'; })); }
+  }
 
   $('#g-quiz-exit', v).onclick = () => {
     uiState.mode = 'lesson';
@@ -546,14 +445,14 @@ function renderQuizView(v) {
     $$('[data-g-opt]', v).forEach((b) => {
       b.onclick = () => {
         if (qState.answered) return;
-        const picked = +b.dataset.gOpt;
-        const isCorrect = checkGrammarAnswer(item, picked);
+        const p = +b.dataset.gOpt;
+        const isCorrect = checkGrammarAnswer(item, p);
         qState.answered = true;
-        qState.pickedIndex = picked;
+        qState.pickedIndex = p;
         qState.results.push({
           questionId: item.id,
-          pickedIndex: picked,
-          pickedText: item.options[picked],
+          pickedIndex: p,
+          pickedText: item.options[p],
           correctAnswer: item.correctAnswer,
           correct: isCorrect,
         });
@@ -582,7 +481,7 @@ function renderQuizView(v) {
           });
           qState.summary = summary;
           uiState.mode = 'result';
-          renderQuizResultView(v);
+          renderGrammar(v);
         }
       };
     }
@@ -594,40 +493,33 @@ function renderQuizResultView(v) {
   const topic = getTopicById(qState.topicId);
   const total = qState.items.length;
   const correctCount = qState.results.filter((r) => r.correct).length;
-  const wrongCount = total - correctCount;
   const score = qState.summary ? qState.summary.score : calculateQuizScore(correctCount, total);
   const passed = score >= PASS_SCORE;
   const gp = getGrammarProgress(qState.topicId);
 
   v.innerHTML = `
-    <div class="summary card g-result-card">
-      <span class="chip ${passed ? 'ok' : 'alt'}">${passed ? '🎉 Mini Sınav Başarılı!' : '📚 Tekrar Çalışmanız Önerilir'}</span>
-      <h2 style="margin-top:10px">${esc(topic.title)}</h2>
+    <div class="summary">
+      ${passed ? successMark() : ''}
+      <h2>${esc(topic.title)}</h2>
       <div class="big-num">%${score}</div>
-      <p class="muted"><b>${correctCount} Doğru</b> · <b>${wrongCount} Yanlış</b> (Toplam ${total} Soru)</p>
-
-      ${gp.completed ? `<div class="g-complete-banner">✅ Bu konu <b>Tamamlandı</b> rozetine sahip! (En Yüksek Başarı: %${gp.bestScore})</div>` : `<p class="muted small">Konuyu tamamlamak için 5 soruda en az 4 doğru (%80) yapmalısınız.</p>`}
-
-      <div class="g-review-answers">
-        <h3 style="text-align:left;margin-bottom:8px">Soru Özeti</h3>
-        ${qState.items.map((it, idx) => {
-          const r = qState.results[idx];
-          return `
-            <div class="g-ans-row ${r?.correct ? 'ok' : 'no'}">
-              <div><b>${idx + 1}.</b> ${esc(it.question)}</div>
-              <div class="small">
-                Senin cevabın: <b>${esc(r?.pickedText || '—')}</b> ${r?.correct ? '✓' : `✗ (Doğru: <b>${esc(it.correctAnswer)}</b>)`}
-              </div>
-              <div class="muted small">${esc(it.explanation)}</div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-
-      <div class="row gap center wrap" style="margin-top:18px">
-        <button type="button" class="btn primary" id="g-retry-quiz">🔄 Yeni Mini Sınav Çöz</button>
-        <button type="button" class="btn" id="g-back-lesson">📖 Ders Anlatımına Dön</button>
-        <button type="button" class="btn ghost" id="g-back-home">🎓 Grammar Academy</button>
+      <p class="verdict">${passed ? (gp.completed ? 'Konu tamamlandı' : 'Başarılı') : 'Bir tur daha çalış'}</p>
+      <p class="muted">${correctCount} doğru · ${total - correctCount} yanlış${passed ? '' : ' · tamamlamak için en az 4 doğru gerekir'}</p>
+      <details class="more">
+        <summary>Cevap analizi</summary>
+        <div class="more-body">
+          <ul class="list flush">
+            ${qState.items.map((it, idx) => {
+              const r = qState.results[idx];
+              return `<li class="g-ans ${r?.correct ? 'ok' : 'no'}"><b>${idx + 1}. ${esc(it.question)}</b><span>Cevabın: ${esc(r?.pickedText || '—')}${r?.correct ? '' : ` · Doğru: ${esc(it.correctAnswer)}`}</span><small class="muted">${esc(it.explanation)}</small></li>`;
+            }).join('')}
+          </ul>
+        </div>
+      </details>
+      <div class="sum-actions">
+        ${passed
+          ? '<button type="button" class="btn primary" id="g-back-home">Grammar Yoluna Dön</button><button type="button" class="btn ghost" id="g-retry-quiz">Yeni Mini Sınav</button>'
+          : '<button type="button" class="btn primary" id="g-retry-quiz">Yeni Mini Sınav</button><button type="button" class="btn ghost" id="g-back-home">Grammar Yoluna Dön</button>'}
+        <button type="button" class="btn ghost" id="g-back-lesson">Ders Anlatımı</button>
       </div>
     </div>
   `;
@@ -637,6 +529,8 @@ function renderQuizResultView(v) {
   $('#g-back-home', v).onclick = () => {
     uiState.mode = 'list';
     uiState.quiz = null;
+    setFocus(false);
     renderGrammarHome(v);
+    window.scrollTo(0, 0);
   };
 }

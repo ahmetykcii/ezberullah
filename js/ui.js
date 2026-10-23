@@ -27,7 +27,7 @@ export function openModal({ title, html, onMount, onClose, wide = false }) {
   const ov = document.createElement('div');
   ov.className = 'modal-overlay';
   ov.innerHTML = `<div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-    <div class="modal-head"><h3>${esc(title)}</h3><button class="icon-btn" data-close aria-label="Kapat">✕</button></div>
+    <div class="modal-head"><h3>${esc(title)}</h3><button class="icon-btn" data-close aria-label="Kapat"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="modal-body">${html}</div></div>`;
   root.appendChild(ov);
   const prev = document.activeElement;
@@ -146,3 +146,22 @@ export function ring(pct, size = 84, label = '') {
     <circle cx="42" cy="42" r="${r}" class="ring-bg"/><circle cx="42" cy="42" r="${r}" class="ring-fg" stroke-dasharray="${(c * v) / 100} ${c}" transform="rotate(-90 42 42)"/>
     <text x="42" y="47" text-anchor="middle" class="ring-t">${Math.round(v)}%</text></svg>`;
 }
+
+/* ---------- Minimal SVG ikon seti (VELUNO v3.1) ---------- */
+const svg = (d, extra = '') => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${d}</svg>`;
+export const ICONS = {
+  chev: svg('<path d="M9 6l6 6-6 6"/>'),
+  back: svg('<path d="M15 6l-6 6 6 6"/>'),
+  close: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  lock: svg('<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/>'),
+  speaker: svg('<path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  search: svg('<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>'),
+  book: svg('<path d="M2 5.5A2.5 2.5 0 0 1 4.5 3H11v17H4.5A2.5 2.5 0 0 0 2 22.5v-17Z"/><path d="M22 5.5A2.5 2.5 0 0 0 19.5 3H13v17h6.5a2.5 2.5 0 0 1 2.5 2.5v-17Z"/>'),
+  stack: svg('<path d="M12 3L2 8l10 5 10-5-10-5Z"/><path d="M2 13l10 5 10-5"/>'),
+  exam: svg('<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M9 12l2 2 4-4"/><path d="M8 7h8"/>'),
+  chart: svg('<path d="M4 20V11M10 20V5M16 20v-7M22 20V8"/>'),
+  gear: svg('<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.3" fill="var(--card)"/><circle cx="15" cy="17" r="2.3" fill="var(--card)"/>'),
+};
+export const successMark = () => `<svg class="success-mark" viewBox="0 0 52 52" aria-hidden="true"><circle class="sm-c" cx="26" cy="26" r="23"/><path class="sm-t" d="M15 27l8 8 14-16"/></svg>`;

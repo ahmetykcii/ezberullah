@@ -1,13 +1,13 @@
-// VELUNO — uygulama giriş noktası: açılış (hayrat) ekranı, router, Ana Sayfa, Ayarlar, Tema Sistemi, PWA kaydı.
+// VELUNO v3.1 — uygulama giriş noktası: açılış (hayrat) ekranı, router, Learning Home, Diğer, Ayarlar, Tema Sistemi, PWA kaydı.
 import { initStorage, state, getSettings, setSetting, getMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
-import { seedBuiltIn, LEVELS, LEVEL_NAMES, STATUS_LABELS } from './vocabulary.js';
-import { $, $$, esc, toast, ring, fmtTime, confirmDialog, openModal } from './ui.js';
+import { seedBuiltIn, LEVELS } from './vocabulary.js';
+import { $, $$, esc, toast, confirmDialog, openModal, ICONS } from './ui.js';
 import { renderLearn, initKeys, abortSession, resumeSaved, startLearn } from './learning.js';
 import { renderReview, studyPlan, startReview } from './review.js';
 import { renderExams } from './exams.js';
-import { renderStats, levelStats, today, streakStats, streak, totalSeconds, todayLearnedCount, getMistakeAnalytics } from './statistics.js';
+import { renderStats, levelStats, today, streakStats, todayLearnedCount } from './statistics.js';
 import { renderVocabulary } from './vocab-ui.js';
-import { renderGrammar, grammarOverallStats } from './grammar.js';
+import { renderGrammar, nextGrammarTopic, openGrammarLesson, resetGrammarView } from './grammar.js';
 import { exportBackup, pickAndRestore } from './import-export.js';
 
 const view = () => $('#view');
@@ -77,246 +77,157 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings };
+const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings };
+const MORE_GROUP = ['more', 'vocabulary', 'exams', 'statistics', 'settings'];
+let keepGrammarView = false;
+function gotoGrammarLesson(id) {
+  if (openGrammarLesson(id, null)) { keepGrammarView = true; location.hash = '#/grammar'; }
+}
 function route() {
   const name = (location.hash.replace('#/', '') || 'dashboard').split('?')[0];
   const fn = routes[name] || renderDashboard;
   abortSession();
-  $$('[data-nav]').forEach((a) => { const on = a.dataset.nav === name; a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
+  if (name === 'grammar') { if (!keepGrammarView) resetGrammarView(); keepGrammarView = false; }
+  $$('[data-nav]').forEach((a) => {
+    const on = a.dataset.nav === name || (a.dataset.nav === 'more' && MORE_GROUP.includes(name));
+    a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
+  });
   view().classList.remove('page-in'); void view().offsetWidth; view().classList.add('page-in');
-  try { fn(view()); } catch (e) { console.error(e); view().innerHTML = `<div class="card"><h2>Bir hata oluştu</h2><p class="muted">${esc(e.message)}</p><a class="btn" href="#/dashboard">Ana Sayfaya Dön</a></div>`; }
+  try { fn(view()); } catch (e) { console.error(e); view().innerHTML = `<div class="page"><h2>Bir hata oluştu</h2><p class="muted">${esc(e.message)}</p><a class="btn" href="#/dashboard">Ana Sayfaya Dön</a></div>`; }
   window.scrollTo(0, 0);
   $('#view').focus({ preventScroll: true });
 }
 
-/* ---------- Ana Sayfa (Dashboard) ---------- */
+/* ---------- Ana Sayfa (Learning Home) ---------- */
+/** Ana eylemin açacağı seviye: son kullanılan seviye; bitmişse tamamlanmamış ilk seviye. */
+function pickLearnLevel() {
+  const pref = getMeta('learnLevel');
+  const open = (l) => { const x = levelStats(l); return x.total > 0 && x.completion < 100; };
+  if (LEVELS.includes(pref) && open(pref)) return pref;
+  return LEVELS.find(open) || (LEVELS.includes(pref) ? pref : LEVELS[0]);
+}
+
+function openGoalModal(onDone) {
+  const cur = getSettings().dailyGoal || 10;
+  openModal({
+    title: 'Günlük Hedef',
+    html: `<p class="muted small">Günde kaç yeni kelime öğrenmek istiyorsun?</p>
+      <div class="seg" role="group">${[5, 10, 15, 20].map((g) => `<button type="button" class="seg-btn ${cur === g ? 'active' : ''}" data-set-goal="${g}">${g}</button>`).join('')}</div>
+      <label class="field">Özel hedef (1–500)<input type="number" min="1" max="500" class="input" id="custom-goal-inp" value="${cur}"></label>
+      <div class="row end"><button class="btn ghost" data-x>Vazgeç</button><button class="btn primary" id="save-custom-goal">Kaydet</button></div>`,
+    onMount(b, api) {
+      const save = (val) => { setSetting('dailyGoal', val); api.close(); toast(`Günlük hedef ${val} kelime olarak ayarlandı.`); if (onDone) onDone(); };
+      $('[data-x]', b).onclick = api.close;
+      $$('[data-set-goal]', b).forEach((x) => { x.onclick = () => save(parseInt(x.dataset.setGoal, 10)); });
+      $('#save-custom-goal', b).onclick = () => save(Math.max(1, Math.min(500, parseInt($('#custom-goal-inp', b).value, 10) || 10)));
+    },
+  });
+}
+
 function renderDashboard(v) {
-  const s = getSettings(), t = today(), all = levelStats('');
+  const s = getSettings(), t = today();
   const dailyGoal = s.dailyGoal || 10;
   const tWords = todayLearnedCount(t);
+  const reached = tWords >= dailyGoal;
   const goalPct = Math.min(100, Math.round((tWords / dailyGoal) * 100));
   const saved = getMeta('activeSession');
   const hasSaved = saved && saved.idx < (saved.items?.length || 0);
   const strk = streakStats();
-  const mistakes = getMistakeAnalytics(10);
-  const gStats = grammarOverallStats();
+  const due = levelStats('').due;
+  const gNext = nextGrammarTopic();
   const plan = studyPlan();
-  const next = all.due ? { m: 'smart', t: `${all.due} kelime tekrar bekliyor`, b: 'Akıllı Tekrarı Başlat' } : null;
-  const stat = (l, val, sub = '') => `<div class="stat"><span class="muted">${l}</span><b>${val}</b>${sub ? `<small class="muted">${sub}</small>` : ''}</div>`;
-  v.innerHTML = `<header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="VELUNO logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Yeni kelimeler öğrenmeye hazır mısın? <span class="muted">· Daha akıllıca öğren, daha uzun süre hatırla.</span></p></div></div></header>
-  <div class="platform-switch" role="navigation" aria-label="Bölüm seçimi">
-    <a class="p-tab active" href="#/dashboard"><span>📖 VOCABULARY</span><small>Kelime Öğrenme &amp; SRS Sistemi</small></a>
-    <a class="p-tab" href="#/grammar"><span>🎓 GRAMMAR ACADEMY</span><small>A2 · B1 · B2 Dil Bilgisi (${gStats.completedTopics}/${gStats.totalTopics} Konu)</small></a>
+  const level = pickLearnLevel();
+  const row = (attrs, main, sub = '') => `<li><${attrs.href ? 'a' : 'button type="button"'} class="list-row linkrow" ${attrs.href ? `href="${attrs.href}"` : `id="${attrs.id}"`}><div class="row-main"><b>${main}</b>${sub ? `<span class="muted small">${sub}</span>` : ''}</div>${ICONS.chev}</${attrs.href ? 'a' : 'button'}></li>`;
+  v.innerHTML = `<div class="page home">
+  <header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="VELUNO logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
+  <section class="today" aria-label="Bugünkü hedef">
+    <div class="today-row"><div class="today-label">Bugünkü Hedefin: <b>${tWords}/${dailyGoal}</b> Kelime</div><button type="button" class="text-btn" id="edit-goal">Değiştir</button></div>
+    <div class="progress ${reached ? 'goal-reached' : ''}" role="progressbar" aria-valuenow="${goalPct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${goalPct}%"></i></div>
+    <div class="today-sub muted small">Günlük Seri: <b>${strk.current} gün</b>${reached ? ' · Hedef tamamlandı' : ''}</div>
+  </section>
+  <div class="cta-block">
+    ${hasSaved
+      ? `<button class="btn primary xl block" id="resume">Kaldığın Yerden Devam Et</button><p class="muted small center">${esc(saved.title)} · ${saved.idx}/${saved.items.length} · <button type="button" class="text-btn" id="discard">Vazgeç</button></p>`
+      : `<button class="btn primary xl block" id="go-learn">Öğrenmeye Devam Et</button><p class="muted small center">${level} seviyesi</p>`}
   </div>
-  ${hasSaved ? `<div class="card resume-card">
-    <div class="resume-row">
-      <div class="resume-info">
-        <span class="chip alt sm">⏳ Yarım Kalan Oturum</span>
-        <h3 style="margin:.3rem 0 .2rem">${esc(saved.title)}</h3>
-        <span class="muted small">${saved.idx}/${saved.items.length} soru tamamlandı (%${Math.round((saved.idx / saved.items.length) * 100)})</span>
-      </div>
-      <div class="resume-actions">
-        <button class="btn primary lg" id="resume">▶️ Kaldığın Yerden Devam Et</button>
-        <button class="btn ghost sm" id="discard">Vazgeç</button>
-      </div>
-    </div>
-    <div class="progress" style="margin-top:12px"><i style="width:${Math.round((saved.idx / saved.items.length) * 100)}%"></i></div>
-  </div>` : ''}
-  <div class="smart-grid">
-    <div class="card smart-card goal-card">
-      <div>
-        <div class="row between">
-          <div><div class="card-eyebrow">GÜNLÜK KELİME HEDEFİ</div><h3 class="card-title">🎯 Bugünkü Hedefin: <b>${tWords}/${dailyGoal}</b> Kelime</h3></div>
-          <span class="chip ${tWords >= dailyGoal ? 'ok' : 'alt'}">${tWords >= dailyGoal ? '✓ Tamamlandı' : '%' + goalPct}</span>
-        </div>
-        <div class="progress big ${tWords >= dailyGoal ? 'goal-reached' : ''}"><i style="width:${goalPct}%"></i></div>
-        <div class="goal-chip-row">
-          <span class="muted small">Hedef:</span>
-          ${[5, 10, 15, 20].map((g) => `<button type="button" class="chip-btn ${dailyGoal === g ? 'active' : ''}" data-set-goal="${g}">${g}</button>`).join('')}
-          <button type="button" class="chip-btn ${![5, 10, 15, 20].includes(dailyGoal) ? 'active' : ''}" id="custom-goal" title="Özel hedef belirle">Özel</button>
-        </div>
-        <p class="muted small">Yalnızca bugün 6 aşamayı bitiren yeni kelimeler sayılır.${next ? ' · ' + next.t : ''}</p>
-      </div>
-      <div class="row end" style="margin-top:10px">${next ? `<button class="btn primary sm" id="smart">${next.b}</button>` : '<a class="btn primary sm" href="#/learn">Yeni Kelime Öğren</a>'}</div>
-    </div>
-    <div class="card smart-card streak-card">
-      <div>
-        <div class="row between">
-          <div><div class="card-eyebrow">GÜNLÜK SERİ</div><h3 class="card-title">🔥 ${strk.current} Günlük Seri</h3></div>
-          <span class="chip ${strk.todayActive ? 'ok' : 'alt'}">${strk.todayActive ? '✓ Bugün çalışıldı' : '⏳ Henüz çalışılmadı'}</span>
-        </div>
-        <div class="streak-metrics">
-          <div class="streak-sub"><span>Mevcut Seri:</span> <b>${strk.current} gün</b></div>
-          <div class="streak-sub"><span>En Uzun Seri:</span> <b>${strk.longest} gün</b></div>
-        </div>
-        <p class="muted small">${strk.todayActive ? 'Harika! Bugünkü çalışma kaydedildi ve seriniz korundu. 🚀' : 'Seriyi devam ettirmek için bugün en az bir oturum tamamlayın! 💪'}</p>
-      </div>
-      <div class="row end" style="margin-top:10px"><a class="btn sm" href="#/statistics">Detaylı İstatistikler →</a></div>
-    </div>
-    <div class="card smart-card mistakes-card">
-      <div>
-        <div class="row between">
-          <div><div class="card-eyebrow">HATA ANALİZİ</div><h3 class="card-title">🧠 Zorlandığın Kelimeler: <b>${mistakes.totalMistakeWords}</b></h3></div>
-          <span class="chip ${mistakes.totalMistakeWords > 0 ? 'bad' : 'ok'}">${mistakes.totalMistakeWords > 0 ? mistakes.totalMistakeWords + ' kelime' : 'Sıfır Hata'}</span>
-        </div>
-        <p class="muted small">${mistakes.totalMistakeWords > 0 ? 'En çok hata yaptığın kelimeleri tekrar ederek hafızanı güçlendir.' : 'Henüz zorlandığın bir kelime yok. Harika gidiyorsun! 🎉'}</p>
-        ${mistakes.totalMistakeWords > 0 ? `
-          <div class="mistake-preview-list">
-            ${mistakes.top10.slice(0, 2).map((m) => `<div class="mistake-pill"><b>${esc(m.word)}</b> <small class="muted">${esc(m.meaning)}</small> <span class="chip bad sm">${m.incorrectCount}×</span></div>`).join('')}
-          </div>
-        ` : ''}
-      </div>
-      <div class="row end gap wrap" style="margin-top:10px">
-        ${mistakes.totalMistakeWords > 0 ? `<button class="btn sm" id="show-mistakes">🔍 Analizi Gör</button><button class="btn primary sm" id="review-mistakes">🎯 Zorlandığın Kelimeleri Tekrar Et</button>` : '<a class="btn sm" href="#/learn">Yeni Kelime Öğren →</a>'}
-      </div>
-    </div>
-  </div>
-  <div class="grid stats">${stat('Çalışma Serisi', strk.current + ' gün')}${stat('Toplam Öğrenilen', all.completed, '6 aşamayı bitiren')}${stat('Tekrar Bekleyen', all.due)}${stat('Bugün Yeni', tWords)}${stat('Bugün Tekrar', t.reviews)}${stat('Bugünkü Süre', fmtTime(t.seconds), 'Toplam: ' + fmtTime(totalSeconds()))}</div>
-  ${plan ? planCard(plan) : ''}
-  <h2>Seviyeler</h2><div class="grid levels">${LEVELS.map((l) => { const x = levelStats(l); return `<div class="card level"><div class="row between"><div><h3>${l} — ${LEVEL_NAMES[l]}</h3><span class="muted">${x.total} kelime${x.drafts ? ` (+${x.drafts} taslak)` : ''}</span></div>${ring(x.completion, 76, 'Öğrenme Tamamlanma Oranı')}</div>
-    <div class="pools"><span><b>${x.NEW}</b>${STATUS_LABELS.NEW}</span><span><b>${x.LEARNING}</b>${STATUS_LABELS.LEARNING}</span><span><b>${x.REVIEW}</b>${STATUS_LABELS.REVIEW}</span><span><b>${x.MASTERED}</b>${STATUS_LABELS.MASTERED}</span></div>
-    <p class="small"><span class="muted">Öğrenme Tamamlanma Oranı:</span> <b>%${Math.round(x.completion)}</b> · <span class="muted">Kalıcı Öğrenme Oranı:</span> <b>%${Math.round(x.mastery)}</b></p>
-    <p class="small muted">${x.due} kelime tekrar bekliyor</p><button class="btn primary block" data-learn="${l}">Öğrenmeye Devam Et</button></div>`; }).join('')}</div>
-  <div class="grid modes quick"><a class="card link" href="#/grammar">🎓 <b>Grammar Academy</b><span class="muted">A2, B1, B2 Türkçe konu anlatımları ve mini sınavlar (${gStats.completedTopics}/${gStats.totalTopics} tamamlandı)</span></a><a class="card link" href="#/vocabulary">📚 <b>Kelime Havuzum</b><span class="muted">Kelime ekle, ara, içe aktar</span></a><a class="card link" href="#/exams">📝 <b>Sınavlar</b><span class="muted">Kelime sınavları ve sınav geçmişi</span></a></div>`;
-  $$('[data-learn]', v).forEach((b) => { b.onclick = () => startLearn(b.dataset.learn); });
-  const sm = $('#smart', v); if (sm) sm.onclick = () => startReview('smart');
-  const rm = $('#review-mistakes', v); if (rm) rm.onclick = () => startReview('mistakes');
-  const shm = $('#show-mistakes', v); if (shm) shm.onclick = () => showMistakeModal(mistakes);
-  $$('[data-set-goal]', v).forEach((b) => {
-    b.onclick = () => {
-      const g = parseInt(b.dataset.setGoal, 10);
-      setSetting('dailyGoal', g);
-      toast(`Günlük hedef ${g} kelime olarak ayarlandı.`);
-      renderDashboard(v);
-    };
-  });
-  const cg = $('#custom-goal', v);
-  if (cg) cg.onclick = () => {
-    openModal({
-      title: 'Özel Günlük Hedef',
-      html: `
-        <p class="muted">Günde öğrenmek istediğiniz yeni kelime sayısını belirleyin (1–500):</p>
-        <div style="margin:16px 0"><input type="number" min="1" max="500" class="input" id="custom-goal-inp" value="${dailyGoal}"></div>
-        <div class="row end"><button class="btn ghost" data-x>Vazgeç</button><button class="btn primary" id="save-custom-goal">Kaydet</button></div>
-      `,
-      onMount(b, api) {
-        $('[data-x]', b).onclick = api.close;
-        const inp = $('#custom-goal-inp', b);
-        $('#save-custom-goal', b).onclick = () => {
-          const val = Math.max(1, Math.min(500, parseInt(inp.value, 10) || 10));
-          setSetting('dailyGoal', val);
-          api.close();
-          toast(`Günlük hedef ${val} kelime olarak kaydedildi.`);
-          renderDashboard(v);
-        };
-      }
-    });
-  };
+  <ul class="list quiet">
+    ${due ? row({ href: '#/review' }, `${due} kelime tekrar bekliyor`, 'Kısa bir tekrar turu') : ''}
+    ${gNext ? row({ id: 'go-grammar' }, 'Grammar', `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}`) : ''}
+    ${plan && !plan.past ? row({ href: '#/statistics' }, `Sınava ${plan.days} gün kaldı`, `Önerilen günlük hedef: ${plan.suggested}`) : ''}
+  </ul>
+  </div>`;
+  const gl = $('#go-learn', v); if (gl) gl.onclick = () => startLearn(level);
+  const gg = $('#go-grammar', v); if (gg) gg.onclick = () => gotoGrammarLesson(gNext.id);
+  $('#edit-goal', v).onclick = () => openGoalModal(() => renderDashboard(v));
   const rs = $('#resume', v); if (rs) rs.onclick = async () => { if (!(await resumeSaved())) toast('Oturum devam ettirilemedi.', 'error'); };
   const dc = $('#discard', v); if (dc) dc.onclick = async () => { if (await confirmDialog('Yarım kalan oturum silinsin mi? (Verdiğiniz cevaplar zaten kaydedildi.)', { danger: true })) { const { setMeta } = await import('./storage.js'); await setMeta('activeSession', null); renderDashboard(v); } };
 }
 
-function showMistakeModal(mistakes) {
-  openModal({
-    title: '🧠 Akıllı Yanlış Kelime Analizi', wide: true,
-    html: `
-      <p class="muted">En çok zorlandığınız ilk 10 kelime ve başarı oranları (gerçek SRS çalışma geçmişine dayalıdır):</p>
-      <div class="table scroll mistake-table">
-        <div class="row-item mistake-head">
-          <span>Kelime</span>
-          <span>Türkçe Anlam</span>
-          <span>Hata / Doğru</span>
-          <span>Başarı Oranı</span>
-        </div>
-        ${mistakes.top10.map((m) => `
-          <div class="row-item">
-            <span><b>${esc(m.word)}</b> <span class="chip alt sm">${m.level}</span></span>
-            <span>${esc(m.meaning)}</span>
-            <span><span class="chip bad sm">${m.incorrectCount} hata</span> <small class="muted">${m.correctCount} doğru</small></span>
-            <span>${m.accuracy !== null ? `<span class="chip ${m.accuracy >= 60 ? 'ok' : 'bad'} sm">%${m.accuracy}</span>` : '<small class="muted">—</small>'}</span>
-          </div>
-        `).join('')}
-      </div>
-      <div class="row between" style="margin-top:14px">
-        <button class="btn ghost" data-x>Kapat</button>
-        <button class="btn primary" id="modal-review-btn">🎯 Zorlandığın Kelimeleri Tekrar Et</button>
-      </div>
-    `,
-    onMount(b, api) {
-      $('[data-x]', b).onclick = api.close;
-      const rbtn = $('#modal-review-btn', b);
-      if (rbtn) rbtn.onclick = () => { api.close(); startReview('mistakes'); };
-    }
-  });
-}
-function planCard(p) {
-  if (p.past) return '<div class="card"><h3>Sınav Tarihi Geçti</h3><p class="muted">Ayarlardan yeni bir tarih belirleyebilirsiniz.</p></div>';
-  return `<div class="card"><h3>Sınav Planı · ${p.days} Gün Kaldı</h3><p class="muted">${esc(p.phase)}</p><div class="grid stats"><div class="stat"><span class="muted">Öğrenilmemiş</span><b>${p.unlearned}</b></div><div class="stat"><span class="muted">Yeni/Gün</span><b>${p.newPerDay}</b></div><div class="stat"><span class="muted">Tekrar/Gün</span><b>${p.reviewPerDay}</b></div><div class="stat"><span class="muted">Önerilen Günlük Hedef</span><b>${p.suggested}</b></div></div></div>`;
+/* ---------- Diğer ---------- */
+function renderMore(v) {
+  const item = (href, ic, title, sub) => `<li><a class="list-row linkrow" href="${href}"><span class="row-ic">${ICONS[ic]}</span><div class="row-main"><b>${title}</b><span class="muted small">${sub}</span></div>${ICONS.chev}</a></li>`;
+  v.innerHTML = `<div class="page"><h1>Diğer</h1>
+  <ul class="list">
+    ${item('#/vocabulary', 'stack', 'Kelime Havuzum', 'Kelimeleri ara, incele ve düzenle')}
+    ${item('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları ve geçmiş sonuçlar')}
+    ${item('#/statistics', 'chart', 'İstatistikler', 'İlerlemeni takip et')}
+    ${item('#/settings', 'gear', 'Ayarlar', 'Görünüm, hedef, yedekleme')}
+  </ul></div>`;
 }
 
-/* ---------- Ayarlar ---------- */
+/* ---------- Ayarlar (iOS tarzı liste) ---------- */
 function renderSettings(v) {
   const s = getSettings();
   const curTheme = ['light', 'dark', 'auto'].includes(s.theme) ? s.theme : 'light';
-  const sw = (id, label, on, desc = '') => `<label class="switch-row"><span>${label}${desc ? `<small class="muted">${desc}</small>` : ''}</span><input type="checkbox" id="${id}" ${on ? 'checked' : ''}></label>`;
-  v.innerHTML = `<h1>Ayarlar</h1>
-  <div class="row gap wrap quick-links"><a class="btn" href="#/vocabulary">📚 Kelime Havuzum</a><a class="btn" href="#/exams">📝 Sınavlar</a></div>
-  <div class="card"><h3>Öğrenme Hedefleri</h3><div class="grid form">
-   <label>Günlük kelime hedefi
-     <div class="row gap wrap" style="margin:4px 0 6px">
-       ${[5, 10, 15, 20].map((g) => `<button type="button" class="chip-btn ${s.dailyGoal === g ? 'active' : ''}" data-s-goal="${g}">${g}</button>`).join('')}
-     </div>
-     <input class="input" type="number" min="1" max="500" id="goal" value="${s.dailyGoal}">
-   </label>
-   <label>Kelime öğrenme grup boyutu<input class="input" type="number" min="1" max="15" id="batch" value="${s.batchSize}"></label>
-   <label>Hedef sınav tarihi<input class="input" type="date" id="exam" value="${s.examDate}"></label></div>
-   <p class="muted small">Sınav tarihi girildiğinde Ana Sayfada kalan gün ve önerilen günlük çalışma hedefi gösterilir.</p></div>
-  <div class="card"><h3>Görünüm, Ses ve Kontroller</h3>
-   <div class="switch-row theme-row">
-     <span>Tema<small class="muted">Açık (varsayılan), Koyu veya cihazınızın sistem teması</small></span>
-     <div class="row gap wrap">
-       <div class="theme-seg" role="group" aria-label="Tema seçimi">
-         <button type="button" class="seg-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light">☀️ Açık</button>
-         <button type="button" class="seg-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark">🌙 Koyu</button>
-         <button type="button" class="seg-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto">💻 Otomatik</button>
-       </div>
-       <select class="input sm" id="theme" aria-label="Tema seçimi">
-         <option value="light" ${curTheme === 'light' ? 'selected' : ''}>Açık</option>
-         <option value="dark" ${curTheme === 'dark' ? 'selected' : ''}>Koyu</option>
-         <option value="auto" ${curTheme === 'auto' ? 'selected' : ''}>Otomatik (Cihaz Teması)</option>
-       </select>
-     </div>
-   </div>
-   ${sw('snd', 'Ses efektleri', s.sound)}${sw('anim', 'Animasyonlar', s.animations)}${sw('red', 'Azaltılmış hareket', s.reducedMotion, 'Ekran geçişlerini ve hareketi en aza indirir')}${sw('keys', 'Klavye kısayolları', s.shortcuts, 'Enter: gönder · 1–4: seçenek · Boşluk: dinle · Esc: çık')}
-   <label class="switch-row"><span>Telaffuz hızı <small class="muted" id="rv">${s.ttsRate}×</small></span><input type="range" min="0.5" max="1.5" step="0.1" id="rate" value="${s.ttsRate}"></label>
-   <button class="btn sm" type="button" id="tts">🔊 Telaffuzu Dene</button></div>
-  <div class="card"><h3>Veri Yedekleme ve Başlangıç</h3><div class="row gap wrap"><button class="btn" type="button" id="exp">⬇ Veri Yedeğini İndir (JSON)</button><button class="btn" type="button" id="imp">⬆ Veri Yedeğini Geri Yükle</button><button class="btn" type="button" id="replay-intro">🎬 Hayrat Açılışını Tekrar İzle</button></div>
-   <p class="muted small">Veri depolama: ${persistent ? 'IndexedDB (kalıcı)' : '⚠ Bellek (tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın)'} · Toplam ${state.words.length} kelime</p></div>
-  <div class="card danger-zone"><h3>İlerlemeyi Sıfırla</h3><p class="muted">Tüm kelime ilerlemeleri, sınav sonuçları ve istatistikler silinir. Kelimeleriniz (kendi eklediklerinizle birlikte) korunur. İki aşamalı onay gerekir.</p><button class="btn danger" type="button" id="reset">İlerlemeyi Sıfırla…</button></div>
-  <div class="card"><h3>Hakkında</h3><p class="muted">VELUNO · Daha akıllıca öğren, daha uzun süre hatırla. · Tüm veriler yalnızca bu tarayıcıda saklanır ve tamamen ücretsiz çalışır.</p></div>`;
+  const sw = (id, label, on, desc = '') => `<label class="list-row"><span class="row-main"><b>${label}</b>${desc ? `<span class="muted small">${desc}</span>` : ''}</span><input type="checkbox" class="switch" id="${id}" ${on ? 'checked' : ''}></label>`;
+  const btnRow = (id, label, cls = '') => `<li><button type="button" class="list-row linkrow ${cls}" id="${id}"><span class="row-main"><b>${label}</b></span>${ICONS.chev}</button></li>`;
+  v.innerHTML = `<div class="page settings"><h1>Ayarlar</h1>
+
+  <h2 class="group-title">Görünüm</h2>
+  <div class="list"><div class="list-row stack"><span class="row-main"><b>Tema</b></span>
+    <div class="seg full" role="group" aria-label="Tema seçimi">
+      <button type="button" class="seg-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light">Açık</button>
+      <button type="button" class="seg-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark">Koyu</button>
+      <button type="button" class="seg-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto">Otomatik</button>
+    </div></div></div>
+  <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder.</p>
+
+  <h2 class="group-title">Günlük Hedef</h2>
+  <ul class="list">
+    <li><button type="button" class="list-row linkrow" id="goal-row"><span class="row-main"><b>Günlük kelime hedefi</b></span><span class="row-value">${s.dailyGoal} kelime</span>${ICONS.chev}</button></li>
+    <li><label class="list-row"><span class="row-main"><b>Grup boyutu</b><span class="muted small">Bir oturumdaki kelime sayısı</span></span><input class="input sm num" type="number" min="1" max="15" id="batch" value="${s.batchSize}"></label></li>
+    <li><label class="list-row"><span class="row-main"><b>Hedef sınav tarihi</b></span><input class="input sm" type="date" id="exam" value="${s.examDate}"></label></li>
+  </ul>
+
+  <h2 class="group-title">Ses ve Öğrenme</h2>
+  <div class="list">
+    ${sw('snd', 'Ses efektleri', s.sound)}${sw('anim', 'Animasyonlar', s.animations)}${sw('red', 'Azaltılmış hareket', s.reducedMotion, 'Geçişleri ve hareketi en aza indirir')}${sw('keys', 'Klavye kısayolları', s.shortcuts)}
+    <label class="list-row"><span class="row-main"><b>Telaffuz hızı</b></span><span class="row-value" id="rv">${s.ttsRate}×</span><input type="range" min="0.5" max="1.5" step="0.1" id="rate" value="${s.ttsRate}"></label>
+  </div>
+  <ul class="list"><li><button type="button" class="list-row linkrow" id="tts"><span class="row-main"><b>Telaffuzu dene</b></span>${ICONS.speaker}</button></li></ul>
+
+  <h2 class="group-title">Yedekleme ve Geri Yükleme</h2>
+  <ul class="list">
+    ${btnRow('exp', 'Yedeği indir (JSON)')}${btnRow('imp', 'Yedeği geri yükle')}${btnRow('replay-intro', 'Hayrat açılışını tekrar izle')}
+  </ul>
+  <ul class="list">${btnRow('reset', 'İlerlemeyi sıfırla…', 'danger-text')}</ul>
+  <p class="group-note muted small">Sıfırlama, kelime ilerlemelerini ve istatistikleri siler; kelimelerin korunur. İki aşamalı onay gerekir.</p>
+
+  <h2 class="group-title">Hakkında</h2>
+  <div class="list">
+    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v3.1</span></div>
+    <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
+  </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
   const num = (id, key, min, max) => on(id, (e) => { const n = Math.max(min, Math.min(max, parseInt(e.target.value, 10) || DEFAULT_SETTINGS[key])); e.target.value = n; setSetting(key, n); toast('Ayarlar kaydedildi.'); });
-  num('#goal', 'dailyGoal', 1, 500); num('#batch', 'batchSize', 1, 15);
-  $$('[data-s-goal]', v).forEach((b) => {
-    b.onclick = () => {
-      const val = +b.dataset.sGoal;
-      $('#goal', v).value = val;
-      setSetting('dailyGoal', val);
-      $$('[data-s-goal]', v).forEach((x) => x.classList.toggle('active', x === b));
-      toast('Günlük hedef kaydedildi.');
-    };
-  });
+  num('#batch', 'batchSize', 1, 15);
+  $('#goal-row', v).onclick = () => openGoalModal(() => renderSettings(v));
   on('#exam', (e) => { setSetting('examDate', e.target.value); toast('Sınav tarihi kaydedildi.'); });
   const updateThemeUI = (val) => {
     setSetting('theme', val);
     applySettings();
-    const sel = $('#theme', v);
-    if (sel) sel.value = val;
     $$('[data-set-theme]', v).forEach((btn) => btn.classList.toggle('active', btn.dataset.setTheme === val));
-    const names = { light: 'Açık tema', dark: 'Koyu tema', auto: 'Otomatik (Cihaz teması)' };
-    toast(`${names[val] || 'Tema'} etkinleştirildi.`);
   };
-  on('#theme', (e) => updateThemeUI(e.target.value));
   $$('[data-set-theme]', v).forEach((btn) => {
     btn.onclick = () => updateThemeUI(btn.dataset.setTheme);
   });
