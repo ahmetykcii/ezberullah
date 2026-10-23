@@ -11,8 +11,8 @@ service cloud.firestore {
     match /private/sude {
       // Yalnızca kimliği doğrulanmış Ahmet veya Sude mesajı okuyabilir
       allow read: if request.auth != null && (
-        request.auth.uid == 'AHMET_FIREBASE_UID_BURAYA' ||
-        request.auth.uid == 'SUDE_FIREBASE_UID_BURAYA'
+        request.auth.uid == 'abtxapEdixd96LgSRo9ZufW6RB82' ||
+        request.auth.uid == '8wjsLQS03fgOH7EuptJA5mJDqTn2'
       );
 
       // İstemci tarafı yazma engellenir (Veri Firebase Console üzerinden yönetilir)
@@ -24,8 +24,8 @@ service cloud.firestore {
     match /private/sudePhoto {
       // Yalnızca kimliği doğrulanmış Ahmet veya Sude fotoğrafı okuyabilir
       allow read: if request.auth != null && (
-        request.auth.uid == 'AHMET_FIREBASE_UID_BURAYA' ||
-        request.auth.uid == 'SUDE_FIREBASE_UID_BURAYA'
+        request.auth.uid == 'abtxapEdixd96LgSRo9ZufW6RB82' ||
+        request.auth.uid == '8wjsLQS03fgOH7EuptJA5mJDqTn2'
       );
 
       // İstemci tarafı yazma engellenir (Veri Firebase Console üzerinden yönetilir)

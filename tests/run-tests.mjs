@@ -1632,17 +1632,26 @@ await test('Sude [8] Firebase Web Bağlantı Altyapısı ve Erişim Tanılama Ar
   const authModule = await import('../js/auth.js');
   const appSrc = await readText('js/app.js');
 
-  // 1) Proje adı veluno-private olarak ayarlı olmalı
+  // 1) Proje adı veluno-private ve gerçek yapılandırma değerleri tanımlı olmalı
   eq(fbCfg.FIREBASE_CONFIG.projectId, 'veluno-private', 'projectId veluno-private olmalı');
   eq(fbCfg.FIREBASE_CONFIG.authDomain, 'veluno-private.firebaseapp.com', 'authDomain veluno-private olmalı');
+  eq(fbCfg.FIREBASE_CONFIG.messagingSenderId, '1027705472722', 'messagingSenderId doğru olmalı');
+  eq(fbCfg.isFirebaseConfigured(), true, 'isFirebaseConfigured true dönmeli');
 
-  // 2) testFirebaseAccess fonksiyonu export edilmiş olmalı ve eksik yapılandırmada güvenli sonuç dönmeli
+  // 2) Gerçek UID değerleri ve yetki kontrol fonksiyonları
+  eq(fbCfg.AUTHORIZED_UIDS.AHMET, 'abtxapEdixd96LgSRo9ZufW6RB82', 'Ahmet UID doğru ayarlanmalı');
+  eq(fbCfg.AUTHORIZED_UIDS.SUDE, '8wjsLQS03fgOH7EuptJA5mJDqTn2', 'Sude UID doğru ayarlanmalı');
+  eq(fbCfg.isAhmetUid('abtxapEdixd96LgSRo9ZufW6RB82'), true, 'Ahmet UID tanınmalı');
+  eq(fbCfg.isSudeUid('8wjsLQS03fgOH7EuptJA5mJDqTn2'), true, 'Sude UID tanınmalı');
+  eq(fbCfg.isAuthorizedUid('intruder'), false, 'Yabancı UID yetkisiz olmalı');
+
+  // 3) testFirebaseAccess fonksiyonu export edilmiş olmalı ve güvenli sonuç dönmeli
   ok(typeof authModule.testFirebaseAccess === 'function', 'testFirebaseAccess fonksiyonu mevcut olmalı');
   const res = await authModule.testFirebaseAccess();
   eq(res.project, 'veluno-private', 'testFirebaseAccess doğru proje adını okumalı');
   ok(Array.isArray(res.tests), 'test sonuçları dizi olmalı');
 
-  // 3) Ayarlar ekranında Erişim ve Güvenlik Testi butonları tanımlı olmalı
+  // 4) Ayarlar ekranında Erişim ve Güvenlik Testi butonları tanımlı olmalı
   ok(appSrc.includes('id="test-access-btn"') && appSrc.includes('id="test-guest-btn"'), 'Ayarlar menüsünde hem yetkili hem misafir için test butonu bulunmalı');
   ok(appSrc.includes('showAccessTestModal'), 'app.js içinde tanılama modalı tanımlı olmalı');
 });

@@ -3,20 +3,20 @@
 // GİZLİ YÖNETİCİ ANAHTARLARI VEYA SERVİS HESABI ŞİFRELERİ KESİNLİKLE BURAYA EKLENMEZ.
 
 export const FIREBASE_CONFIG = {
-  // 1) Firebase Console > Project Settings (Dişli) > General > Your Apps (Web </>) alanından kopyalayın:
-  apiKey: "", // Örnek: "AIzaSyD-..."
+  apiKey: "AIzaSyAWfIEIlRjOygfTUOctAsoVodCazyDYvQK",
   authDomain: "veluno-private.firebaseapp.com",
   projectId: "veluno-private",
-  storageBucket: "veluno-private.appspot.com",
-  messagingSenderId: "", // Örnek: "123456789012"
-  appId: "" // Örnek: "1:123456789012:web:abcdef..."
+  storageBucket: "veluno-private.firebasestorage.app",
+  messagingSenderId: "1027705472722",
+  appId: "1:1027705472722:web:27b641f3ff01daea160f0b",
+  measurementId: "G-2VG83RQNGX"
 };
 
-// Yetkili UID listesi (Firebase Console > Authentication > Users tablosundan kopyalanır)
+// Yetkili Firebase UID değerleri
 // Gerçek sunucu erişim kontrolü Firebase Sunucusundaki firestore.rules kuralları ile sağlanır.
 export const AUTHORIZED_UIDS = {
-  AHMET: "AHMET_FIREBASE_UID_BURAYA", // Firebase Console'daki Ahmet kullanıcısının User UID'si
-  SUDE: "SUDE_FIREBASE_UID_BURAYA"    // Firebase Console'daki Sude kullanıcısının User UID'si
+  AHMET: "abtxapEdixd96LgSRo9ZufW6RB82",
+  SUDE: "8wjsLQS03fgOH7EuptJA5mJDqTn2"
 };
 
 export function isFirebaseConfigured() {
