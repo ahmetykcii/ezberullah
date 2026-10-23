@@ -44,18 +44,6 @@ const readText = async (p) => {
   if (typeof readFile === 'function') return readFile(p);
   const fs = await import('node:fs'); return fs.readFileSync(p, 'utf8');
 };
-if (typeof globalThis.fetch === 'undefined') {
-  globalThis.fetch = async (url) => {
-    const text = await readText(url);
-    return {
-      ok: true,
-      status: 200,
-      json: async () => JSON.parse(text),
-      text: async () => text,
-    };
-  };
-}
-const Vis = await import('../js/visuals.js');
 const loader = (lv) => readJSON(`data/${lv.toLowerCase()}.json`);
 
 out('1) Veri ve Türkçeleştirme Etiketleri');
@@ -373,10 +361,10 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v3.3.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v3.2.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v3.3.0';"), 'SW sürümü veluno-v3.3.0 olmalı');
-  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/visuals.js', 'data/visuals-meta.json', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
+  ok(sw.includes("const VERSION = 'veluno-v3.2.0';"), 'SW sürümü veluno-v3.2.0 olmalı');
+  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
 });
@@ -1172,163 +1160,6 @@ await test('v3.2 [14] Veri ve İmza Bütünlüğü: 1.320 kelime (931 aktif + 38
   const allDataWords = [...data.A2, ...data.B1, ...data.B2];
   eq(allDataWords.length, 1320, 'Toplam 1.320 kelime korunmalı');
   eq(allDataWords.filter((w) => !w.isDraft).length, 931, '931 aktif kelime korunmalı');
-  eq(allDataWords.filter((w) => w.isDraft).length, 389, '389 taslak kelime korunmalı');
-  eq(G.GRAMMAR_TOPICS.length, 38, '38 grammar konusu korunmalı');
-  eq(G.GRAMMAR_QUESTIONS.length, 60, '60 grammar sorusu korunmalı');
-
-  const appSrc = await readText('js/app.js');
-  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası harfi harfine korunmalı');
-});
-
-out('\n9) VELUNO v3.3 — Automated Visual Vocabulary Learning (Görsel Öğrenme & Kütüphane)');
-await Vis.loadVisualsMeta();
-
-await test('v3.3 [1] Görsel Veri Havuzu ve Metadata: 1.320 kelimenin tamamı taranmıştır; 1.175 görsel (505 hareketli animasyon + 670 statik) ve 145 soyut kavram (görselsiz) mevcuttur', async () => {
-  const meta = await readJSON('data/visuals-meta.json');
-  ok(meta && meta.stats && meta.visuals, 'visuals-meta.json geçerli yapıya sahip olmalı');
-  eq(meta.stats.totalWords, 1320, '1.320 kelimenin tamamı taranmış olmalı');
-  eq(meta.stats.visualizedCount, 1175, '1.175 görselleştirilmiş kelime olmalı');
-  eq(meta.stats.animatedCount, 505, '505 hareketli animasyon olmalı');
-  eq(meta.stats.staticCount, 670, '670 statik vektör görsel olmalı');
-  eq(meta.stats.abstractCount, 145, '145 soyut kavram olmalı');
-  eq(Object.keys(meta.visuals).length, 1320, '1.320 kelime için meta kaydı bulunmalı');
-});
-
-await test('v3.3 [2] SVG Vektör Dosyaları Bütünlüğü: Üretilen 1.175 SVG dosyasının tamamı mevcuttur ve geçerli SVG sözdizimi taşır', async () => {
-  const meta = await readJSON('data/visuals-meta.json');
-  let checkedCount = 0;
-  for (const [id, item] of Object.entries(meta.visuals)) {
-    if (item.type !== 'abstract' && item.path) {
-      ok(item.file && item.file.endsWith('.svg'), 'Dosya adı .svg olmalı: ' + id);
-      if (checkedCount < 25 || checkedCount % 50 === 0) {
-        const svgContent = await readText(item.path);
-        ok(svgContent.includes('<svg') && svgContent.includes('</svg>'), 'Geçerli SVG içeriği: ' + item.path);
-        ok(svgContent.includes('xmlns="http://www.w3.org/2000/svg"'), 'SVG namespace bulunmalı: ' + item.path);
-      }
-      checkedCount++;
-    }
-  }
-  eq(checkedCount, 1175, '1.175 SVG dosyası doğrulanmalı');
-});
-
-await test('v3.3 [3] Eylem ve Hareket Kelimeleri: abroad, increase, reduce, grow, disappear, protect, connect, achieve, improve, prevent hareketli animasyon (animation) olarak tanımlanmıştır', async () => {
-  const motionWords = [
-    'a2-abroad-047',   // abroad
-    'b1-increase-021', // increase
-    'b1-reduce-032',   // reduce
-    'a2-oxref-0040',   // grow
-    'a2-oxref-0022',   // disappear
-    'b1-protect-031',  // protect
-    'a2-connect-175',  // connect
-    'b1-achieve-001',  // achieve
-    'a2-improve-045',  // improve
-    'b1-oxref-0072',   // prevent
-  ];
-  for (const id of motionWords) {
-    const v = Vis.getWordVisualSync(id);
-    ok(v, 'Görsel bulunmalı: ' + id);
-    eq(v.type, 'animation', id + ' eylemi animasyon türünde olmalı');
-    ok(v.path.endsWith('.svg'), id + ' yolu SVG olmalı');
-  }
-});
-
-await test('v3.3 [4] Somut Nesne ve Mekan Kelimeleri: apartment, airport vb. temiz statik vektör (static) olarak tanımlanmıştır', async () => {
-  const staticWords = [
-    'a2-apartment-001', // apartment
-    'a2-airport-053',   // airport
-  ];
-  for (const id of staticWords) {
-    const v = Vis.getWordVisualSync(id);
-    ok(v, 'Görsel bulunmalı: ' + id);
-    eq(v.type, 'static', id + ' nesnesi statik türde olmalı');
-  }
-});
-
-await test('v3.3 [5] Soyut ve Dilbilgisel Kelimeler: albeit, almost, definitely, against, already vb. kavramlar yanıltıcı görselleştirmeden kaçınmak için görselsiz (abstract) olarak belirlenmiştir', async () => {
-  const abstractIds = [
-    'b2-albeit-083',     // albeit
-    'a2-almost-055',     // almost
-    'a2-definitely-240', // definitely
-    'a2-oxref-0203',    // against
-    'a2-oxref-0205',    // already
-  ];
-  for (const id of abstractIds) {
-    const v = Vis.getWordVisualSync(id);
-    eq(v, null, id + ' görselsiz olmalı (getWordVisualSync null dönmeli)');
-    const meta = Vis.getWordMetaSync(id);
-    ok(meta, 'Meta bulunmalı: ' + id);
-    eq(meta.type, 'abstract', id + ' türü abstract olmalı');
-    eq(meta.path, null, id + ' yolu null olmalı');
-  }
-});
-
-await test('v3.3 [6] Öğrenme Ekranı Sıfır Boşluk Kuralı: renderVisualHtml soyut kelimelerde ve görselsiz kayıtlarda boş dize döner, DOM\'da gereksiz yer kaplamaz', () => {
-  eq(Vis.renderVisualHtml('b2-albeit-083'), '', 'Soyut kelimede boş dize dönmeli');
-  eq(Vis.renderVisualHtml('a2-almost-055'), '', 'Soyut kelimede boş dize dönmeli');
-  eq(Vis.renderVisualHtml('non-existent-id'), '', 'Geçersiz ID için boş dize dönmeli');
-
-  const html = Vis.renderVisualHtml('a2-abroad-047');
-  ok(html.includes('class="word-visual-box'), 'Görseli olan kelimede kutu üretilmeli');
-  ok(html.includes('src="assets/visuals/a2-abroad-047.svg"'), 'Görsel yolu bulunmalı');
-
-  const compactHtml = Vis.renderVisualHtml('a2-abroad-047', { compact: true });
-  ok(compactHtml.includes('compact'), 'compact sınıfı eklenmeli');
-});
-
-await test('v3.3 [7] Ayarlar Açma/Kapama: visuals: false yapıldığında hiçbir kelimede görsel HTML üretilmez; visuals: true yapıldığında görsel kutusu döner', async () => {
-  await setSetting('visuals', false);
-  eq(Vis.renderVisualHtml('a2-abroad-047'), '', 'visuals: false iken HTML boş dönmeli');
-  eq(Vis.renderVisualHtml('b1-increase-021'), '', 'visuals: false iken HTML boş dönmeli');
-
-  await setSetting('visuals', true);
-  ok(Vis.renderVisualHtml('a2-abroad-047').length > 0, 'visuals: true iken görsel dönmeli');
-});
-
-await test('v3.3 [8] Salt Okunur Önizleme Güvenliği: openVisualPreviewModal ve görsel kütüphanesi incelemeleri SRS aralığını, tekrar tarihini, ustalık puanını ve seriyi ASLA değiştirmez', async () => {
-  const w = state.wordMap.get('a2-abroad-047');
-  const progBefore = getProgress('a2-abroad-047');
-  const streakBefore = streak();
-  const todayBefore = todayLearnedCount();
-
-  Vis.openVisualPreviewModal(w);
-
-  const progAfter = getProgress('a2-abroad-047');
-  eq(progAfter.interval, progBefore.interval, 'SRS aralığı değişmemeli');
-  eq(progAfter.dueDate, progBefore.dueDate, 'Tekrar tarihi değişmemeli');
-  eq(progAfter.mastery, progBefore.mastery, 'Ustalık puanı değişmemeli');
-  eq(progAfter.learningComplete, progBefore.learningComplete, 'Öğrenme tamamlanma değişmemeli');
-  eq(streak(), streakBefore, 'Seri değişmemeli');
-  eq(todayLearnedCount(), todayBefore, 'Günlük hedef sayacı değişmemeli');
-});
-
-await test('v3.3 [9] Görsel Kütüphanesi ve Arayüz Bütünlüğü: #/visuals rotası, Ayarlar menüsü kısayolu ve SVG ikonlar mevcuttur', async () => {
-  const appSrc = await readText('js/app.js');
-  ok(appSrc.includes('visuals: renderVisualLibrary'), 'visuals rotası app.js içinde kayıtlı olmalı');
-  ok(appSrc.includes('Görsel Kütüphanesi'), 'Daha Fazla / Ayarlar menüsünde Görsel Kütüphanesi bağlantısı bulunmalı');
-  ok(appSrc.includes('Görsel animasyonlar'), 'Ayarlar menüsünde Görsel animasyonlar anahtarı bulunmalı');
-
-  const css = await readText('css/style.css');
-  ok(css.includes('.word-visual-box'), 'CSS içinde .word-visual-box bulunmalı');
-  ok(css.includes('.visual-library'), 'CSS içinde .visual-library bulunmalı');
-  ok(css.includes('.vis-grid'), 'CSS içinde .vis-grid bulunmalı');
-});
-
-await test('v3.3 [10] Çevrimdışı ve PWA Uyumluluğu: Tüm görseller yerel SVG ve CSS animasyonudur; harici CDN veya API bağımlılığı yoktur; prefers-reduced-motion desteklenir', async () => {
-  const meta = await readJSON('data/visuals-meta.json');
-  for (const [id, item] of Object.entries(meta.visuals)) {
-    if (item.path) {
-      ok(!item.path.startsWith('http://') && !item.path.startsWith('https://'), 'Görsel harici URL içermemeli (çevrimdışı yerel olmalı): ' + id);
-      ok(item.path.startsWith('assets/visuals/'), 'Görsel assets/visuals/ içinde olmalı: ' + id);
-    }
-  }
-  const css = await readText('css/style.css');
-  ok(css.includes('prefers-reduced-motion:reduce'), 'prefers-reduced-motion desteği mevcut olmalı');
-});
-
-await test('v3.3 [11] Taslak Kelime ve Veri Bütünlüğü: 1.320 kelime (931 aktif + 389 taslak), 38 grammar konusu, 60 soru ve "ahmet ❤️ sude" imzası eksiksiz korunur', async () => {
-  const allDataWords = [...data.A2, ...data.B1, ...data.B2];
-  eq(allDataWords.length, 1320, 'Toplam 1.320 kelime korunmalı');
-  eq(allDataWords.filter((w) => !w.isDraft).length, 931, '931 aktif kelime korunmalı (taslaklar aktifleştirilmemeli)');
   eq(allDataWords.filter((w) => w.isDraft).length, 389, '389 taslak kelime korunmalı');
   eq(G.GRAMMAR_TOPICS.length, 38, '38 grammar konusu korunmalı');
   eq(G.GRAMMAR_QUESTIONS.length, 60, '60 grammar sorusu korunmalı');

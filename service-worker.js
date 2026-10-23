@@ -1,11 +1,10 @@
 // VELUNO service worker — çevrimdışı: yalnızca önbelleğe alınmış uygulama dosyaları + yerel veri.
 // Sürüm değişince eski önbellek silinir. Yol bağımsız (GitHub Pages alt dizini için göreli).
-const VERSION = 'veluno-v3.3.0';
+const VERSION = 'veluno-v3.2.0';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css',
   'js/app.js', 'js/storage.js', 'js/engine.js', 'js/vocabulary.js', 'js/vocab-ui.js', 'js/learning.js', 'js/review.js',
   'js/exams.js', 'js/statistics.js', 'js/import-export.js', 'js/ui.js', 'js/grammar-data.js', 'js/grammar.js',
-  'js/visuals.js', 'data/visuals-meta.json',
   'data/a2.json', 'data/b1.json', 'data/b2.json',
   'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png',
 ];
