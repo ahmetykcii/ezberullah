@@ -201,6 +201,8 @@ export async function login(email, password) {
       msg = 'Ağ bağlantısı başarısız. Lütfen internetinizi kontrol edin.';
     } else if (err.code === 'auth/too-many-requests') {
       msg = 'Çok fazla başarısız deneme. Lütfen bir süre sonra tekrar deneyin.';
+    } else if (err.code === 'auth/invalid-api-key' || err.message?.includes('API key not valid') || err.message?.includes('API_KEY_INVALID')) {
+      msg = 'Firebase API anahtarı geçersiz. Lütfen Firebase Console > Proje Ayarları altındaki Web API Key değerini kontrol edin.';
     }
     return { success: false, error: msg };
   }
@@ -300,15 +302,18 @@ export async function testFirebaseAccess() {
         : 'Okuma yetkisi ONAYLANDI (Belge Firestore\'da henüz oluşturulmamış, güvenlik kuralı izin veriyor).'
     });
   } catch (err) {
+    const isApiKeyError = err.message?.includes('API key not valid') || err.message?.includes('API_KEY_INVALID') || err.code === 'auth/invalid-api-key';
     const isDenied = err.code === 'permission-denied';
     result.tests.push({
       id: 'message',
       target: 'private/sude (Özel Mesaj)',
-      status: isDenied ? 'DENIED' : 'ERROR',
+      status: isApiKeyError ? 'INVALID_API_KEY' : (isDenied ? 'DENIED' : 'ERROR'),
       success: false,
-      message: isDenied
-        ? 'Erişim Güvenlik Kuralı Tarafından Engellendi (DENIED - Yabancılar İçeriği Göremez).'
-        : `Hata: ${err.message}`
+      message: isApiKeyError
+        ? 'Firebase API anahtarı geçersiz (Google API_KEY_INVALID). Lütfen Console > Proje Ayarları altındaki Web API Key değerini kontrol edin.'
+        : (isDenied
+          ? 'Erişim Güvenlik Kuralı Tarafından Engellendi (DENIED - Yabancılar İçeriği Göremez).'
+          : `Hata: ${err.message}`)
     });
   }
 
@@ -326,15 +331,18 @@ export async function testFirebaseAccess() {
         : 'Okuma yetkisi ONAYLANDI (Belge Firestore\'da henüz oluşturulmamış, güvenlik kuralı izin veriyor).'
     });
   } catch (err) {
+    const isApiKeyError = err.message?.includes('API key not valid') || err.message?.includes('API_KEY_INVALID') || err.code === 'auth/invalid-api-key';
     const isDenied = err.code === 'permission-denied';
     result.tests.push({
       id: 'photo',
       target: 'private/sudePhoto (Özel Fotoğraf)',
-      status: isDenied ? 'DENIED' : 'ERROR',
+      status: isApiKeyError ? 'INVALID_API_KEY' : (isDenied ? 'DENIED' : 'ERROR'),
       success: false,
-      message: isDenied
-        ? 'Erişim Güvenlik Kuralı Tarafından Engellendi (DENIED - Yabancılar Fotoğrafı Göremez).'
-        : `Hata: ${err.message}`
+      message: isApiKeyError
+        ? 'Firebase API anahtarı geçersiz (Google API_KEY_INVALID). Lütfen Console > Proje Ayarları altındaki Web API Key değerini kontrol edin.'
+        : (isDenied
+          ? 'Erişim Güvenlik Kuralı Tarafından Engellendi (DENIED - Yabancılar Fotoğrafı Göremez).'
+          : `Hata: ${err.message}`)
     });
   }
 
