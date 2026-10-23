@@ -31,40 +31,88 @@ export function renderSurprise(container) {
   // 2) Yetkili kullanıcı (Sude veya Ahmet önizleme) — Zenginleştirilmiş Romantik Sürpriz Arayüzü
   container.innerHTML = `
     <div class="jfy-page" id="jfy-container">
-      <!-- Arka Planda Çok Sayıda Süzülen Romantik Kalp (25–35 adet) -->
+      <!-- Arka Planda Çok Sayıda Süzülen Romantik Kalp (80 adet, mobilde 40) -->
       <div class="jfy-hearts-bg" aria-hidden="true">
         <span class="jfy-heart h1">❤️</span>
         <span class="jfy-heart h2">💖</span>
         <span class="jfy-heart h3">💕</span>
         <span class="jfy-heart h4">💗</span>
-        <span class="jfy-heart h5">❤️</span>
-        <span class="jfy-heart h6">💓</span>
-        <span class="jfy-heart h7">💖</span>
-        <span class="jfy-heart h8">❤️</span>
-        <span class="jfy-heart h9">💕</span>
-        <span class="jfy-heart h10">💗</span>
-        <span class="jfy-heart h11">💖</span>
-        <span class="jfy-heart h12">❤️</span>
-        <span class="jfy-heart h13">💓</span>
-        <span class="jfy-heart h14">💕</span>
-        <span class="jfy-heart h15">💖</span>
+        <span class="jfy-heart h5">💓</span>
+        <span class="jfy-heart h6">💘</span>
+        <span class="jfy-heart h7">✨</span>
+        <span class="jfy-heart h8">🌸</span>
+        <span class="jfy-heart h9">💜</span>
+        <span class="jfy-heart h10">🌺</span>
+        <span class="jfy-heart h11">🤍</span>
+        <span class="jfy-heart h12">💝</span>
+        <span class="jfy-heart h13">❤️</span>
+        <span class="jfy-heart h14">💖</span>
+        <span class="jfy-heart h15">💕</span>
         <span class="jfy-heart h16">💗</span>
-        <span class="jfy-heart h17">❤️</span>
-        <span class="jfy-heart h18">💓</span>
-        <span class="jfy-heart h19">💕</span>
-        <span class="jfy-heart h20">💖</span>
-        <span class="jfy-heart h21">💗</span>
-        <span class="jfy-heart h22">❤️</span>
-        <span class="jfy-heart h23">💓</span>
-        <span class="jfy-heart h24">💖</span>
-        <span class="jfy-heart h25">💕</span>
-        <span class="jfy-heart h26">💗</span>
-        <span class="jfy-heart h27">❤️</span>
-        <span class="jfy-heart h28">💖</span>
+        <span class="jfy-heart h17">💓</span>
+        <span class="jfy-heart h18">💘</span>
+        <span class="jfy-heart h19">✨</span>
+        <span class="jfy-heart h20">🌸</span>
+        <span class="jfy-heart h21">💜</span>
+        <span class="jfy-heart h22">🌺</span>
+        <span class="jfy-heart h23">🤍</span>
+        <span class="jfy-heart h24">💝</span>
+        <span class="jfy-heart h25">❤️</span>
+        <span class="jfy-heart h26">💖</span>
+        <span class="jfy-heart h27">💕</span>
+        <span class="jfy-heart h28">💗</span>
         <span class="jfy-heart h29">💓</span>
-        <span class="jfy-heart h30">💕</span>
-        <span class="jfy-heart h31">❤️</span>
-        <span class="jfy-heart h32">💗</span>
+        <span class="jfy-heart h30">💘</span>
+        <span class="jfy-heart h31">✨</span>
+        <span class="jfy-heart h32">🌸</span>
+        <span class="jfy-heart h33">💜</span>
+        <span class="jfy-heart h34">🌺</span>
+        <span class="jfy-heart h35">🤍</span>
+        <span class="jfy-heart h36">💝</span>
+        <span class="jfy-heart h37">❤️</span>
+        <span class="jfy-heart h38">💖</span>
+        <span class="jfy-heart h39">💕</span>
+        <span class="jfy-heart h40">💗</span>
+        <span class="jfy-heart h41">💓</span>
+        <span class="jfy-heart h42">💘</span>
+        <span class="jfy-heart h43">✨</span>
+        <span class="jfy-heart h44">🌸</span>
+        <span class="jfy-heart h45">💜</span>
+        <span class="jfy-heart h46">🌺</span>
+        <span class="jfy-heart h47">🤍</span>
+        <span class="jfy-heart h48">💝</span>
+        <span class="jfy-heart h49">❤️</span>
+        <span class="jfy-heart h50">💖</span>
+        <span class="jfy-heart h51">💕</span>
+        <span class="jfy-heart h52">💗</span>
+        <span class="jfy-heart h53">💓</span>
+        <span class="jfy-heart h54">💘</span>
+        <span class="jfy-heart h55">✨</span>
+        <span class="jfy-heart h56">🌸</span>
+        <span class="jfy-heart h57">💜</span>
+        <span class="jfy-heart h58">🌺</span>
+        <span class="jfy-heart h59">🤍</span>
+        <span class="jfy-heart h60">💝</span>
+        <span class="jfy-heart h61">❤️</span>
+        <span class="jfy-heart h62">💖</span>
+        <span class="jfy-heart h63">💕</span>
+        <span class="jfy-heart h64">💗</span>
+        <span class="jfy-heart h65">💓</span>
+        <span class="jfy-heart h66">💘</span>
+        <span class="jfy-heart h67">✨</span>
+        <span class="jfy-heart h68">🌸</span>
+        <span class="jfy-heart h69">💜</span>
+        <span class="jfy-heart h70">🌺</span>
+        <span class="jfy-heart h71">🤍</span>
+        <span class="jfy-heart h72">💝</span>
+        <span class="jfy-heart h73">❤️</span>
+        <span class="jfy-heart h74">💖</span>
+        <span class="jfy-heart h75">💕</span>
+        <span class="jfy-heart h76">💗</span>
+        <span class="jfy-heart h77">💓</span>
+        <span class="jfy-heart h78">💘</span>
+        <span class="jfy-heart h79">✨</span>
+        <span class="jfy-heart h80">🌸</span>
       </div>
 
       <div class="jfy-content-wrap">
@@ -144,8 +192,8 @@ export function renderSurprise(container) {
 
             <!-- 4. Sayfadan Çıkış & VELUNO'ya Devam -->
             <div class="jfy-exit-wrap">
-              <button type="button" class="btn primary xl block jfy-btn-continue" id="btn-continue-veluno">
-                VELUNO’ya Devam Et ✨
+              <button type="button" class="jfy-btn-continue" id="btn-continue-veluno">
+                Beni Sevmeye Devam Et <span class="jfy-btn-heart" aria-hidden="true">❤️</span>
               </button>
             </div>
 
@@ -168,8 +216,12 @@ function wireSurpriseEvents(container) {
   const musicBtn = container.querySelector('#btn-toggle-music');
   const audioEl = container.querySelector('#jfy-audio');
 
+  let isSurpriseOpening = false;
   if (openBtn) {
     openBtn.onclick = () => {
+      if (isSurpriseOpening) return;
+      isSurpriseOpening = true;
+      openBtn.disabled = true;
       // 1) iPhone Safari uyumlu müzik başlatma (Doğrudan kullanıcı dokunma anında)
       if (audioEl && audioEl.src) {
         try {
@@ -277,7 +329,9 @@ function triggerHeartBurst(container, sourceBtn) {
   );
 
   const heartIcons = ['❤️', '💖', '💕', '💗', '💓', '💘', '✨'];
-  const totalParticles = 36;
+  // Masaüstünde ~100 parçacık, mobilde performans için 60 parçacık
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const totalParticles = isMobile ? 60 : 100;
   const particleElements = [];
 
   for (let i = 0; i < totalParticles; i++) {
@@ -305,14 +359,22 @@ function triggerHeartBurst(container, sourceBtn) {
         });
       }
     } else {
-      // 36 parçacıklı tam radyal patlama açısı ve mesafesi
-      const angle = (i * (360 / totalParticles) + (Math.random() * 16 - 8)) * (Math.PI / 180);
-      const dist = 90 + Math.random() * 220;
+      // ~100 parçacıklı 3 katmanlı (yakın yoğun, orta ve uzak) tam radyal patlama
+      const angle = (i * (360 / totalParticles) + (Math.random() * 14 - 7)) * (Math.PI / 180);
+      const tier = i % 3;
+      let dist;
+      if (tier === 0) {
+        dist = 70 + Math.random() * 80; // yakın yoğun romantik küme
+      } else if (tier === 1) {
+        dist = 140 + Math.random() * 110; // orta halka
+      } else {
+        dist = 240 + Math.random() * 140; // uzak süzülen kalpler
+      }
       const dx = Math.cos(angle) * dist;
       const dy = Math.sin(angle) * dist - 35; // Romantik hafif yukarı eğim
-      const rot = Math.random() * 80 - 40;
-      const scale = 0.85 + Math.random() * 0.95;
-      const durationMs = Math.round(1500 + Math.random() * 700);
+      const rot = Math.random() * 90 - 45;
+      const scale = 0.75 + Math.random() * 1.05;
+      const durationMs = Math.round(1500 + Math.random() * 800);
       const delayMs = Math.round(Math.random() * 120);
 
       // Safari ve tüm modern tarayıcılar için Web Animations API ile donanım hızlandırmalı garanti animasyon

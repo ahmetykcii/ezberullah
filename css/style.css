@@ -445,40 +445,90 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 /* ===== VELUNO v4.3 — "Just For You ❤️" Özel Sürpriz Arayüzü ===== */
 .jfy-page{min-height:calc(100vh - 120px);min-height:calc(100dvh - 120px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:24px 16px 40px;background:#160D1E;border-radius:24px;border:1px solid #3B2446;color:#FFF5F8}
 .jfy-hearts-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.jfy-heart{position:absolute;opacity:.35;animation:jfyFloat 10s infinite linear;user-select:none}
-.jfy-heart.h1{left:4%;animation-duration:8s;animation-delay:0s;font-size:14px}
-.jfy-heart.h2{left:10%;animation-duration:11s;animation-delay:2s;font-size:24px;opacity:.4}
-.jfy-heart.h3{left:16%;animation-duration:9s;animation-delay:4s;font-size:16px}
-.jfy-heart.h4{left:22%;animation-duration:13s;animation-delay:1s;font-size:28px;opacity:.45}
-.jfy-heart.h5{left:28%;animation-duration:10s;animation-delay:5s;font-size:18px}
-.jfy-heart.h6{left:34%;animation-duration:14s;animation-delay:3s;font-size:22px}
-.jfy-heart.h7{left:40%;animation-duration:7.5s;animation-delay:6s;font-size:15px}
-.jfy-heart.h8{left:46%;animation-duration:12s;animation-delay:2.5s;font-size:32px;opacity:.5}
-.jfy-heart.h9{left:52%;animation-duration:9.5s;animation-delay:1.2s;font-size:16px}
-.jfy-heart.h10{left:58%;animation-duration:15s;animation-delay:4.2s;font-size:26px;opacity:.4}
-.jfy-heart.h11{left:64%;animation-duration:11s;animation-delay:0.8s;font-size:20px}
-.jfy-heart.h12{left:70%;animation-duration:13.5s;animation-delay:5.5s;font-size:36px;opacity:.55}
-.jfy-heart.h13{left:76%;animation-duration:8.5s;animation-delay:3.2s;font-size:14px}
-.jfy-heart.h14{left:82%;animation-duration:12.5s;animation-delay:1.8s;font-size:24px;opacity:.42}
-.jfy-heart.h15{left:88%;animation-duration:10.5s;animation-delay:6.2s;font-size:18px}
-.jfy-heart.h16{left:94%;animation-duration:16s;animation-delay:2.1s;font-size:30px;opacity:.48}
-.jfy-heart.h17{left:7%;animation-duration:12s;animation-delay:7s;font-size:18px}
-.jfy-heart.h18{left:14%;animation-duration:14.5s;animation-delay:8.5s;font-size:22px}
-.jfy-heart.h19{left:25%;animation-duration:9s;animation-delay:6.8s;font-size:15px}
-.jfy-heart.h20{left:32%;animation-duration:13s;animation-delay:9.2s;font-size:28px;opacity:.5}
-.jfy-heart.h21{left:38%;animation-duration:10.2s;animation-delay:7.4s;font-size:19px}
-.jfy-heart.h22{left:48%;animation-duration:15.5s;animation-delay:8.1s;font-size:24px}
-.jfy-heart.h23{left:55%;animation-duration:8.2s;animation-delay:6.5s;font-size:16px}
-.jfy-heart.h24{left:62%;animation-duration:12.8s;animation-delay:9.8s;font-size:34px;opacity:.52}
-.jfy-heart.h25{left:68%;animation-duration:11.2s;animation-delay:7.8s;font-size:17px}
-.jfy-heart.h26{left:74%;animation-duration:14s;animation-delay:10.2s;font-size:23px}
-.jfy-heart.h27{left:80%;animation-duration:9.8s;animation-delay:8.8s;font-size:15px}
-.jfy-heart.h28{left:86%;animation-duration:13.2s;animation-delay:11s;font-size:27px;opacity:.45}
-.jfy-heart.h29{left:92%;animation-duration:11.8s;animation-delay:9.5s;font-size:20px}
-.jfy-heart.h30{left:19%;animation-duration:15s;animation-delay:11.5s;font-size:25px}
-.jfy-heart.h31{left:43%;animation-duration:8.8s;animation-delay:10.5s;font-size:14px}
-.jfy-heart.h32{left:71%;animation-duration:13.8s;animation-delay:12s;font-size:29px;opacity:.48}
-@keyframes jfyFloat{0%{transform:translate3d(0,110vh,0) rotate(-10deg) scale(.8);opacity:0}20%{opacity:.45}50%{transform:translate3d(18px,50vh,0) rotate(12deg) scale(1.05)}80%{opacity:.45}100%{transform:translate3d(-18px,-10vh,0) rotate(-14deg) scale(1.15);opacity:0}}
+.jfy-heart{position:absolute;bottom:-60px;opacity:0;line-height:1;user-select:none;pointer-events:none;animation:jfyFloat 14s infinite linear;animation-fill-mode:both;will-change:transform,opacity}
+.jfy-heart.h1{left:31.9%;font-size:30px;animation-duration:12.7s;animation-delay:-1.5s;--jfy-sway:-17px;--jfy-op:0.31}
+.jfy-heart.h2{left:61.2%;font-size:14px;animation-duration:14.4s;animation-delay:-2.9s;--jfy-sway:20px;--jfy-op:0.38}
+.jfy-heart.h3{left:90.6%;font-size:22px;animation-duration:16.1s;animation-delay:-4.4s;--jfy-sway:-23px;--jfy-op:0.45}
+.jfy-heart.h4{left:26.0%;font-size:34px;animation-duration:17.8s;animation-delay:-5.9s;--jfy-sway:26px;--jfy-op:0.52}
+.jfy-heart.h5{left:55.3%;font-size:16px;animation-duration:19.5s;animation-delay:-7.3s;--jfy-sway:-30px;--jfy-op:0.29}
+.jfy-heart.h6{left:84.7%;font-size:26px;animation-duration:21.2s;animation-delay:-8.8s;--jfy-sway:15px;--jfy-op:0.36}
+.jfy-heart.h7{left:20.1%;font-size:40px;animation-duration:11.9s;animation-delay:-10.3s;--jfy-sway:-18px;--jfy-op:0.43}
+.jfy-heart.h8{left:49.5%;font-size:18px;animation-duration:13.6s;animation-delay:-11.8s;--jfy-sway:21px;--jfy-op:0.50}
+.jfy-heart.h9{left:78.8%;font-size:30px;animation-duration:15.3s;animation-delay:-13.2s;--jfy-sway:-24px;--jfy-op:0.27}
+.jfy-heart.h10{left:14.2%;font-size:14px;animation-duration:17.0s;animation-delay:-14.7s;--jfy-sway:27px;--jfy-op:0.34}
+.jfy-heart.h11{left:43.6%;font-size:22px;animation-duration:18.7s;animation-delay:-16.2s;--jfy-sway:-30px;--jfy-op:0.41}
+.jfy-heart.h12{left:72.9%;font-size:34px;animation-duration:20.4s;animation-delay:-17.6s;--jfy-sway:15px;--jfy-op:0.48}
+.jfy-heart.h13{left:8.3%;font-size:16px;animation-duration:11.1s;animation-delay:-8.6s;--jfy-sway:-18px;--jfy-op:0.25}
+.jfy-heart.h14{left:37.7%;font-size:26px;animation-duration:12.8s;animation-delay:-8.4s;--jfy-sway:21px;--jfy-op:0.32}
+.jfy-heart.h15{left:67.1%;font-size:40px;animation-duration:14.5s;animation-delay:-8.3s;--jfy-sway:-25px;--jfy-op:0.39}
+.jfy-heart.h16{left:96.4%;font-size:18px;animation-duration:16.2s;animation-delay:-8.1s;--jfy-sway:28px;--jfy-op:0.46}
+.jfy-heart.h17{left:31.8%;font-size:30px;animation-duration:17.9s;animation-delay:-8.0s;--jfy-sway:-31px;--jfy-op:0.53}
+.jfy-heart.h18{left:61.2%;font-size:14px;animation-duration:19.6s;animation-delay:-7.8s;--jfy-sway:16px;--jfy-op:0.30}
+.jfy-heart.h19{left:90.5%;font-size:22px;animation-duration:21.3s;animation-delay:-7.7s;--jfy-sway:-19px;--jfy-op:0.37}
+.jfy-heart.h20{left:25.9%;font-size:34px;animation-duration:12.0s;animation-delay:-6.6s;--jfy-sway:22px;--jfy-op:0.44}
+.jfy-heart.h21{left:55.3%;font-size:16px;animation-duration:13.7s;animation-delay:-4.8s;--jfy-sway:-25px;--jfy-op:0.51}
+.jfy-heart.h22{left:84.6%;font-size:26px;animation-duration:15.4s;animation-delay:-3.1s;--jfy-sway:28px;--jfy-op:0.28}
+.jfy-heart.h23{left:20.0%;font-size:40px;animation-duration:17.1s;animation-delay:-1.3s;--jfy-sway:-31px;--jfy-op:0.35}
+.jfy-heart.h24{left:49.4%;font-size:18px;animation-duration:18.8s;animation-delay:-17.4s;--jfy-sway:16px;--jfy-op:0.42}
+.jfy-heart.h25{left:78.8%;font-size:30px;animation-duration:20.5s;animation-delay:-17.3s;--jfy-sway:-20px;--jfy-op:0.49}
+.jfy-heart.h26{left:14.1%;font-size:14px;animation-duration:11.2s;animation-delay:-6.3s;--jfy-sway:23px;--jfy-op:0.26}
+.jfy-heart.h27{left:43.5%;font-size:22px;animation-duration:12.9s;animation-delay:-2.9s;--jfy-sway:-26px;--jfy-op:0.33}
+.jfy-heart.h28{left:72.9%;font-size:34px;animation-duration:14.6s;animation-delay:-13.4s;--jfy-sway:29px;--jfy-op:0.40}
+.jfy-heart.h29{left:8.2%;font-size:16px;animation-duration:16.3s;animation-delay:-11.7s;--jfy-sway:-32px;--jfy-op:0.47}
+.jfy-heart.h30{left:37.6%;font-size:26px;animation-duration:18.0s;animation-delay:-9.9s;--jfy-sway:17px;--jfy-op:0.24}
+.jfy-heart.h31{left:67.0%;font-size:40px;animation-duration:19.7s;animation-delay:-8.1s;--jfy-sway:-20px;--jfy-op:0.31}
+.jfy-heart.h32{left:96.3%;font-size:18px;animation-duration:21.4s;animation-delay:-6.4s;--jfy-sway:23px;--jfy-op:0.38}
+.jfy-heart.h33{left:31.7%;font-size:30px;animation-duration:12.1s;animation-delay:-2.5s;--jfy-sway:-26px;--jfy-op:0.45}
+.jfy-heart.h34{left:61.1%;font-size:14px;animation-duration:13.8s;animation-delay:-10.6s;--jfy-sway:29px;--jfy-op:0.52}
+.jfy-heart.h35{left:90.5%;font-size:22px;animation-duration:15.5s;animation-delay:-7.3s;--jfy-sway:-15px;--jfy-op:0.29}
+.jfy-heart.h36{left:25.8%;font-size:34px;animation-duration:17.2s;animation-delay:-3.9s;--jfy-sway:18px;--jfy-op:0.36}
+.jfy-heart.h37{left:55.2%;font-size:16px;animation-duration:18.9s;animation-delay:-0.5s;--jfy-sway:-21px;--jfy-op:0.43}
+.jfy-heart.h38{left:84.6%;font-size:26px;animation-duration:20.6s;animation-delay:-16.7s;--jfy-sway:24px;--jfy-op:0.50}
+.jfy-heart.h39{left:19.9%;font-size:40px;animation-duration:11.3s;animation-delay:-3.7s;--jfy-sway:-27px;--jfy-op:0.27}
+.jfy-heart.h40{left:49.3%;font-size:18px;animation-duration:13.0s;animation-delay:-9.4s;--jfy-sway:30px;--jfy-op:0.34}
+.jfy-heart.h41{left:78.7%;font-size:30px;animation-duration:14.7s;animation-delay:-4.4s;--jfy-sway:-15px;--jfy-op:0.41}
+.jfy-heart.h42{left:14.0%;font-size:14px;animation-duration:16.4s;animation-delay:-15.0s;--jfy-sway:18px;--jfy-op:0.48}
+.jfy-heart.h43{left:43.4%;font-size:22px;animation-duration:18.1s;animation-delay:-11.6s;--jfy-sway:-21px;--jfy-op:0.25}
+.jfy-heart.h44{left:72.8%;font-size:34px;animation-duration:19.8s;animation-delay:-8.2s;--jfy-sway:24px;--jfy-op:0.32}
+.jfy-heart.h45{left:8.2%;font-size:16px;animation-duration:21.5s;animation-delay:-4.9s;--jfy-sway:-28px;--jfy-op:0.39}
+.jfy-heart.h46{left:37.5%;font-size:26px;animation-duration:12.2s;animation-delay:-9.7s;--jfy-sway:31px;--jfy-op:0.46}
+.jfy-heart.h47{left:66.9%;font-size:40px;animation-duration:13.9s;animation-delay:-3.1s;--jfy-sway:-16px;--jfy-op:0.53}
+.jfy-heart.h48{left:96.3%;font-size:18px;animation-duration:15.6s;animation-delay:-11.3s;--jfy-sway:19px;--jfy-op:0.30}
+.jfy-heart.h49{left:31.6%;font-size:30px;animation-duration:17.3s;animation-delay:-6.3s;--jfy-sway:-22px;--jfy-op:0.37}
+.jfy-heart.h50{left:61.0%;font-size:14px;animation-duration:19.0s;animation-delay:-1.3s;--jfy-sway:25px;--jfy-op:0.44}
+.jfy-heart.h51{left:90.4%;font-size:22px;animation-duration:20.7s;animation-delay:-16.0s;--jfy-sway:-28px;--jfy-op:0.51}
+.jfy-heart.h52{left:25.7%;font-size:34px;animation-duration:11.4s;animation-delay:-0.6s;--jfy-sway:31px;--jfy-op:0.28}
+.jfy-heart.h53{left:55.1%;font-size:16px;animation-duration:13.1s;animation-delay:-3.2s;--jfy-sway:-16px;--jfy-op:0.35}
+.jfy-heart.h54{left:84.5%;font-size:26px;animation-duration:14.8s;animation-delay:-9.1s;--jfy-sway:19px;--jfy-op:0.42}
+.jfy-heart.h55{left:19.9%;font-size:40px;animation-duration:16.5s;animation-delay:-2.5s;--jfy-sway:-23px;--jfy-op:0.49}
+.jfy-heart.h56{left:49.2%;font-size:18px;animation-duration:18.2s;animation-delay:-13.2s;--jfy-sway:26px;--jfy-op:0.26}
+.jfy-heart.h57{left:78.6%;font-size:30px;animation-duration:19.9s;animation-delay:-8.2s;--jfy-sway:-29px;--jfy-op:0.33}
+.jfy-heart.h58{left:14.0%;font-size:14px;animation-duration:21.6s;animation-delay:-3.2s;--jfy-sway:32px;--jfy-op:0.40}
+.jfy-heart.h59{left:43.3%;font-size:22px;animation-duration:12.3s;animation-delay:-4.9s;--jfy-sway:-17px;--jfy-op:0.47}
+.jfy-heart.h60{left:72.7%;font-size:34px;animation-duration:14.0s;animation-delay:-8.4s;--jfy-sway:20px;--jfy-op:0.24}
+.jfy-heart.h61{left:8.1%;font-size:16px;animation-duration:15.7s;animation-delay:-0.2s;--jfy-sway:-23px;--jfy-op:0.31}
+.jfy-heart.h62{left:37.4%;font-size:26px;animation-duration:17.4s;animation-delay:-8.5s;--jfy-sway:26px;--jfy-op:0.38}
+.jfy-heart.h63{left:66.8%;font-size:40px;animation-duration:19.1s;animation-delay:-1.9s;--jfy-sway:-29px;--jfy-op:0.45}
+.jfy-heart.h64{left:96.2%;font-size:18px;animation-duration:20.8s;animation-delay:-15.0s;--jfy-sway:14px;--jfy-op:0.52}
+.jfy-heart.h65{left:31.5%;font-size:30px;animation-duration:11.5s;animation-delay:-8.2s;--jfy-sway:-18px;--jfy-op:0.29}
+.jfy-heart.h66{left:60.9%;font-size:14px;animation-duration:13.2s;animation-delay:-9.2s;--jfy-sway:21px;--jfy-op:0.36}
+.jfy-heart.h67{left:90.3%;font-size:22px;animation-duration:14.9s;animation-delay:-13.6s;--jfy-sway:-24px;--jfy-op:0.43}
+.jfy-heart.h68{left:25.7%;font-size:34px;animation-duration:16.6s;animation-delay:-5.3s;--jfy-sway:27px;--jfy-op:0.50}
+.jfy-heart.h69{left:55.0%;font-size:16px;animation-duration:18.3s;animation-delay:-14.5s;--jfy-sway:-30px;--jfy-op:0.27}
+.jfy-heart.h70{left:84.4%;font-size:26px;animation-duration:20.0s;animation-delay:-7.9s;--jfy-sway:15px;--jfy-op:0.34}
+.jfy-heart.h71{left:19.8%;font-size:40px;animation-duration:21.7s;animation-delay:-1.3s;--jfy-sway:-18px;--jfy-op:0.41}
+.jfy-heart.h72{left:49.1%;font-size:18px;animation-duration:12.4s;animation-delay:-11.6s;--jfy-sway:21px;--jfy-op:0.48}
+.jfy-heart.h73{left:78.5%;font-size:30px;animation-duration:14.1s;animation-delay:-0.2s;--jfy-sway:-24px;--jfy-op:0.25}
+.jfy-heart.h74{left:13.9%;font-size:14px;animation-duration:15.8s;animation-delay:-3.7s;--jfy-sway:27px;--jfy-op:0.32}
+.jfy-heart.h75{left:43.3%;font-size:22px;animation-duration:17.5s;animation-delay:-10.5s;--jfy-sway:-31px;--jfy-op:0.39}
+.jfy-heart.h76{left:72.6%;font-size:34px;animation-duration:19.2s;animation-delay:-2.3s;--jfy-sway:16px;--jfy-op:0.46}
+.jfy-heart.h77{left:8.0%;font-size:16px;animation-duration:20.9s;animation-delay:-13.9s;--jfy-sway:-19px;--jfy-op:0.53}
+.jfy-heart.h78{left:37.4%;font-size:26px;animation-duration:11.6s;animation-delay:-4.5s;--jfy-sway:22px;--jfy-op:0.30}
+.jfy-heart.h79{left:66.7%;font-size:40px;animation-duration:13.3s;animation-delay:-2.4s;--jfy-sway:-25px;--jfy-op:0.37}
+.jfy-heart.h80{left:96.1%;font-size:18px;animation-duration:15.0s;animation-delay:-3.6s;--jfy-sway:28px;--jfy-op:0.44}
+@keyframes jfyFloat{0%{transform:translate3d(0,0,0) rotate(-10deg) scale(.85);opacity:0}12%{opacity:var(--jfy-op,.45)}50%{transform:translate3d(var(--jfy-sway,22px),-55vh,0) rotate(12deg) scale(1.05)}85%{opacity:var(--jfy-op,.45)}100%{transform:translate3d(calc(var(--jfy-sway,22px)*-.6),-125vh,0) rotate(-14deg) scale(1.15);opacity:0}}
+@media(max-width:768px){.jfy-heart:nth-child(n+41){display:none!important}}
+
 .jfy-content-wrap{position:relative;z-index:1;width:100%;max-width:580px;margin:0 auto;text-align:center}
 .jfy-badge-preview{display:inline-block;background:#3B2446;color:#F472B6;font-size:.78rem;font-weight:700;padding:4px 14px;border-radius:99px;margin-bottom:16px;border:1px solid #5C326E}
 .jfy-stage{width:100%}
@@ -544,10 +594,11 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .jfy-music-btn:active{transform:scale(.92)}
 .jfy-music-card.playing .jfy-music-btn{background:#BE185D}
 
-/* Sayfadan Çıkış & VELUNO'ya Devam */
-.jfy-exit-wrap{width:100%;max-width:440px;margin-top:8px}
-.jfy-btn-continue{background:#DB2777;color:#FFF;border-radius:16px}
-.jfy-btn-continue:hover:not(:disabled){background:#BE185D}
+/* Sayfadan Çıkış & VELUNO'ya Devam — "Beni Sevmeye Devam Et ❤️" */
+.jfy-exit-wrap{width:100%;max-width:440px;margin-top:10px}
+.jfy-btn-continue{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#E8B4D8;color:#27152D;border:1px solid rgba(255,220,245,.35);border-radius:18px;padding:16px 28px;font:700 1.05rem Inter,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.02em;cursor:pointer;box-shadow:0 4px 18px rgba(232,180,216,.28);transition:transform 160ms cubic-bezier(.2,.8,.4,1),background-color 180ms ease,box-shadow 180ms ease;user-select:none;-webkit-tap-highlight-color:transparent}
+.jfy-btn-continue:hover{background:#F3C5E5;transform:translateY(-2px);box-shadow:0 6px 22px rgba(243,197,229,.38)}
+.jfy-btn-continue:active{transform:scale(.98);box-shadow:0 2px 10px rgba(232,180,216,.25)}
 
 /* Kilitli ve Ahmet Önizleme */
 .jfy-locked-card{max-width:440px;padding:36px 24px;background:#22132E;border:1px solid #442654;border-radius:22px}

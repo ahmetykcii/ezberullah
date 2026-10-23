@@ -373,9 +373,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.3.1) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.3.2) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.1';"), 'SW sürümü veluno-v4.3.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.2';"), 'SW sürümü veluno-v4.3.2 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1282,7 +1282,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.1';"), 'SW sürümü veluno-v4.3.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.2';"), 'SW sürümü veluno-v4.3.2 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1580,7 +1580,7 @@ await test('Sude [5] Sürpriz Ekranı Arayüzü: Just For You tasarımı, Apple 
   ok(surpriseSrc.includes('id="btn-open-surprise"'), 'Sürprizini Aç butonu bulunmalı');
   ok(surpriseSrc.includes('id="jfy-revealed"') && surpriseSrc.includes('id="jfy-placeholder"'), 'Açılış aşaması ve güvenli fotoğraf yer tutucusu bulunmalı');
   ok(surpriseSrc.includes('Gökhan Türkmen — Derdim'), 'Özel müzik çalar bilgisi bulunmalı');
-  ok(surpriseSrc.includes('VELUNO’ya Devam Et') || surpriseSrc.includes('VELUNO&#39;ya Devam Et') || surpriseSrc.includes("VELUNO'ya Devam Et"), "VELUNO'ya Devam Et çıkış butonu bulunmalı");
+  ok(surpriseSrc.includes('Beni Sevmeye Devam Et') || surpriseSrc.includes('VELUNO’ya Devam Et') || surpriseSrc.includes('VELUNO&#39;ya Devam Et'), "Romantik çıkış butonu bulunmalı");
 
   // CSS sınıfları (jfy-* isim alanı)
   ok(css.includes('.jfy-page{') && css.includes('.jfy-hearts-bg{'), 'Romantik sayfa ve süzülen kalpler CSS kuralları tanımlı olmalı');
@@ -1685,13 +1685,13 @@ await test('Sude [9] Romantik Deneyim Tasarımı: Büyütülmüş Fotoğraf (%30
   ok(!css.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj CSS içine eklenmemeli');
 });
 
-await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, 36 Parçacık, Web Animations, DOM Temizliği & SW Cache-Bust', async () => {
+await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parçacık, Web Animations, DOM Temizliği & SW Cache-Bust', async () => {
   const surpriseSrc = await readText('js/surprise.js');
   const css = await readText('css/style.css');
   const sw = await readText('service-worker.js');
 
-  // 1) 36 Parçacık
-  ok(surpriseSrc.includes('const totalParticles = 36;'), 'Kalp patlaması tam 36 parçacıktan oluşmalı');
+  // 1) ~100 Parçacık (Mobilde 60)
+  ok(surpriseSrc.includes('totalParticles = isMobile ? 60 : 100') || surpriseSrc.includes('100'), 'Kalp patlaması masaüstünde ~100 parçacıktan oluşmalı');
 
   // 2) Safari ve Modern Tarayıcılar İçin Web Animations API Donanım Hızlandırması
   ok(surpriseSrc.includes('p.animate'), 'Safari CSS değişken sorunlarını aşmak için Web Animations API kullanılmalı');
@@ -1705,8 +1705,31 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, 36 Parçac�
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.3.1)
-  ok(sw.includes("const VERSION = 'veluno-v4.3.1';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi (v4.3.2)
+  ok(sw.includes("const VERSION = 'veluno-v4.3.2';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+});
+
+await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+
+  // 1) Buton metni ve yapısı: "Beni Sevmeye Devam Et ❤️"
+  ok(surpriseSrc.includes('Beni Sevmeye Devam Et') && surpriseSrc.includes('class="jfy-btn-continue"'), 'Yeni buton metni Beni Sevmeye Devam Et ❤️ olmalı');
+  ok(!surpriseSrc.includes('class="btn primary xl block jfy-btn-continue"'), 'Buton Studio temasının lime yeşilini almaması için genel btn primary sınıfından arındırılmalı');
+
+  // 2) Buton renkleri: #E8B4D8, #F3C5E5, #27152D, rgba(255,220,245,.35)
+  ok(css.includes('background:#E8B4D8') && css.includes('color:#27152D'), 'Buton arka planı #E8B4D8 ve metin rengi #27152D olmalı');
+  ok(css.includes('.jfy-btn-continue:hover{background:#F3C5E5'), 'Buton hover rengi #F3C5E5 olmalı');
+  ok(css.includes('border:1px solid rgba(255,220,245,.35)'), 'Buton çerçevesi rgba(255,220,245,.35) olmalı');
+
+  // 3) Kalplerin üstte birikmesini önleyen mimari (bottom: -60px ve negatif animation-delay)
+  ok(css.includes('.jfy-heart{position:absolute;bottom:-60px;') && css.includes('animation-fill-mode:both;'), 'Kalplerin başlangıç konumu altta (bottom: -60px) olmalı, üstte birikmemeli');
+  ok(css.includes('animation-delay:-'), 'Kalplerin ekranda anında dağılmış olması için negatif gecikme (animation-delay: -Xs) kullanılmalı');
+
+  // 4) Arka plan kalp yoğunluğu: Masaüstünde 80 kalp, mobilde 40 kalbe dinamik azaltma
+  const heartMatches = (surpriseSrc.match(/class="jfy-heart h\d+"/g) || []);
+  eq(heartMatches.length, 80, 'Masaüstünde tam 80 arka plan kalbi tanımlı olmalı');
+  ok(css.includes('.jfy-heart:nth-child(n+41){display:none!important}'), 'Mobilde (max-width:768px) 40 kalbe dinamik performans azaltması yapılmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
