@@ -15,9 +15,21 @@ service cloud.firestore {
         request.auth.uid == 'SUDE_FIREBASE_UID_BURAYA'
       );
 
-      // Yalnızca Ahmet (yönetici) mesajı yazabilir ve güncelleyebilir
-      allow write: if request.auth != null &&
-        request.auth.uid == 'AHMET_FIREBASE_UID_BURAYA';
+      // İstemci tarafı yazma engellenir (Veri Firebase Console üzerinden yönetilir)
+      allow write: if false;
+    }
+
+    // 3) Sude & Ahmet Özel Fotoğraf Belgesi (Firebase Spark Planı — Blaze Gerekmez)
+    // Fotoğraf WebP biçiminde Base64 kodlanmış olarak bu belgede saklanır
+    match /private/sudePhoto {
+      // Yalnızca kimliği doğrulanmış Ahmet veya Sude fotoğrafı okuyabilir
+      allow read: if request.auth != null && (
+        request.auth.uid == 'AHMET_FIREBASE_UID_BURAYA' ||
+        request.auth.uid == 'SUDE_FIREBASE_UID_BURAYA'
+      );
+
+      // İstemci tarafı yazma engellenir (Veri Firebase Console üzerinden yönetilir)
+      allow write: if false;
     }
   }
 }

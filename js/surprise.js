@@ -197,34 +197,37 @@ async function loadSecurePrivateData(container) {
   if (!isFirebaseConfigured() || typeof window === 'undefined') return;
 
   try {
-    // Firebase Storage'dan fotoğraf çekme denemesi
-    if (window.firebase && window.firebase.storage) {
-      const storage = window.firebase.storage();
-      const photoRef = storage.ref('private/sude/photo.jpg');
-      const url = await photoRef.getDownloadURL();
-      const box = container.querySelector('#jfy-photo-box');
-      if (box && url) {
-        box.innerHTML = `<img src="${url}" class="jfy-real-photo" alt="Sude & Ahmet Özel Fotoğrafı" loading="eager">`;
+    // Cloud Firestore üzerinden fotoğraf ve mesaj çekme (Firebase Spark Planı — Blaze gerekmez)
+    if (window.firebase && window.firebase.firestore) {
+      const db = window.firebase.firestore();
+
+      // 1) Sude & Ahmet Özel Fotoğraf Belgesi (private/sudePhoto)
+      const photoDoc = await db.collection('private').doc('sudePhoto').get();
+      if (photoDoc.exists) {
+        const pdata = photoDoc.data();
+        if (pdata && pdata.imageBase64) {
+          const mime = pdata.mimeType || 'image/webp';
+          const dataUrl = `data:${mime};base64,${pdata.imageBase64}`;
+          const box = container.querySelector('#jfy-photo-box');
+          if (box) {
+            box.innerHTML = `<img src="${dataUrl}" class="jfy-real-photo" alt="Sude & Ahmet Özel Fotoğrafı" loading="eager">`;
+          }
+        }
+      }
+
+      // 2) Sude & Ahmet Özel Romantik Mesaj Belgesi (private/sude)
+      const msgDoc = await db.collection('private').doc('sude').get();
+      if (msgDoc.exists) {
+        const mdata = msgDoc.data();
+        const msgEl = container.querySelector('#jfy-msg-text');
+        if (msgEl && mdata.message) {
+          msgEl.innerHTML = `<p>${escapeHtml(mdata.message).replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+        }
       }
     }
   } catch {
     // Özel veri henüz yoksa veya ağ kesildiyse zarif yer tutucu korunur, asla hata sızdırılmaz
   }
-
-  try {
-    // Firestore'dan romantik mesaj çekme denemesi
-    if (window.firebase && window.firebase.firestore) {
-      const db = window.firebase.firestore();
-      const doc = await db.collection('private').doc('sude').get();
-      if (doc.exists) {
-        const data = doc.data();
-        const msgEl = container.querySelector('#jfy-msg-text');
-        if (msgEl && data.message) {
-          msgEl.innerHTML = `<p>${escapeHtml(data.message).replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
-        }
-      }
-    }
-  } catch {}
 }
 
 function escapeHtml(str) {

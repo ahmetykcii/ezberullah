@@ -1508,16 +1508,22 @@ await test('Sude [1] Gizlilik ve Güvenlik: Depoda hiçbir kişisel fotoğraf, �
 await test('Sude [2] Firebase Güvenlik Kuralları Taslağı: storage.rules ve firestore.rules varsayılan erişimi reddetmeli', async () => {
   const storageRules = await readText('firebase/storage.rules');
   const firestoreRules = await readText('firebase/firestore.rules');
+  const surpriseSrc = await readText('js/surprise.js');
 
-  // Storage Kuralları
+  // Storage Kuralları (Spark Planı: Blaze gerekmemesi için Storage kapalıdır)
   ok(storageRules.includes("service firebase.storage"), 'storage.rules geçerli firebase.storage servisi tanımlamalı');
   ok(storageRules.includes("allow read, write: if false;"), 'storage.rules varsayılan olarak tüm yolları engellemeli');
-  ok(storageRules.includes("match /private/sude/{fileName}") && storageRules.includes("request.auth != null"), 'storage.rules private/sude altında yetkili UID kontrolü yapmalı');
 
   // Firestore Kuralları
   ok(firestoreRules.includes("service cloud.firestore"), 'firestore.rules geçerli cloud.firestore servisi tanımlamalı');
   ok(firestoreRules.includes("allow read, write: if false;"), 'firestore.rules varsayılan olarak tüm yolları engellemeli');
   ok(firestoreRules.includes("match /private/sude") && firestoreRules.includes("request.auth != null"), 'firestore.rules private/sude belgesi için yetkili UID kontrolü yapmalı');
+  ok(firestoreRules.includes("match /private/sudePhoto") && firestoreRules.includes("request.auth != null"), 'firestore.rules private/sudePhoto belgesi için yetkili UID kontrolü yapmalı');
+  ok(firestoreRules.includes("allow write: if false;"), 'firestore.rules istemci tarafı yazma işlemlerini engellemeli');
+
+  // surprise.js Firestore fotoğraf depolama kontrolü (Storage çağrısı olmamalı, Firestore sudePhoto kullanılmalı)
+  ok(!surpriseSrc.includes("firebase.storage"), 'surprise.js Firebase Storage çağrısı içermemeli (Spark planı)');
+  ok(surpriseSrc.includes("doc('sudePhoto')") && surpriseSrc.includes("imageBase64"), 'surprise.js Firestore sudePhoto belgesinden imageBase64 okumalı');
 });
 
 await test('Sude [3] Yetkilendirme & Rol Davranışı: Misafir, Sude, Ahmet ve yetkisiz UID durumları', () => {
@@ -1600,6 +1606,25 @@ await test('Sude [6] Çevrimdışı ve Sıfır Bağımlılık Garantisi: Firebas
 
   const appSrc = await readText('js/app.js');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
+});
+
+await test('Sude [7] Spark Planı & Firestore Fotoğraf Depolama Mimarisi: 100% Ücretsiz, Sıfır Blaze Bağımlılığı, Base64 WebP ve Doküman Limiti Güvencesi', async () => {
+  const readmeSrc = await readText('firebase/README.md');
+  const firestoreRules = await readText('firebase/firestore.rules');
+  const surpriseSrc = await readText('js/surprise.js');
+
+  // 1) Spark ve Blaze bağımsızlığı README ve kurallarda belgelenmeli
+  ok(readmeSrc.includes('Firebase Spark') && readmeSrc.includes('Blaze Gerekmez'), 'README.md Spark planı ve Blaze gereksizliğini belirtmeli');
+  ok(readmeSrc.includes('sudePhoto') && readmeSrc.includes('imageBase64') && readmeSrc.includes('mimeType'), 'README.md sudePhoto belge alanlarını açıklamalı');
+  ok(readmeSrc.includes('1 MiB') || readmeSrc.includes('1MB') || readmeSrc.includes('1 MB'), 'README.md Firestore 1 MiB belge boyut limitini açıklamalı');
+
+  // 2) Firestore rules sudePhoto belgesine istemci yazmasını engellemeli
+  ok(firestoreRules.includes('match /private/sudePhoto'), 'firestore.rules private/sudePhoto belgesini tanımlamalı');
+  ok(firestoreRules.includes('allow write: if false;'), 'firestore.rules istemci yazmasını yasaklamalı');
+
+  // 3) surprise.js Data URL oluşturma mantığı: mimeType fallback 'image/webp' ve base64
+  ok(surpriseSrc.includes("mimeType || 'image/webp'"), 'surprise.js varsayılan WebP mimeType kullanmalı');
+  ok(surpriseSrc.includes('data:${mime};base64,${pdata.imageBase64}'), 'surprise.js Data URL formatını doğru üretmeli');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
