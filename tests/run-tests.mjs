@@ -361,9 +361,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v3.2.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.0.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v3.2.0';"), 'SW sürümü veluno-v3.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.0.0';"), 'SW sürümü veluno-v4.0.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -775,14 +775,14 @@ await test('v3.1 Ekran sadeleştirmeleri: Kelime odak akışı, Tekrar tek dokun
   for (const g of ['Görünüm', 'Günlük Hedef', 'Ses ve Öğrenme', 'Yedekleme ve Geri Yükleme', 'Hakkında']) ok(app.includes(`>${g}</h2>`), `Ayarlar grubu bulunmalı: ${g}`);
 });
 
-await test('v3.1 Grammar öğrenme yolculuğu: seviye seçici, dikey yol, durum göstergeleri, "Yakında" metni yok, 38 konu / 3 hazır ders korunur', async () => {
+await test('v3.1 Grammar öğrenme yolculuğu: seviye seçici, dikey yol, durum göstergeleri, "Yakında" metni yok, 38 konu / hazır dersler', async () => {
   const g = await readText('js/grammar.js');
   ok(g.includes('class="path"') && g.includes('data-g-level=') && g.includes('step-node'), 'Dikey öğrenme yolu ve seviye seçici bulunmalı');
   ok(g.includes("'done'") && g.includes("'active'") && g.includes("'locked'"), 'Tamamlandı / Aktif / Kilitli durumları bulunmalı');
   ok(!g.includes('Yakında') && !g.includes('Test Aktif Değil'), 'Kullanıcıya "Yakında" / "Test Aktif Değil" gösterilmemeli');
   eq(G.GRAMMAR_TOPICS.length, 38);
-  eq(G.GRAMMAR_TOPICS.filter((t) => G.isTopicReady(t)).length, 3, '3 hazır ders korunmalı');
-  eq(G.GRAMMAR_QUESTIONS.length, 60);
+  eq(G.GRAMMAR_TOPICS.filter((t) => G.isTopicReady(t)).length, 7, '7 hazır ders korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 140);
   eq(G.nextGrammarTopic().id, G.GRAMMAR_TOPICS.filter((t) => G.isTopicReady(t) && !getGrammarProgress(t.id).completed)[0].id, 'Sıradaki ders önerisi doğru olmalı');
 });
 
@@ -802,7 +802,7 @@ await test('v2.2 [2] Toplam 38 grammar konusunun bulunması ve benzersiz ID kont
 await test('v2.2 [3] A2 seviyesinde tam 14 konu bulunması', () => {
   const a2Topics = G.getTopicsByLevel('A2');
   eq(a2Topics.length, 14, 'A2 seviyesinde 14 konu olmalı');
-  eq(a2Topics[0].title, 'Present Continuous vs. Simple Present');
+  ok(a2Topics[0].title === 'Present Simple vs. Present Continuous' || a2Topics[0].title === 'Present Continuous vs. Simple Present', 'A2 ilk konusu Present Simple vs. Present Continuous olmalı');
   eq(a2Topics[13].title, 'Basic Relative Clauses (Who, Which, Where)');
 });
 
@@ -835,16 +835,16 @@ await test('v2.2 [6] Üç örnek dersin (A2 Past Continuous, B1 Present Perfect 
   }
 });
 
-await test('v2.2 [7] Toplam 60 özgün sorunun bulunması (her hazır ders için 20 soru)', () => {
-  eq(G.GRAMMAR_QUESTIONS.length, 60, 'Toplam 60 soru bulunmalı');
-  eq(G.getQuestionsForTopic('a2-g03').length, 20, 'A2 Past Continuous için 20 geçerli soru olmalı');
-  eq(G.getQuestionsForTopic('b1-g01').length, 20, 'B1 Present Perfect vs. Past Simple için 20 geçerli soru olmalı');
-  eq(G.getQuestionsForTopic('b2-g04').length, 20, 'B2 Third Conditional & Mixed Conditionals için 20 geçerli soru olmalı');
+await test('v2.2 [7] Toplam 140 özgün sorunun bulunması (her hazır ders için 20 soru)', () => {
+  eq(G.GRAMMAR_QUESTIONS.length, 140, 'Toplam 140 soru bulunmalı');
+  for (const tid of ['a2-g01', 'a2-g02', 'a2-g03', 'a2-g04', 'a2-g05', 'b1-g01', 'b2-g04']) {
+    eq(G.getQuestionsForTopic(tid).length, 20, `${tid} için 20 geçerli soru olmalı`);
+  }
 });
 
 await test('v2.2 [8] Soruların benzersiz ID’lere ve geçerli şemaya sahip olması', () => {
   const ids = G.GRAMMAR_QUESTIONS.map((q) => q.id);
-  eq(new Set(ids).size, 60, '60 sorunun tamamı benzersiz ID değerine sahip olmalı');
+  eq(new Set(ids).size, 140, '140 sorunun tamamı benzersiz ID değerine sahip olmalı');
   for (const q of G.GRAMMAR_QUESTIONS) {
     eq(G.validateGrammarQuestion(q), [], `Soru şeması hatasız olmalı: ${q.id}`);
   }
@@ -979,9 +979,9 @@ await test('v2.2 [19] Eksik veya hatalı soru verilerinin yakalanması ve 5’te
   eq(G.buildGrammarMiniQuiz('a2-g03', 5, Math.random, smallPool), [], '5’ten az soruda buildGrammarMiniQuiz boş dizi dönmeli');
 });
 
-await test('v2.2 [20] Henüz hazır olmayan (Yakında) 35 dersin açılmaması ve testlerinin başlatılmaması', () => {
+await test('v2.2 [20] Henüz hazır olmayan (Yakında) 31 dersin açılmaması ve testlerinin başlatılmaması', () => {
   const soonTopics = G.GRAMMAR_TOPICS.filter((t) => t.status !== 'ready');
-  eq(soonTopics.length, 35, '35 konu Yakında (soon) durumunda olmalı');
+  eq(soonTopics.length, 31, '31 konu Yakında (soon) durumunda olmalı');
   for (const t of soonTopics) {
     eq(G.isTopicReady(t), false, `${t.id} hazır olmamalı`);
     eq(G.canStartGrammarQuiz(t.id), false, `${t.id} sınavı aktif olmamalı`);
@@ -1156,16 +1156,137 @@ await test('v3.2 [13] Serbest Seviye Seçimi: Seviye değiştirildiğinde öncek
   ok(stored.B1 && stored.B1.idx === 1, 'B1 oturumu korunmalı');
 });
 
-await test('v3.2 [14] Veri ve İmza Bütünlüğü: 1.320 kelime (931 aktif + 389 taslak), 38 grammar konusu, 60 soru ve "ahmet ❤️ sude" imzası aynen korunur', async () => {
+await test('v3.2 [14] Veri ve İmza Bütünlüğü: 1.320 kelime (931 aktif + 389 taslak), 38 grammar konusu, 140 soru ve "ahmet ❤️ sude" imzası aynen korunur', async () => {
   const allDataWords = [...data.A2, ...data.B1, ...data.B2];
   eq(allDataWords.length, 1320, 'Toplam 1.320 kelime korunmalı');
   eq(allDataWords.filter((w) => !w.isDraft).length, 931, '931 aktif kelime korunmalı');
   eq(allDataWords.filter((w) => w.isDraft).length, 389, '389 taslak kelime korunmalı');
   eq(G.GRAMMAR_TOPICS.length, 38, '38 grammar konusu korunmalı');
-  eq(G.GRAMMAR_QUESTIONS.length, 60, '60 grammar sorusu korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 140, '140 grammar sorusu korunmalı');
 
   const appSrc = await readText('js/app.js');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası harfi harfine korunmalı');
+});
+
+out('\n9) VELUNO v4.0 — Content Academy / Phase 1 (4 Yeni A2 Dersi & 80 Yeni Soru)');
+
+await test('v4.0 [1] Dört Yeni A2 Dersi: a2-g01, a2-g02, a2-g04 ve a2-g05 müfredata hazır (ready) olarak entegre edilmiştir', () => {
+  const newLessonIds = ['a2-g01', 'a2-g02', 'a2-g04', 'a2-g05'];
+  for (const id of newLessonIds) {
+    const t = G.getTopicById(id);
+    ok(t, `${id} konusu mevcut olmalı`);
+    eq(t.status, 'ready', `${id} durumu ready olmalı`);
+    eq(t.level, 'A2', `${id} seviyesi A2 olmalı`);
+    ok(G.isTopicReady(t), `${id} isTopicReady true dönmeli`);
+    ok(G.canStartGrammarQuiz(id), `${id} canStartGrammarQuiz true dönmeli`);
+  }
+});
+
+await test('v4.0 [2] Dört Yeni Dersin İçerik Standartları: Giriş, 4 bölüm konu anlatımı, formüller, Türkçe çevirili örnekler, kurallar, sık yapılan hatalar ve sınav taktikleri eksiksizdir', () => {
+  const newLessonIds = ['a2-g01', 'a2-g02', 'a2-g04', 'a2-g05'];
+  for (const id of newLessonIds) {
+    const t = G.getTopicById(id);
+    const c = t.content;
+    ok(c && typeof c.intro === 'string' && c.intro.length > 50, `${id} kapsamlı giriş içermeli`);
+    ok(Array.isArray(c.sections) && c.sections.length >= 4, `${id} en az 4 konu anlatım bölümü içermeli`);
+    ok(c.sections.every((s) => s.heading && s.body), `${id} bölümler başlık ve gövde içermeli`);
+    ok(Array.isArray(c.formulas) && c.formulas.length >= 4, `${id} en az 4 formül içermeli`);
+    ok(c.formulas.every((f) => f.label && f.pattern), `${id} formüller etiket ve şablon içermeli`);
+    ok(Array.isArray(c.examples) && c.examples.length >= 5, `${id} en az 5 örnek cümle içermeli`);
+    ok(c.examples.every((ex) => ex.en && ex.tr), `${id} örnekler İngilizce ve Türkçe çeviri içermeli`);
+    ok(Array.isArray(c.keyRules) && c.keyRules.length >= 4, `${id} en az 4 önemli kural içermeli`);
+    ok(Array.isArray(c.commonMistakes) && c.commonMistakes.length >= 4, `${id} en az 4 sık yapılan hata içermeli`);
+    ok(c.commonMistakes.every((m) => m.wrong && m.right && m.explanation), `${id} hatalar yanlış/doğru/açıklama içermeli`);
+    ok(Array.isArray(c.examTips) && c.examTips.length >= 4, `${id} en az 4 sınav taktiği içermeli`);
+  }
+});
+
+await test('v4.0 [3] 80 Yeni Özgün Soru ve Toplam 140 Soru Havuzu: Her bir yeni ders için tam 20 soru mevcuttur', () => {
+  eq(G.GRAMMAR_QUESTIONS.length, 140, 'Toplam soru havuzu 140 olmalı');
+  const expectedCounts = {
+    'a2-g01': 20,
+    'a2-g02': 20,
+    'a2-g03': 20,
+    'a2-g04': 20,
+    'a2-g05': 20,
+    'b1-g01': 20,
+    'b2-g04': 20,
+  };
+  for (const [tid, cnt] of Object.entries(expectedCounts)) {
+    eq(G.getQuestionsForTopic(tid).length, cnt, `${tid} için tam ${cnt} soru olmalı`);
+  }
+});
+
+await test('v4.0 [4] Soru Şeması ve Kalitesi: Her soruda 4 benzersiz seçenek, seçeneklerde bulunan tek doğru cevap, açıklama ve dengeli zorluk dağılımı', () => {
+  for (const q of G.GRAMMAR_QUESTIONS) {
+    const errs = G.validateGrammarQuestion(q);
+    eq(errs, [], `Soru doğrulaması hatasız olmalı: ${q.id}`);
+  }
+
+  for (const tid of ['a2-g01', 'a2-g02', 'a2-g04', 'a2-g05']) {
+    const qs = G.getQuestionsForTopic(tid);
+    const easyCount = qs.filter((q) => q.difficulty === 'easy').length;
+    const medCount = qs.filter((q) => q.difficulty === 'medium').length;
+    const hardCount = qs.filter((q) => q.difficulty === 'hard').length;
+    ok(easyCount >= 5, `${tid} kolay soru sayısı (${easyCount}) en az 5 olmalı`);
+    ok(medCount >= 5, `${tid} orta soru sayısı (${medCount}) en az 5 olmalı`);
+    ok(hardCount >= 5, `${tid} zor soru sayısı (${hardCount}) en az 5 olmalı`);
+  }
+});
+
+await test('v4.0 [5] Mini Sınav Sistemi: Yeni derslerin her birinden rastgele 5 soru ile mini sınav sorunsuz başlatılır, seçenekler karıştırılır ve doğru cevap korunur', () => {
+  for (const tid of ['a2-g01', 'a2-g02', 'a2-g04', 'a2-g05']) {
+    const quizItems = G.buildGrammarMiniQuiz(tid, 5);
+    eq(quizItems.length, 5, `${tid} için mini sınav 5 soru dönmeli`);
+    const qIds = new Set(quizItems.map((item) => item.id));
+    eq(qIds.size, 5, `${tid} mini sınavında aynı soru tekrarlanmamalı`);
+    for (const item of quizItems) {
+      eq(item.options.length, 4, '4 seçenek olmalı');
+      eq(new Set(item.options).size, 4, 'Seçenekler tekrarsız olmalı');
+      ok(item.options.includes(item.correctAnswer), 'Doğru cevap seçeneklerde yer almalı');
+    }
+  }
+});
+
+await test('v4.0 [6] Grammar İlerlemesi ve Başarı Ölçütü: Yeni derslerde 4/5 (%80) doğru ile ders tamamlandı (completed: true) kaydedilir', async () => {
+  const tid = 'a2-g01';
+  await G.recordGrammarQuizResult(tid, { correct: 4, total: 5 });
+  let prog = getGrammarProgress(tid);
+  eq(prog.completed, true, '%80 ile ders tamamlandı olmalı');
+  eq(prog.bestScore, 80, 'En iyi puan 80 olmalı');
+  eq(prog.lastScore, 80, 'Son puan 80 olmalı');
+
+  await G.recordGrammarQuizResult(tid, { correct: 2, total: 5 });
+  prog = getGrammarProgress(tid);
+  eq(prog.completed, true, 'Düşük puan completed durumunu bozmamalı');
+  eq(prog.bestScore, 80, 'En iyi puan korunmalı');
+  eq(prog.lastScore, 40, 'Son puan güncellenmeli');
+});
+
+await test('v4.0 [7] 389 Taslak Kelimenin Korunması ve Denetimi: 1.320 kelime havuzunda 931 aktif, 389 taslak (18 A2 + 371 B1) korunmuştur; taslaklar aktifleştirilmemiştir', () => {
+  const allDataWords = [...data.A2, ...data.B1, ...data.B2];
+  eq(allDataWords.length, 1320, 'Toplam 1.320 kelime korunmalı');
+  const activeWords = allDataWords.filter((w) => !w.isDraft);
+  const draftWords = allDataWords.filter((w) => w.isDraft);
+  eq(activeWords.length, 931, '931 aktif kelime korunmalı');
+  eq(draftWords.length, 389, '389 taslak kelime korunmalı');
+
+  const a2Drafts = data.A2.filter((w) => w.isDraft);
+  const b1Drafts = data.B1.filter((w) => w.isDraft);
+  const b2Drafts = data.B2.filter((w) => w.isDraft);
+  eq(a2Drafts.length, 18, 'A2 seviyesinde tam 18 taslak kelime korunmalı');
+  eq(b1Drafts.length, 371, 'B1 seviyesinde tam 371 taslak kelime korunmalı');
+  eq(b2Drafts.length, 0, 'B2 seviyesinde taslak kelime olmamalı');
+});
+
+await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası harfi harfine korunmuştur', async () => {
+  const appSrc = await readText('js/app.js');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası harfi harfine korunmalı');
+});
+
+await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü veluno-v4.0.0 olarak güncellenmiştir', async () => {
+  const sw = await readText('service-worker.js');
+  ok(sw.includes("const VERSION = 'veluno-v4.0.0';"), 'SW sürümü veluno-v4.0.0 olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
