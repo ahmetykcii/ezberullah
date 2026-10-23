@@ -9,6 +9,8 @@ import { renderStats, levelStats, today, streakStats, todayLearnedCount } from '
 import { renderVocabulary } from './vocab-ui.js';
 import { renderGrammar, nextGrammarTopic, openGrammarLesson, resetGrammarView } from './grammar.js';
 import { exportBackup, pickAndRestore } from './import-export.js';
+import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser, hasSeenSurpriseThisSession, markSurpriseSeen, login, logout, testFirebaseAccess } from './auth.js';
+import { renderSurprise } from './surprise.js';
 
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
@@ -81,7 +83,7 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings };
+const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
 const MORE_GROUP = ['more', 'vocabulary', 'exams', 'statistics', 'settings'];
 let keepGrammarView = false;
 function gotoGrammarLesson(id) {
@@ -155,6 +157,12 @@ function openGoalModal(onDone) {
 }
 
 function renderDashboard(v) {
+  // Sude yeni oturumunda henüz sürprizi görmediyse sürpriz ekranına yönlendir
+  if (isSude() && !hasSeenSurpriseThisSession()) {
+    location.hash = '#/surprise';
+    return;
+  }
+
   const s = getSettings(), t = today();
   const dailyGoal = s.dailyGoal || 10;
   const tWords = todayLearnedCount(t);
@@ -187,8 +195,15 @@ function renderDashboard(v) {
       <p class="muted small center">${level} — ${levelName} Seviye · <button type="button" class="text-btn" id="change-level">Seviyeyi Değiştir</button></p>`;
   }
 
+  const ahmetBanner = isAhmet() ? `
+    <div class="ahmet-preview-banner">
+      <span>Ahmet & Sude Özel Alanı ❤️</span>
+      <a href="#/surprise?preview=1">Sürprizi Önizle ❤️</a>
+    </div>` : '';
+
   v.innerHTML = `<div class="page home">
   <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
+  ${ahmetBanner}
   <section class="today" aria-label="Bugünkü hedef">
     <div class="today-row"><div class="today-label">Bugünkü Hedefin: <b>${tWords}/${dailyGoal}</b> Kelime</div><button type="button" class="text-btn" id="edit-goal">Değiştir</button></div>
     <div class="progress ${reached ? 'goal-reached' : ''}" role="progressbar" aria-valuenow="${goalPct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${goalPct}%"></i></div>
@@ -294,9 +309,27 @@ function renderSettings(v) {
   <ul class="list">${btnRow('reset', 'İlerlemeyi sıfırla…', 'danger-text')}</ul>
   <p class="group-note muted small">Sıfırlama, kelime ilerlemelerini ve istatistikleri siler; kelimelerin korunur. İki aşamalı onay gerekir.</p>
 
+  <h2 class="group-title">Özel Hesap (Ahmet & Sude)</h2>
+  ${(() => {
+    const u = getCurrentUser();
+    return u
+      ? `<ul class="list">
+          <li class="list-row"><span class="row-main"><b>Giriş Yapıldı</b><span class="muted small">${esc(u.email || u.displayName)}</span></span><span class="row-value ok-t">${u.isSude ? 'Sude ❤️' : (u.isAhmet ? 'Ahmet (Yönetici)' : 'Giriş Yapıldı')}</span></li>
+          ${u.isAhmet ? `<li><a class="list-row linkrow" href="#/surprise?preview=1"><span class="row-main"><b>Sürprizi Önizle ❤️</b><span class="muted small">Ahmet özel önizleme modu</span></span>${ICONS.chev}</a></li>` : ''}
+          ${u.isSude ? `<li><a class="list-row linkrow" href="#/surprise"><span class="row-main"><b>Sürprizimi Gör ❤️</b><span class="muted small">Just For You ekranı</span></span>${ICONS.chev}</a></li>` : ''}
+          <li><button type="button" class="list-row linkrow" id="test-access-btn"><span class="row-main"><b>Erişim ve Güvenlik Testi</b><span class="muted small">Firestore okuma yetkilerini anlık kontrol et</span></span>${ICONS.chev}</button></li>
+          <li><button type="button" class="list-row linkrow danger-text" id="logout-btn"><span class="row-main"><b>Çıkış Yap</b></span></button></li>
+        </ul>`
+      : `<ul class="list">
+          <li><button type="button" class="list-row linkrow" id="open-auth"><span class="row-main"><b>Özel Giriş (Ahmet & Sude)</b><span class="muted small">Sürpriz ve yönetici hesabı</span></span>${ICONS.chev}</button></li>
+          <li><button type="button" class="list-row linkrow" id="test-guest-btn"><span class="row-main"><b>Güvenlik Kontrolü (Misafir)</b><span class="muted small">Yabancıların erişemediğini doğrula</span></span>${ICONS.chev}</button></li>
+        </ul>`;
+  })()}
+  <p class="group-note muted small">Normal kullanıcıların hesap oluşturması gerekmez; tüm eğitim özellikleri ücretsiz ve çevrimdışı açıktır.</p>
+
   <h2 class="group-title">Hakkında</h2>
   <div class="list">
-    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v4.2</span></div>
+    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v4.3</span></div>
     <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
   </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
@@ -318,6 +351,131 @@ function renderSettings(v) {
   $('#exp', v).onclick = exportBackup; $('#imp', v).onclick = pickAndRestore;
   $('#replay-intro', v).onclick = () => { localStorage.removeItem(INTRO_KEY); showIntro(); };
   $('#reset', v).onclick = resetProgress;
+  if ($('#open-auth', v)) $('#open-auth', v).onclick = () => openAuthModal(() => renderSettings(v));
+  if ($('#logout-btn', v)) $('#logout-btn', v).onclick = async () => { await logout(); toast('Çıkış yapıldı.'); renderSettings(v); };
+  if ($('#test-access-btn', v)) $('#test-access-btn', v).onclick = showAccessTestModal;
+  if ($('#test-guest-btn', v)) $('#test-guest-btn', v).onclick = showAccessTestModal;
+}
+
+async function showAccessTestModal() {
+  const loading = openModal({
+    title: 'Erişim ve Güvenlik Testi',
+    html: `
+      <div class="center" style="padding:1.5rem">
+        <p>Firebase Firestore güvenlik kuralları ve okuma yetkileri test ediliyor…</p>
+        <span class="muted small">Lütfen bekleyin…</span>
+      </div>
+    `
+  });
+
+  const res = await testFirebaseAccess();
+  loading.close();
+
+  const userRole = res.currentUser
+    ? `${esc(res.currentUser.role)} (${esc(res.currentUser.email || res.currentUser.uid)})`
+    : 'Misafir (Giriş Yapılmamış)';
+
+  const itemsHtml = res.tests.map((t) => {
+    const isOk = t.status === 'ALLOWED';
+    const isDenied = t.status === 'DENIED';
+    const badgeClass = isOk ? 'ok-t' : (isDenied ? 'warn-t' : 'err-t');
+    const badgeText = isOk ? '✅ İZİN VERİLDİ' : (isDenied ? '🔒 ENGELLENDİ' : '⚠️ ' + t.status);
+    return `
+      <li class="list-row" style="align-items:flex-start">
+        <div class="row-main">
+          <b>${esc(t.target)}</b>
+          <span class="muted small" style="margin-top:2px">${esc(t.message)}</span>
+        </div>
+        <span class="row-value ${badgeClass}" style="white-space:nowrap;font-weight:600;font-size:0.75rem">${badgeText}</span>
+      </li>
+    `;
+  }).join('');
+
+  openModal({
+    title: 'Firestore Güvenlik ve Yetki Raporu',
+    html: `
+      <div style="margin-bottom:12px">
+        <p class="small muted" style="margin:0 0 4px"><b>Firebase Projesi:</b> <code>${esc(res.project)}</code></p>
+        <p class="small muted" style="margin:0"><b>Mevcut Oturum:</b> <b>${userRole}</b></p>
+      </div>
+      <ul class="list" style="margin-bottom:14px">
+        ${itemsHtml}
+      </ul>
+      <div class="group-note muted small" style="margin-bottom:14px">
+        ${res.currentUser && (res.currentUser.role.includes('Ahmet') || res.currentUser.role.includes('Sude'))
+          ? '✨ Yetkili hesap oturumunuz açık. Yalnızca siz özel fotoğrafa ve mesaja erişebilirsiniz.'
+          : '🛡️ Giriş yapılmamış (Misafir). Özel dokümanlara erişim sunucu tarafından başarıyla engellenmiştir (DENIED).'}
+      </div>
+      <div class="row end">
+        <button type="button" class="btn primary" data-x>Kapat</button>
+      </div>
+    `,
+    onMount(b, api) {
+      $('[data-x]', b).onclick = api.close;
+    }
+  });
+}
+
+function openAuthModal(onSuccess) {
+  openModal({
+    title: 'Özel Giriş (Ahmet & Sude)',
+    html: `
+      <form id="auth-form" class="auth-form" autocomplete="on">
+        <p class="muted small" style="margin-bottom:14px">Bu giriş yalnızca özel sürpriz ve yönetici önizlemesi içindir. Normal kullanıcıların giriş yapması gerekmez.</p>
+        <div class="field">
+          <label for="auth-email">E-posta</label>
+          <input type="email" id="auth-email" class="input" placeholder="ornek@veluno.app" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="auth-pass">Şifre</label>
+          <input type="password" id="auth-pass" class="input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="auth-err" class="err small" style="margin:6px 0 10px"></div>
+        <div class="row end gap">
+          <button type="button" class="btn ghost" data-x>Vazgeç</button>
+          <button type="submit" class="btn primary" id="auth-submit">Giriş Yap</button>
+        </div>
+      </form>
+    `,
+    onMount(b, api) {
+      $('[data-x]', b).onclick = api.close;
+      const form = $('#auth-form', b);
+      const errEl = $('#auth-err', b);
+      const submitBtn = $('#auth-submit', b);
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        errEl.textContent = '';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Giriş yapılıyor…';
+
+        const email = $('#auth-email', b).value.trim();
+        const pass = $('#auth-pass', b).value;
+
+        const res = await login(email, pass);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Giriş Yap';
+
+        if (!res.success) {
+          errEl.textContent = res.error || 'Giriş başarısız.';
+          return;
+        }
+
+        api.close();
+        if (isSude()) {
+          toast('Hoş geldin Sude! Senin için bir sürpriz var. ❤️', 'success');
+          location.hash = '#/surprise';
+        } else if (isAhmet()) {
+          toast('Hoş geldin Ahmet! Sürprizi Önizle modu aktif.', 'success');
+          route();
+        } else {
+          toast('Giriş yapıldı.', 'success');
+          route();
+        }
+        if (typeof onSuccess === 'function') onSuccess();
+      };
+    }
+  });
 }
 
 async function resetProgress() {
@@ -397,6 +555,7 @@ async function boot() {
     return;
   }
   if (!persistent) setTimeout(() => toast('Tarayıcınız kalıcı depolamayı engelliyor; ilerlemeniz bu sekme kapanınca kaybolabilir. Düzenli yedek alın.', 'error', 8000), 1500);
+  try { await initAuth(); } catch {}
   registerSW();
   let seen = false;
   try { seen = localStorage.getItem(INTRO_KEY) === 'true'; } catch { /* */ }

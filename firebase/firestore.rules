@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1) Varsayılan Güvenlik: Tüm genel okuma ve yazma işlemlerini reddet
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2) Sude & Ahmet Özel Romantik Mesaj Belgesi
+    match /private/sude {
+      // Yalnızca kimliği doğrulanmış Ahmet veya Sude mesajı okuyabilir
+      allow read: if request.auth != null && (
+        request.auth.uid == 'abtxapEdixd96LgSRo9ZufW6RB82' ||
+        request.auth.uid == '8wjsLQS03fgOH7EuptJA5mJDqTn2'
+      );
+
+      // İstemci tarafı yazma engellenir (Veri Firebase Console üzerinden yönetilir)
+      allow write: if false;
+    }
+
+    // 3) Sude & Ahmet Özel Fotoğraf Belgesi (Firebase Spark Planı — Blaze Gerekmez)
+    // Fotoğraf WebP biçiminde Base64 kodlanmış olarak bu belgede saklanır
+    match /private/sudePhoto {
+      // Yalnızca kimliği doğrulanmış Ahmet veya Sude fotoğrafı okuyabilir
+      allow read: if request.auth != null && (
+        request.auth.uid == 'abtxapEdixd96LgSRo9ZufW6RB82' ||
+        request.auth.uid == '8wjsLQS03fgOH7EuptJA5mJDqTn2'
+      );
+
+      // İstemci tarafı yazma engellenir (Veri Firebase Console üzerinden yönetilir)
+      allow write: if false;
+    }
+  }
+}

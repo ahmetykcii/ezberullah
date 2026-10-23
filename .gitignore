@@ -6,3 +6,12 @@ node_modules/
 data/backups/
 data/sources/
 data/a2-pilot-100.json
+# Audio files (general protection - only Ahmet's original surprise song is tracked)
+assets/audio/
+!assets/audio/
+assets/audio/*
+!assets/audio/ask.mp3
+*.mp3
+*.m4a
+*.wav
+!assets/audio/ask.mp3

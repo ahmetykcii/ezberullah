@@ -13,12 +13,15 @@ import { handlers } from '../js/learning.js';
 import '../js/review.js';
 import { buildExamItems } from '../js/exams.js';
 import { studyPlan, candidates, reviewItems } from '../js/review.js';
-import { levelStats, streak, streakStats, todayLearnedCount, getMistakeAnalytics, bumpDaily } from '../js/statistics.js';
+import { levelStats, streak, streakStats, today, todayLearnedCount, getMistakeAnalytics, bumpDaily } from '../js/statistics.js';
 import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta, getGrammarProgress, saveGrammarProgress } from '../js/storage.js';
 import { resumeSaved } from '../js/learning.js';
 import * as G from '../js/grammar.js';
 import '../js/vocab-ui.js';
 import { resolveTheme } from '../js/app.js';
+import * as Auth from '../js/auth.js';
+import * as FbCfg from '../js/firebase-config.js';
+import { renderSurprise } from '../js/surprise.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
@@ -29,6 +32,15 @@ if (typeof globalThis.localStorage === 'undefined') {
     setItem: (k, v) => mem.set(String(k), String(v)),
     removeItem: (k) => mem.delete(String(k)),
     clear: () => mem.clear(),
+  };
+}
+if (typeof globalThis.sessionStorage === 'undefined') {
+  const smem = new Map();
+  globalThis.sessionStorage = {
+    getItem: (k) => (smem.has(String(k)) ? smem.get(String(k)) : null),
+    setItem: (k, v) => smem.set(String(k), String(v)),
+    removeItem: (k) => smem.delete(String(k)),
+    clear: () => smem.clear(),
   };
 }
 let pass = 0, fail = 0;
@@ -361,9 +373,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.2.1) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.3.4) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.2.1';"), 'SW sürümü veluno-v4.2.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'SW sürümü veluno-v4.3.4 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -594,7 +606,7 @@ await test('v2.1 Günlük Kelime Hedefi: varsayılan hedef 10, yalnızca öğren
   eq(DEFAULT_SETTINGS.dailyGoal, 10, 'Varsayılan günlük kelime hedefi 10 olmalı');
   
   // Günlük veri durumunu temizleyelim / test nesnesi oluşturalım
-  const testDate = '2026-10-23';
+  const testDate = today().date;
   state.daily[testDate] = { date: testDate, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0, learnedWordIds: [] };
 
   // 1) Yeni bir kelime öğrenildiğinde hedefe 1 eklenir
@@ -616,7 +628,7 @@ await test('v2.1 Günlük Kelime Hedefi: varsayılan hedef 10, yalnızca öğren
   eq(state.daily[testDate].reviews, 1, 'Tekrar sayısı ayrıca tutulmalı');
 
   // 5) Farklı takvim gününde (gece yarısı sonrası) hedef sıfırdan başlar, dünün verisi silinmez
-  const nextDate = '2026-10-24';
+  const nextDate = '2099-01-01';
   const nextDay = { date: nextDate, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0, learnedWordIds: [] };
   eq(todayLearnedCount(nextDay), 0, 'Yeni günde günlük hedef sıfırdan başlamalı');
   eq(todayLearnedCount(state.daily[testDate]), 2, 'Önceki günün öğrenilen kelime sayısı korunmalı');
@@ -1270,7 +1282,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.2.1';"), 'SW sürümü veluno-v4.2.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'SW sürümü veluno-v4.3.4 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1474,6 +1486,286 @@ await test('UI Refinement: Kelime öğrenme ekranında Yavaş metni kaldırıld�
   ok(appSrc.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı korunmalı');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
   ok(css.includes('.hero-title-row{') && css.includes('.hero-sig{'), 'Başlık ve imza satır CSS kuralları korunmalı');
+});
+
+out('\n13) VELUNO v4.3 — Private Romantic Surprise & Secure Architecture');
+
+await test('Sude [1] Gizlilik ve Güvenlik: Depoda hiçbir kişisel fotoğraf, özel mesaj, şifre veya gizli anahtar bulunmamalı', async () => {
+  const fbCfgSrc = await readText('js/firebase-config.js');
+  const authSrc = await readText('js/auth.js');
+
+  // 1) Asla gerçek şifre veya servis hesabı anahtarı kaynak kodda olmamalı
+  ok(!fbCfgSrc.includes('private_key') && !fbCfgSrc.includes('service_account'), 'Firebase istemci yapılandırmasında servis hesabı veya gizli anahtar olmamalı');
+  ok(!authSrc.includes('password = "') && !authSrc.includes("password = '"), 'Sabit şifre karşılaştırması kodda bulunmamalı');
+
+  // 2) Gerçek fotoğraf veya mp3 dosyası depoya eklenmemiş olmalı
+  const fs = await import('node:fs').catch(() => null);
+  if (fs) {
+    ok(!fs.existsSync('assets/sude.jpg') && !fs.existsSync('assets/photo.jpg') && !fs.existsSync('assets/derdim.mp3'), 'Özel fotoğraf veya şarkı deposu herkese açık assets klasörüne yüklenmemeli');
+  }
+});
+
+await test('Sude [2] Firebase Güvenlik Kuralları Taslağı: storage.rules ve firestore.rules varsayılan erişimi reddetmeli', async () => {
+  const storageRules = await readText('firebase/storage.rules');
+  const firestoreRules = await readText('firebase/firestore.rules');
+  const surpriseSrc = await readText('js/surprise.js');
+
+  // Storage Kuralları (Spark Planı: Blaze gerekmemesi için Storage kapalıdır)
+  ok(storageRules.includes("service firebase.storage"), 'storage.rules geçerli firebase.storage servisi tanımlamalı');
+  ok(storageRules.includes("allow read, write: if false;"), 'storage.rules varsayılan olarak tüm yolları engellemeli');
+
+  // Firestore Kuralları
+  ok(firestoreRules.includes("service cloud.firestore"), 'firestore.rules geçerli cloud.firestore servisi tanımlamalı');
+  ok(firestoreRules.includes("allow read, write: if false;"), 'firestore.rules varsayılan olarak tüm yolları engellemeli');
+  ok(firestoreRules.includes("match /private/sude") && firestoreRules.includes("request.auth != null"), 'firestore.rules private/sude belgesi için yetkili UID kontrolü yapmalı');
+  ok(firestoreRules.includes("match /private/sudePhoto") && firestoreRules.includes("request.auth != null"), 'firestore.rules private/sudePhoto belgesi için yetkili UID kontrolü yapmalı');
+  ok(firestoreRules.includes("allow write: if false;"), 'firestore.rules istemci tarafı yazma işlemlerini engellemeli');
+
+  // surprise.js Firestore fotoğraf depolama kontrolü (Storage çağrısı olmamalı, Firestore sudePhoto kullanılmalı)
+  ok(!surpriseSrc.includes("firebase.storage"), 'surprise.js Firebase Storage çağrısı içermemeli (Spark planı)');
+  ok(surpriseSrc.includes("doc('sudePhoto')") && surpriseSrc.includes("imageBase64"), 'surprise.js Firestore sudePhoto belgesinden imageBase64 okumalı');
+});
+
+await test('Sude [3] Yetkilendirme & Rol Davranışı: Misafir, Sude, Ahmet ve yetkisiz UID durumları', () => {
+  Auth._resetForTesting();
+
+  // 1) Misafir (Giriş yapılmamış)
+  eq(Auth.getCurrentUser(), null, 'Başlangıçta kullanıcı null olmalı');
+  eq(Auth.isLoggedIn(), false, 'Misafir isLoggedIn=false olmalı');
+  eq(Auth.isSude(), false, 'Misafir isSude=false olmalı');
+  eq(Auth.isAhmet(), false, 'Misafir isAhmet=false olmalı');
+  eq(Auth.isAuthorizedUser(), false, 'Misafir isAuthorizedUser=false olmalı');
+
+  // 2) Rastgele / yetkisiz UID
+  Auth._setMockUserForTesting({ uid: 'random-unauthorized-uid', email: 'intruder@test.com' });
+  eq(Auth.isLoggedIn(), true, 'Giriş yapmış sayılmalı');
+  eq(Auth.isSude(), false, 'Yetkisiz hesap Sude sayılmamalı');
+  eq(Auth.isAhmet(), false, 'Yetkisiz hesap Ahmet sayılmamalı');
+  eq(Auth.isAuthorizedUser(), false, 'Yetkisiz hesap isAuthorizedUser=false olmalı');
+
+  // 3) Geçersiz UID kontrol fonksiyonları
+  eq(FbCfg.isSudeUid(''), false);
+  eq(FbCfg.isAhmetUid(''), false);
+  eq(FbCfg.isAuthorizedUid('fake'), false);
+
+  Auth._resetForTesting();
+});
+
+await test('Sude [4] Sude Oturum Kalıcılığı: Yeni girişte sürpriz gösterilmeli, sayfa yenilemede zorla açılmamalı', () => {
+  Auth._resetForTesting();
+
+  // Başlangıçta oturumda görülmedi
+  eq(Auth.hasSeenSurpriseThisSession(), false, 'Yeni oturumda sürpriz henüz görülmemiş olmalı');
+
+  // Sude sürprizi gördüğünde veya devam et butonuna bastığında
+  Auth.markSurpriseSeen();
+  eq(Auth.hasSeenSurpriseThisSession(), true, 'Sürpriz görüldükten sonra true dönmeli');
+
+  // Sayfa yenilemesi oturumu korur
+  eq(Auth.hasSeenSurpriseThisSession(), true, 'Sayfa yenilendiğinde sürpriz tekrar zorla açılmamalı');
+
+  // Yeni bir giriş (login) yapıldığında sıfırlanır
+  Auth.resetSurpriseSession();
+  eq(Auth.hasSeenSurpriseThisSession(), false, 'Yeni girişte sürpriz yeniden gösterilmek üzere sıfırlanmalı');
+
+  Auth._resetForTesting();
+});
+
+await test('Sude [5] Sürpriz Ekranı Arayüzü: Just For You tasarımı, Apple sadeliği, süzülen kalpler ve müzik altyapısı', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+
+  // Arayüz bileşenleri
+  ok(surpriseSrc.includes('JUST FOR YOU') && surpriseSrc.includes('Senin için küçük bir şey hazırladım'), 'Sürpriz başlığı ve selamlama metni bulunmalı');
+  ok(surpriseSrc.includes('id="btn-open-surprise"'), 'Sürprizini Aç butonu bulunmalı');
+  ok(surpriseSrc.includes('id="jfy-revealed"') && surpriseSrc.includes('id="jfy-placeholder"'), 'Açılış aşaması ve güvenli fotoğraf yer tutucusu bulunmalı');
+  ok(surpriseSrc.includes('id="btn-toggle-music"') && surpriseSrc.includes('id="jfy-audio"'), 'Minimalist müzik kontrol butonu ve ses öğesi bulunmalı');
+  ok(!surpriseSrc.includes('Gökhan Türkmen') && !surpriseSrc.includes('jfy-music-card'), 'Şarkı ve sanatçı adı arayüzde görünmemeli, büyük kart kaldırılmış olmalı');
+  ok(surpriseSrc.includes('Beni Sevmeye Devam Et') || surpriseSrc.includes('VELUNO’ya Devam Et') || surpriseSrc.includes('VELUNO&#39;ya Devam Et'), "Romantik çıkış butonu bulunmalı");
+
+  // CSS sınıfları (jfy-* isim alanı)
+  ok(css.includes('.jfy-page{') && css.includes('.jfy-hearts-bg{'), 'Romantik sayfa ve süzülen kalpler CSS kuralları tanımlı olmalı');
+  ok(css.includes('@keyframes jfyFloat') && css.includes('.jfy-romantic-card{'), 'Kalp animasyonları ve romantik kart tasarımı bulunmalı');
+});
+
+await test('Sude [6] Çevrimdışı ve Sıfır Bağımlılık Garantisi: Firebase olmadan VELUNO kelime, grammar ve temaları 100% çalışmalı', async () => {
+  const allWords = [...data.A2, ...data.B1, ...data.B2];
+  const activeWords = allWords.filter((w) => !w.isDraft);
+
+  // 1) Tüm eğitim verileri eksiksiz korunmalı
+  eq(activeWords.length, 2010, '2.010 aktif kelime korunmalı');
+  eq(allWords.length, 2024, '2.024 toplam kayıt korunmalı');
+  eq(G.GRAMMAR_TOPICS.length, 38, '38 Grammar dersi korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 760, '760 Grammar sorusu korunmalı');
+
+  // 2) Dört tema ve imza korunmalı
+  eq(resolveTheme('light'), 'light');
+  eq(resolveTheme('dark'), 'dark');
+  eq(resolveTheme('studio'), 'studio');
+  eq(resolveTheme('auto', true), 'dark');
+  eq(resolveTheme('auto', false), 'light');
+
+  const appSrc = await readText('js/app.js');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
+});
+
+await test('Sude [7] Spark Planı & Firestore Fotoğraf Depolama Mimarisi: 100% Ücretsiz, Sıfır Blaze Bağımlılığı, Base64 WebP ve Doküman Limiti Güvencesi', async () => {
+  const readmeSrc = await readText('firebase/README.md');
+  const firestoreRules = await readText('firebase/firestore.rules');
+  const surpriseSrc = await readText('js/surprise.js');
+
+  // 1) Spark ve Blaze bağımsızlığı README ve kurallarda belgelenmeli
+  ok(readmeSrc.includes('Firebase Spark') && readmeSrc.includes('Blaze Gerekmez'), 'README.md Spark planı ve Blaze gereksizliğini belirtmeli');
+  ok(readmeSrc.includes('sudePhoto') && readmeSrc.includes('imageBase64') && readmeSrc.includes('mimeType'), 'README.md sudePhoto belge alanlarını açıklamalı');
+  ok(readmeSrc.includes('1 MiB') || readmeSrc.includes('1MB') || readmeSrc.includes('1 MB'), 'README.md Firestore 1 MiB belge boyut limitini açıklamalı');
+
+  // 2) Firestore rules sudePhoto belgesine istemci yazmasını engellemeli
+  ok(firestoreRules.includes('match /private/sudePhoto'), 'firestore.rules private/sudePhoto belgesini tanımlamalı');
+  ok(firestoreRules.includes('allow write: if false;'), 'firestore.rules istemci yazmasını yasaklamalı');
+
+  // 3) surprise.js Data URL oluşturma mantığı: mimeType fallback 'image/webp' ve base64
+  ok(surpriseSrc.includes("mimeType || 'image/webp'"), 'surprise.js varsayılan WebP mimeType kullanmalı');
+  ok(surpriseSrc.includes('data:${mime};base64,${pdata.imageBase64}'), 'surprise.js Data URL formatını doğru üretmeli');
+});
+
+await test('Sude [8] Firebase Web Bağlantı Altyapısı ve Erişim Tanılama Aracı (testFirebaseAccess)', async () => {
+  const fbCfg = await import('../js/firebase-config.js');
+  const authModule = await import('../js/auth.js');
+  const appSrc = await readText('js/app.js');
+
+  // 1) Proje adı veluno-private ve gerçek yapılandırma değerleri tanımlı olmalı
+  eq(fbCfg.FIREBASE_CONFIG.projectId, 'veluno-private', 'projectId veluno-private olmalı');
+  eq(fbCfg.FIREBASE_CONFIG.authDomain, 'veluno-private.firebaseapp.com', 'authDomain veluno-private olmalı');
+  eq(fbCfg.FIREBASE_CONFIG.messagingSenderId, '1027705472722', 'messagingSenderId doğru olmalı');
+  eq(fbCfg.isFirebaseConfigured(), true, 'isFirebaseConfigured true dönmeli');
+
+  // 2) Gerçek UID değerleri ve yetki kontrol fonksiyonları
+  eq(fbCfg.AUTHORIZED_UIDS.AHMET, 'abtxapEdixd96LgSRo9ZufW6RB82', 'Ahmet UID doğru ayarlanmalı');
+  eq(fbCfg.AUTHORIZED_UIDS.SUDE, '8wjsLQS03fgOH7EuptJA5mJDqTn2', 'Sude UID doğru ayarlanmalı');
+  eq(fbCfg.isAhmetUid('abtxapEdixd96LgSRo9ZufW6RB82'), true, 'Ahmet UID tanınmalı');
+  eq(fbCfg.isSudeUid('8wjsLQS03fgOH7EuptJA5mJDqTn2'), true, 'Sude UID tanınmalı');
+  eq(fbCfg.isAuthorizedUid('intruder'), false, 'Yabancı UID yetkisiz olmalı');
+
+  // 3) testFirebaseAccess fonksiyonu export edilmiş olmalı ve güvenli sonuç dönmeli
+  ok(typeof authModule.testFirebaseAccess === 'function', 'testFirebaseAccess fonksiyonu mevcut olmalı');
+  const res = await authModule.testFirebaseAccess();
+  eq(res.project, 'veluno-private', 'testFirebaseAccess doğru proje adını okumalı');
+  ok(Array.isArray(res.tests), 'test sonuçları dizi olmalı');
+
+  // 4) Ayarlar ekranında Erişim ve Güvenlik Testi butonları tanımlı olmalı
+  ok(appSrc.includes('id="test-access-btn"') && appSrc.includes('id="test-guest-btn"'), 'Ayarlar menüsünde hem yetkili hem misafir için test butonu bulunmalı');
+  ok(appSrc.includes('showAccessTestModal'), 'app.js içinde tanılama modalı tanımlı olmalı');
+});
+
+await test('Sude [9] Romantik Deneyim Tasarımı: Büyütülmüş Fotoğraf (%30), Kalp Patlaması, Zengin Kalp Atmosferi ve Tipografi', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+
+  // 1) Ses Uyarısı (Sound notice)
+  ok(surpriseSrc.includes('class="jfy-sound-notice"') && surpriseSrc.includes('Telefonunun sesini açmayı unutma'), 'Açılış ekranında romantik ses uyarısı bulunmalı');
+  ok(surpriseSrc.includes('Çünkü bu sürprizin bir de şarkısı var'), 'Ses uyarısı açıklama metni bulunmalı');
+
+  // 2) Büyütülmüş Fotoğraf Alanı (340px yerine 440px)
+  ok(css.includes('.jfy-photo-container{width:100%;max-width:440px') || css.includes('max-width:440px;margin:0 auto'), 'Fotoğraf alanı genişliği 440px (~%30 daha büyük) olmalı');
+  ok(css.includes('.jfy-real-photo') && css.includes('@keyframes jfyPhotoReveal'), 'Fotoğraf reveal animasyonu tanımlı olmalı');
+
+  // 3) Kalp Patlaması (Heart Burst)
+  ok(surpriseSrc.includes('triggerHeartBurst'), 'triggerHeartBurst fonksiyonu sürpriz açılışında çağrılmalı');
+  ok(css.includes('.jfy-burst-wrap') && css.includes('.jfy-burst-particle') && css.includes('@keyframes jfyBurstAnim'), 'Kalp patlaması parçacık animasyonu tanımlı olmalı');
+
+  // 4) Zenginleştirilmiş Arka Plan Kalpleri (>= 25 adet)
+  const heartMatches = (surpriseSrc.match(/class="jfy-heart h\d+"/g) || []);
+  ok(heartMatches.length >= 25, `Arka planda en az 25 romantik kalp bulunmalı, bulunan: ${heartMatches.length}`);
+
+  // 5) Tipografi ve Mesaj Düzeni
+  ok(surpriseSrc.includes('formatRomanticMessage'), 'Mesaj için formatRomanticMessage fonksiyonu bulunmalı');
+  ok(css.includes('.jfy-msg-lead') && css.includes('.jfy-msg-divider') && css.includes('.jfy-msg-paragraphs'), 'Mesaj lead, kalp ayırıcı ve sola hizalı ferah gövde sınıfları tanımlı olmalı');
+
+  // 6) Gizlilik Garantisi: Gerçek kişisel mesaj kaynak kodda veya CSS içinde bulunmamalı
+  ok(!surpriseSrc.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj kaynak kodda sabit gömülü olmamalı');
+  ok(!css.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj CSS içine eklenmemeli');
+});
+
+await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parçacık, Web Animations, DOM Temizliği & SW Cache-Bust', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+  const sw = await readText('service-worker.js');
+
+  // 1) ~100 Parçacık (Mobilde 60)
+  ok(surpriseSrc.includes('totalParticles = isMobile ? 60 : 100') || surpriseSrc.includes('100'), 'Kalp patlaması masaüstünde ~100 parçacıktan oluşmalı');
+
+  // 2) Safari ve Modern Tarayıcılar İçin Web Animations API Donanım Hızlandırması
+  ok(surpriseSrc.includes('p.animate'), 'Safari CSS değişken sorunlarını aşmak için Web Animations API kullanılmalı');
+
+  // 3) En Önde Görünürlük & Kırpılma Koruması (z-index: 999999 & inset: 0)
+  ok(css.includes('.jfy-burst-wrap{position:fixed;inset:0;') && css.includes('z-index:999999'), 'Burst taşıyıcısı ekranın en önünde (z-index: 999999) ve tam ekran (inset: 0) olmalı');
+
+  // 4) DOM Temizliği (Parçacıkların ve taşıyıcının kaldırılması)
+  ok(surpriseSrc.includes('burstWrap.parentNode.removeChild(burstWrap)') && surpriseSrc.includes('try { el.remove(); }'), 'Animasyon tamamlandıktan sonra parçacıklar ve taşıyıcı DOM\'dan temizlenmeli');
+
+  // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
+  ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
+
+  // 6) Service Worker Önbellek Yenilenmesi (v4.3.4)
+  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+});
+
+await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+
+  // 1) Buton metni ve yapısı: "Beni Sevmeye Devam Et ❤️"
+  ok(surpriseSrc.includes('Beni Sevmeye Devam Et') && surpriseSrc.includes('class="jfy-btn-continue"'), 'Yeni buton metni Beni Sevmeye Devam Et ❤️ olmalı');
+  ok(!surpriseSrc.includes('class="btn primary xl block jfy-btn-continue"'), 'Buton Studio temasının lime yeşilini almaması için genel btn primary sınıfından arındırılmalı');
+
+  // 2) Buton renkleri: #E8B4D8, #F3C5E5, #27152D, rgba(255,220,245,.35)
+  ok(css.includes('background:#E8B4D8') && css.includes('color:#27152D'), 'Buton arka planı #E8B4D8 ve metin rengi #27152D olmalı');
+  ok(css.includes('.jfy-btn-continue:hover{background:#F3C5E5'), 'Buton hover rengi #F3C5E5 olmalı');
+  ok(css.includes('border:1px solid rgba(255,220,245,.35)'), 'Buton çerçevesi rgba(255,220,245,.35) olmalı');
+
+  // 3) Kalplerin üstte birikmesini önleyen mimari (bottom: -60px ve negatif animation-delay)
+  ok(css.includes('.jfy-heart{position:absolute;bottom:-60px;') && css.includes('animation-fill-mode:both;'), 'Kalplerin başlangıç konumu altta (bottom: -60px) olmalı, üstte birikmemeli');
+  ok(css.includes('animation-delay:-'), 'Kalplerin ekranda anında dağılmış olması için negatif gecikme (animation-delay: -Xs) kullanılmalı');
+
+  // 4) Arka plan kalp yoğunluğu: Masaüstünde 80 kalp, mobilde 40 kalbe dinamik azaltma
+  const heartMatches = (surpriseSrc.match(/class="jfy-heart h\d+"/g) || []);
+  eq(heartMatches.length, 80, 'Masaüstünde tam 80 arka plan kalbi tanımlı olmalı');
+  ok(css.includes('.jfy-heart:nth-child(n+41){display:none!important}'), 'Mobilde (max-width:768px) 40 kalbe dinamik performans azaltması yapılmalı');
+});
+
+await test('Sude [12] Minimalist Müzik Sistemi, Gizli Şarkı/Sanatçı Bilgisi ve Telif Koruması', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+  const gitignore = await readText('.gitignore');
+
+  // 1) Şarkı adı ve sanatçı adı kullanıcı arayüzünde görünmemeli, büyük kart kaldırılmış olmalı
+  ok(!surpriseSrc.includes('Gökhan Türkmen') && !surpriseSrc.includes('Derdim'), 'Şarkıcı veya şarkı adı arayüzde görünmemeli');
+  ok(!surpriseSrc.includes('class="jfy-music-card"') && !css.includes('.jfy-music-card{'), 'Büyük müzik kartı DOM ve CSS içerisinden kaldırılmış olmalı');
+
+  // 2) Zarif, küçük oynat/duraklat butonu (pudra pembe ve lavanta tonlarında)
+  ok(surpriseSrc.includes('class="jfy-audio-btn"') && surpriseSrc.includes('id="btn-toggle-music"'), 'Zarif müzik butonu bulunmalı');
+  ok(css.includes('.jfy-audio-btn{') && css.includes('color:#E8B4D8'), 'Müzik butonu pudra pembe / lavanta (#E8B4D8) renk paletine sahip olmalı');
+
+  // 3) Safari kullanıcı etkileşimi uyumu ve eş zamanlı başlatma
+  ok(surpriseSrc.includes('audioEl.play()') && surpriseSrc.includes('triggerHeartBurst'), 'Sürpriz açıldığında ses oynatma ve kalp patlaması eş zamanlı tetiklenmeli');
+
+  // 4) Beni Sevmeye Devam Et butonuna basıldığında ses durdurulmalı
+  ok(surpriseSrc.includes('audioEl.pause()'), 'Çıkış butonuna basıldığında müzik durdurulmalı');
+
+  // 5) Telifli ses dosyaları gitignore ile korunmalı (Yalnızca Ahmet'in orijinal şarkısına istisna)
+  ok(gitignore.includes('*.mp3') && gitignore.includes('!assets/audio/ask.mp3'), '.gitignore içinde genel ses koruması ve yalnızca ask.mp3 istisnası bulunmalı');
+});
+
+await test('Sude [13] Ahmet’in Özgün Şarkısı (ask.mp3) Entegrasyonu & Git Yayınına Hazırlık', async () => {
+  const gitignore = await readText('.gitignore');
+  const surpriseSrc = await readText('js/surprise.js');
+
+  // 1) ask.mp3 ses kaynağının surprise.js içinde göreli yol ile tanımlı olması (/ezberullah/ uyumu)
+  ok(surpriseSrc.includes('assets/audio/ask.mp3'), 'Ses kaynağı assets/audio/ask.mp3 göreli yoluyla bağlı olmalı');
+
+  // 2) .gitignore ask.mp3 dosyasını takip edilebilir kılar, diğer tüm mp3/m4a/wav dosyalarını korur
+  ok(gitignore.includes('!assets/audio/ask.mp3'), 'ask.mp3 için gitignore istisnası tanımlı olmalı');
+  ok(gitignore.includes('*.mp3') && gitignore.includes('*.m4a') && gitignore.includes('*.wav'), 'Diğer ses dosyaları koruma altında olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

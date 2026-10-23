@@ -1,0 +1,13 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Firebase Spark (Ücretsiz) Planı:
+    // Firebase Storage Blaze (ücretli) planı gerektirdiğinden VELUNO v4.3'te kullanılmamaktadır.
+    // Sude'nin özel fotoğrafı Cloud Firestore (private/sudePhoto) üzerinde Base64 WebP olarak saklanır.
+    // Tüm depolama yolları tam güvenlikle kilitlenmiştir.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
