@@ -502,9 +502,9 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .jfy-btn-reveal:active{transform:scale(.98)}
 
 /* Kalp Patlaması Parçacık Animasyonu (Heart Burst) */
-.jfy-burst-wrap{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
-.jfy-burst-particle{position:absolute;left:0;top:0;user-select:none;pointer-events:none;font-size:22px;animation:jfyBurstAnim cubic-bezier(.12,.78,.32,1) forwards}
-@keyframes jfyBurstAnim{0%{transform:translate3d(0,0,0) scale(.3) rotate(0deg);opacity:1}60%{opacity:.95}100%{transform:translate3d(var(--dx),var(--dy),0) scale(var(--scale)) rotate(var(--rot));opacity:0}}
+.jfy-burst-wrap{position:fixed;inset:0;pointer-events:none;z-index:999999;overflow:visible}
+.jfy-burst-particle{position:absolute;user-select:none;pointer-events:none;font-size:24px;line-height:1;margin-left:-14px;margin-top:-14px;will-change:transform,opacity;filter:drop-shadow(0 2px 6px rgba(244,114,182,.45));animation:jfyBurstAnim 2s cubic-bezier(.12,.78,.32,1) forwards}
+@keyframes jfyBurstAnim{0%{transform:translate3d(0,0,0) scale(.3) rotate(0deg);opacity:1}60%{opacity:.95}100%{transform:translate3d(var(--dx,0px),var(--dy,0px),0) scale(var(--scale,1)) rotate(var(--rot,0deg));opacity:0}}
 
 /* Açılan Romantik Kart */
 .jfy-stage-revealed.jfy-fade-in{animation:jfyFadeIn .85s cubic-bezier(.2,.7,.2,1) forwards}
@@ -558,6 +558,8 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .ahmet-preview-banner a:hover{background:#4D265F}
 
 @media(prefers-reduced-motion:reduce){
-.jfy-heart,.jfy-heart-pulse,.jfy-burst-particle,.jfy-real-photo,.jfy-stage-revealed.jfy-fade-in{animation:none!important}
+.jfy-heart,.jfy-heart-pulse,.jfy-real-photo,.jfy-stage-revealed.jfy-fade-in{animation:none!important}
+.jfy-burst-particle{animation:jfyBurstReduced 1.6s ease-out forwards!important}
 }
+@keyframes jfyBurstReduced{0%{opacity:1;transform:translate3d(0,0,0) scale(1)}100%{opacity:0;transform:translate3d(0,-24px,0) scale(1.15)}}
 

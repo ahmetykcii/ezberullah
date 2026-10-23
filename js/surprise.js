@@ -189,12 +189,21 @@ function wireSurpriseEvents(container) {
         }
       }
 
-      // 2) Muhteşem Kalp Patlaması Efekti (Heart Burst Particle Animation)
+      // 2) Muhteşem Kalp Patlaması Efekti (36 radyal kalp parçacığı)
       triggerHeartBurst(container, openBtn);
 
       // 3) Karşılama ekranını yumuşak biçimde gizle ve sürpriz kartını aç
-      if (introEl) introEl.hidden = true;
-      if (revealedEl) {
+      if (introEl) {
+        introEl.style.transition = 'opacity 300ms ease-out';
+        introEl.style.opacity = '0';
+        setTimeout(() => {
+          introEl.hidden = true;
+          if (revealedEl) {
+            revealedEl.hidden = false;
+            revealedEl.classList.add('jfy-fade-in');
+          }
+        }, 220);
+      } else if (revealedEl) {
         revealedEl.hidden = false;
         revealedEl.classList.add('jfy-fade-in');
       }
@@ -244,51 +253,106 @@ function wireSurpriseEvents(container) {
 function triggerHeartBurst(container, sourceBtn) {
   if (typeof document === 'undefined') return;
 
+  // 1) Tam ekran sabit katman oluştur (z-index: 999999, ekranın en önünde, kırpılma yok)
   const burstWrap = document.createElement('div');
   burstWrap.className = 'jfy-burst-wrap';
   burstWrap.setAttribute('aria-hidden', 'true');
 
-  const rect = sourceBtn ? sourceBtn.getBoundingClientRect() : null;
-  const originX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
-  const originY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+  // 2) Buton koordinatlarını hesapla (varsayılan: ekran merkezi)
+  let originX = typeof window !== 'undefined' ? window.innerWidth / 2 : 200;
+  let originY = typeof window !== 'undefined' ? window.innerHeight / 2 : 300;
 
-  burstWrap.style.left = `${originX}px`;
-  burstWrap.style.top = `${originY}px`;
+  if (sourceBtn && typeof sourceBtn.getBoundingClientRect === 'function') {
+    const rect = sourceBtn.getBoundingClientRect();
+    if (rect && rect.width > 0 && rect.height > 0) {
+      originX = rect.left + rect.width / 2;
+      originY = rect.top + rect.height / 2;
+    }
+  }
+
+  // 3) Reduced Motion (Azaltılmış Hareket) Kontrolü
+  const isReduced = (
+    (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+    (typeof document !== 'undefined' && document.documentElement && (document.documentElement.classList.contains('reduce') || document.documentElement.classList.contains('no-anim')))
+  );
 
   const heartIcons = ['❤️', '💖', '💕', '💗', '💓', '💘', '✨'];
   const totalParticles = 36;
+  const particleElements = [];
 
   for (let i = 0; i < totalParticles; i++) {
     const p = document.createElement('span');
     p.className = 'jfy-burst-particle';
     p.textContent = heartIcons[i % heartIcons.length];
 
-    // Rastgele açı ve mesafe
-    const angle = (i * (360 / totalParticles) + (Math.random() * 20 - 10)) * (Math.PI / 180);
-    const dist = 90 + Math.random() * 210;
-    const dx = Math.cos(angle) * dist;
-    const dy = Math.sin(angle) * dist - 30; // Hafif yukarı eğim
-    const rot = (Math.random() * 80 - 40);
-    const scale = 0.8 + Math.random() * 0.9;
+    p.style.left = `${originX}px`;
+    p.style.top = `${originY}px`;
 
-    p.style.setProperty('--dx', `${dx.toFixed(1)}px`);
-    p.style.setProperty('--dy', `${dy.toFixed(1)}px`);
-    p.style.setProperty('--rot', `${rot.toFixed(1)}deg`);
-    p.style.setProperty('--scale', scale.toFixed(2));
-    p.style.animationDuration = `${(1.5 + Math.random() * 0.7).toFixed(2)}s`;
-    p.style.animationDelay = `${(Math.random() * 0.15).toFixed(2)}s`;
+    if (isReduced) {
+      // Erişilebilirlik: Hızlı savrulma yerine nazik, yukarı süzülen yumuşak kalp ışığı
+      const spreadX = (Math.random() - 0.5) * 80;
+      const spreadY = -20 - Math.random() * 50;
+      const durationMs = 1400 + Math.random() * 600;
+
+      if (typeof p.animate === 'function') {
+        p.animate([
+          { transform: 'translate3d(0, 0, 0) scale(0.9)', opacity: 1 },
+          { transform: `translate3d(${spreadX.toFixed(1)}px, ${spreadY.toFixed(1)}px, 0) scale(1.1)`, opacity: 0 }
+        ], {
+          duration: durationMs,
+          easing: 'ease-out',
+          fill: 'forwards'
+        });
+      }
+    } else {
+      // 36 parçacıklı tam radyal patlama açısı ve mesafesi
+      const angle = (i * (360 / totalParticles) + (Math.random() * 16 - 8)) * (Math.PI / 180);
+      const dist = 90 + Math.random() * 220;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist - 35; // Romantik hafif yukarı eğim
+      const rot = Math.random() * 80 - 40;
+      const scale = 0.85 + Math.random() * 0.95;
+      const durationMs = Math.round(1500 + Math.random() * 700);
+      const delayMs = Math.round(Math.random() * 120);
+
+      // Safari ve tüm modern tarayıcılar için Web Animations API ile donanım hızlandırmalı garanti animasyon
+      if (typeof p.animate === 'function') {
+        p.animate([
+          { transform: 'translate3d(0, 0, 0) scale(0.3) rotate(0deg)', opacity: 1 },
+          { transform: `translate3d(${(dx * 0.6).toFixed(1)}px, ${(dy * 0.6).toFixed(1)}px, 0) scale(${(scale * 1.15).toFixed(2)}) rotate(${(rot * 0.5).toFixed(1)}deg)`, opacity: 0.95, offset: 0.6 },
+          { transform: `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(${scale.toFixed(2)}) rotate(${rot.toFixed(1)}deg)`, opacity: 0 }
+        ], {
+          duration: durationMs,
+          delay: delayMs,
+          easing: 'cubic-bezier(0.12, 0.78, 0.32, 1)',
+          fill: 'forwards'
+        });
+      }
+
+      // CSS keyframe yedeği
+      p.style.setProperty('--dx', `${dx.toFixed(1)}px`);
+      p.style.setProperty('--dy', `${dy.toFixed(1)}px`);
+      p.style.setProperty('--rot', `${rot.toFixed(1)}deg`);
+      p.style.setProperty('--scale', scale.toFixed(2));
+      p.style.animationDuration = `${(durationMs / 1000).toFixed(2)}s`;
+      p.style.animationDelay = `${(delayMs / 1000).toFixed(2)}s`;
+    }
 
     burstWrap.appendChild(p);
+    particleElements.push(p);
   }
 
   document.body.appendChild(burstWrap);
 
-  // 2.3 saniye sonra parçacık DOM'unu temizle
+  // 2.4 saniye sonra tüm parçacıkları ve taşıyıcıyı DOM'dan temizle
   setTimeout(() => {
+    particleElements.forEach((el) => {
+      try { el.remove(); } catch {}
+    });
     if (burstWrap.parentNode) {
       burstWrap.parentNode.removeChild(burstWrap);
     }
-  }, 2300);
+  }, 2400);
 }
 
 function updateMusicUI(playing, container) {

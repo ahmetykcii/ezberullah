@@ -373,9 +373,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.3.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.3.1) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.0';"), 'SW sürümü veluno-v4.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.1';"), 'SW sürümü veluno-v4.3.1 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1282,7 +1282,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.0';"), 'SW sürümü veluno-v4.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.1';"), 'SW sürümü veluno-v4.3.1 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1683,6 +1683,30 @@ await test('Sude [9] Romantik Deneyim Tasarımı: Büyütülmüş Fotoğraf (%30
   // 6) Gizlilik Garantisi: Gerçek kişisel mesaj kaynak kodda veya CSS içinde bulunmamalı
   ok(!surpriseSrc.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj kaynak kodda sabit gömülü olmamalı');
   ok(!css.includes('Senin için, bizim için ve daha iyi biri olabilmek için'), 'Gerçek kişisel mesaj CSS içine eklenmemeli');
+});
+
+await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, 36 Parçacık, Web Animations, DOM Temizliği & SW Cache-Bust', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+  const sw = await readText('service-worker.js');
+
+  // 1) 36 Parçacık
+  ok(surpriseSrc.includes('const totalParticles = 36;'), 'Kalp patlaması tam 36 parçacıktan oluşmalı');
+
+  // 2) Safari ve Modern Tarayıcılar İçin Web Animations API Donanım Hızlandırması
+  ok(surpriseSrc.includes('p.animate'), 'Safari CSS değişken sorunlarını aşmak için Web Animations API kullanılmalı');
+
+  // 3) En Önde Görünürlük & Kırpılma Koruması (z-index: 999999 & inset: 0)
+  ok(css.includes('.jfy-burst-wrap{position:fixed;inset:0;') && css.includes('z-index:999999'), 'Burst taşıyıcısı ekranın en önünde (z-index: 999999) ve tam ekran (inset: 0) olmalı');
+
+  // 4) DOM Temizliği (Parçacıkların ve taşıyıcının kaldırılması)
+  ok(surpriseSrc.includes('burstWrap.parentNode.removeChild(burstWrap)') && surpriseSrc.includes('try { el.remove(); }'), 'Animasyon tamamlandıktan sonra parçacıklar ve taşıyıcı DOM\'dan temizlenmeli');
+
+  // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
+  ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
+
+  // 6) Service Worker Önbellek Yenilenmesi (v4.3.1)
+  ok(sw.includes("const VERSION = 'veluno-v4.3.1';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
