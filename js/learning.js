@@ -135,7 +135,7 @@ function renderItem() {
 
 export function toggleFocus() { setFocusMode(!document.body.classList.contains('focus')); }
 
-const speakBtn = (t) => `<span class="speak-row"><button type="button" class="speak-btn" data-speak="${esc(t)}" aria-label="Dinle">${ICONS.speaker}</button><button type="button" class="text-btn" data-speak="${esc(t)}" data-slow="1" aria-label="Yavaş dinle">Yavaş</button></span>`;
+const speakBtn = (t) => `<span class="speak-row"><button type="button" class="speak-btn" data-speak="${esc(t)}" aria-label="Dinle">${ICONS.speaker}</button></span>`;
 const inputForm = (ph) => `<form id="ans" autocomplete="off"><input id="inp" class="input lg" placeholder="${ph}" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" inputmode="text" aria-label="Cevabınız"><button class="btn primary xl block" type="submit">Kontrol Et</button></form>`;
 
 function cardDetails(w) {

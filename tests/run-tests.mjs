@@ -361,9 +361,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.2.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.2.1) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.2.0';"), 'SW sürümü veluno-v4.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.2.1';"), 'SW sürümü veluno-v4.2.1 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1270,7 +1270,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.2.0';"), 'SW sürümü veluno-v4.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.2.1';"), 'SW sürümü veluno-v4.2.1 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1458,6 +1458,22 @@ await test('Studio [6] Mevcut sistemlerin, 2.024 kelimenin, 38 Grammar konusunun
 
   const appSrc = await readText('js/app.js');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
+});
+
+await test('UI Refinement: Kelime öğrenme ekranında Yavaş metni kaldırıldı, ses butonu korundu; Ana sayfada logo kaldırıldı, VELUNO ve imza hizalandı', async () => {
+  const learnSrc = await readText('js/learning.js');
+  const appSrc = await readText('js/app.js');
+  const css = await readText('css/style.css');
+
+  // 1) "Yavaş" metni kaldırılmış olmalı, ses butonu ve simgesi korunmalı
+  ok(!learnSrc.includes('>Yavaş</button>') && !learnSrc.includes('data-slow'), 'Öğrenme ekranında Yavaş butonu ve metni bulunmamalı');
+  ok(learnSrc.includes('class="speak-btn"') && learnSrc.includes('data-speak='), 'Öğrenme ekranında seslendirme butonu ve data-speak korunmalı');
+
+  // 2) Ana sayfada üst logoyu içermemeli, VELUNO başlığı ve imza yan yana korunmalı
+  ok(!appSrc.includes('alt="VELUNO logosu"') && !appSrc.includes('class="hero-logo"'), 'Ana sayfa üst bölümünde logo görseli bulunmamalı');
+  ok(appSrc.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı korunmalı');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
+  ok(css.includes('.hero-title-row{') && css.includes('.hero-sig{'), 'Başlık ve imza satır CSS kuralları korunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

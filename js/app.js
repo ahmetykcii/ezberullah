@@ -188,7 +188,7 @@ function renderDashboard(v) {
   }
 
   v.innerHTML = `<div class="page home">
-  <header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="VELUNO logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
+  <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
   <section class="today" aria-label="Bugünkü hedef">
     <div class="today-row"><div class="today-label">Bugünkü Hedefin: <b>${tWords}/${dailyGoal}</b> Kelime</div><button type="button" class="text-btn" id="edit-goal">Değiştir</button></div>
     <div class="progress ${reached ? 'goal-reached' : ''}" role="progressbar" aria-valuenow="${goalPct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${goalPct}%"></i></div>
