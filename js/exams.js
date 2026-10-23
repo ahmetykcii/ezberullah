@@ -1,7 +1,7 @@
 // Sınav sistemi: Mini Sınav, 50/100 Kelime Sınavı, Yanlış Kelimeler Sınavı, Seviye Bitirme Sınavı (40 soru, %80 geçme).
-import { state, saveData, getProgress, saveProgress } from './storage.js';
+import { state, saveData, getProgress, saveProgress, getMeta } from './storage.js';
 import * as E from './engine.js';
-import { $$, esc, fmtTime, openModal } from './ui.js';
+import { $$, esc, fmtTime, openModal, confirmDialog } from './ui.js';
 import { LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { handlers, startSession, summaryHtml } from './learning.js';
 import { bumpDaily } from './statistics.js';
@@ -40,6 +40,11 @@ export function buildExamItems(kind, level = '', rnd = Math.random) {
 }
 
 export async function startExam(kind, level = '') {
+  const saved = getMeta('activeSession');
+  if (saved && saved.idx < (saved.items?.length || 0)) {
+    const ok = await confirmDialog(`Yarım kalan bir oturumunuz var: "${saved.title}" (${saved.idx}/${saved.items.length}). Yeni bir sınav başlatılsın mı?`, { okLabel: 'Yeni Sınavı Başlat', cancelLabel: 'Vazgeç', danger: true });
+    if (!ok) return;
+  }
   const title = kind === 'final' ? `${level} Seviye Bitirme Sınavı` : EXAMS[kind].name;
   await startSession({ kind: 'exam', title, items: buildExamItems(kind, level), feedback: false, params: { exam: kind, level, startedAt: Date.now() } });
 }

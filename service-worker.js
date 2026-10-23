@@ -1,6 +1,6 @@
 // EZBERULLAH service worker — çevrimdışı: yalnızca önbelleğe alınmış uygulama dosyaları + yerel veri.
 // Sürüm değişince eski önbellek silinir. Yol bağımsız (GitHub Pages alt dizini için göreli).
-const VERSION = 'ezberullah-v2.0.2';
+const VERSION = 'ezberullah-v2.1.0';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css',
   'js/app.js', 'js/storage.js', 'js/engine.js', 'js/vocabulary.js', 'js/vocab-ui.js', 'js/learning.js', 'js/review.js',

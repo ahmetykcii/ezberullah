@@ -2,7 +2,7 @@
 // Tüm modlar (learn, review, exam) bu çalıştırıcıyı kullanır; oturum her cevapta kaydedilir ve yenilemede devam eder.
 import { state, getMeta, setMeta, getSettings, getProgress, saveProgress } from './storage.js';
 import * as E from './engine.js';
-import { $, $$, esc, toast, speak, sfx, ring, hasModal, closeTopModal } from './ui.js';
+import { $, $$, esc, toast, speak, sfx, ring, hasModal, closeTopModal, confirmDialog } from './ui.js';
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { bumpDaily, levelStats } from './statistics.js';
 
@@ -186,11 +186,12 @@ handlers.learn = {
     E.applyAnswer(p, ok, { mode: 'learn', stage: item.stage, qtype: item.type });
     await saveProgress(p);
     const d = { seconds: Math.round(elapsed), [ok ? 'correct' : 'wrong']: 1 };
-    if (!was && p.learningComplete) { d.newWords = 1; d.done = 1; }
+    if (!was && p.learningComplete) { d.learnedWordId = item.wordId; d.done = 1; }
     await bumpDaily(d);
     return { drop: !ok };
   },
   async onDone(results) {
+    await bumpDaily({ sessionsCompleted: 1 });
     const q = results.filter((r) => !r.card);
     const ok = q.filter((r) => r.correct).length;
     const done = new Set(q.filter((r) => r.stage === 6 && r.correct).map((r) => r.wordId)).size;
@@ -201,6 +202,11 @@ handlers.learn = {
 };
 
 export async function startLearn(level, focus = false) {
+  const saved = getMeta('activeSession');
+  if (saved && saved.idx < (saved.items?.length || 0)) {
+    const ok = await confirmDialog(`Yarım kalan bir oturumunuz var: "${saved.title}" (${saved.idx}/${saved.items.length}). Yeni bir öğrenme oturumu başlatılsın mı?`, { okLabel: 'Yeni Oturumu Başlat', cancelLabel: 'Vazgeç', danger: true });
+    if (!ok) return;
+  }
   const words = state.words.filter((w) => w.level === level);
   const batch = E.learnBatch(words, state.progress, +getSettings().batchSize || 5);
   if (!batch.length) return toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 6 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);

@@ -4,24 +4,123 @@ import { dayKey, poolOf, isDue, isWordReady } from './engine.js';
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { esc, fmtTime, ring } from './ui.js';
 
-const blank = (date) => ({ date, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0 });
-export const today = () => state.daily[dayKey()] || blank(dayKey());
+const blank = (date) => ({
+  date, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0,
+  learnedWordIds: [], sessionsCompleted: 0,
+});
+export const today = () => {
+  const k = dayKey();
+  const d = state.daily[k] || blank(k);
+  if (!Array.isArray(d.learnedWordIds)) d.learnedWordIds = [];
+  return d;
+};
+
+export function todayLearnedCount(d = today()) {
+  if (Array.isArray(d?.learnedWordIds) && d.learnedWordIds.length > 0) return d.learnedWordIds.length;
+  return d?.newWords || 0;
+}
 
 /** bumpDaily: günlük kaydı artırır ve kaydeder. rt/rc: önceden öğrenilmiş kelimelerin tekrar sonuçları. */
 export async function bumpDaily(delta) {
   const d = { ...today() };
-  for (const [k, v] of Object.entries(delta)) d[k] = (d[k] || 0) + v;
+  if (!Array.isArray(d.learnedWordIds)) d.learnedWordIds = [];
+  if (delta.learnedWordId) {
+    if (!d.learnedWordIds.includes(delta.learnedWordId)) {
+      d.learnedWordIds.push(delta.learnedWordId);
+      d.newWords = d.learnedWordIds.length;
+    }
+    delete delta.learnedWordId;
+  }
+  for (const [k, v] of Object.entries(delta)) {
+    if (k === 'learnedWordIds') continue;
+    d[k] = (d[k] || 0) + v;
+  }
   await saveData('daily', d);
 }
 
-export function streak() {
+export function streakStats(now = new Date()) {
   const days = state.daily;
-  const active = (k) => days[k] && days[k].correct + days[k].wrong > 0;
-  const d = new Date();
-  if (!active(dayKey(d))) d.setDate(d.getDate() - 1); // bugün henüz çalışılmadıysa dünden say
-  let n = 0;
-  while (active(dayKey(d))) { n++; d.setDate(d.getDate() - 1); }
-  return n;
+  const isDayActive = (k) => {
+    const d = days[k];
+    return !!(d && ((d.correct || 0) + (d.wrong || 0) > 0 || (d.newWords || 0) > 0 || (d.reviews || 0) > 0 || (d.sessionsCompleted || 0) > 0));
+  };
+  const todayK = dayKey(now);
+  const todayActive = isDayActive(todayK);
+
+  // Mevcut seri hesabı:
+  // Bugün henüz çalışılmadıysa dünden itibaren geriye say (dünün serisi korunur).
+  // Dün de çalışılmadıysa seri bozulmuştur (0 gün).
+  const d = new Date(now);
+  if (!todayActive) d.setDate(d.getDate() - 1);
+  let current = 0;
+  while (isDayActive(dayKey(d))) {
+    current++;
+    d.setDate(d.getDate() - 1);
+  }
+
+  // En uzun seri hesabı:
+  const activeKeys = Object.keys(days).filter(isDayActive).sort();
+  let longest = 0;
+  let running = 0;
+  let prevDate = null;
+  for (const k of activeKeys) {
+    const [y, m, dt] = k.split('-').map(Number);
+    const thisDate = new Date(y, m - 1, dt);
+    if (prevDate) {
+      const step = new Date(prevDate);
+      step.setDate(step.getDate() + 1);
+      if (dayKey(step) === k) {
+        running++;
+      } else {
+        running = 1;
+      }
+    } else {
+      running = 1;
+    }
+    if (running > longest) longest = running;
+    prevDate = thisDate;
+  }
+  if (current > longest) longest = current;
+
+  return { current, longest, todayActive };
+}
+
+export function streak(now = new Date()) {
+  return streakStats(now).current;
+}
+
+export function getMistakeAnalytics(limit = 10) {
+  const readyWords = state.words.filter((w) => isWordReady(w) && !w.isDraft);
+  const items = [];
+  for (const w of readyWords) {
+    const p = state.progress[w.id];
+    if (!p || (p.incorrectCount || 0) <= 0) continue;
+    const errors = p.incorrectCount || 0;
+    const corrects = p.correctCount || 0;
+    const total = errors + corrects;
+    const accuracy = total > 0 ? Math.round((corrects / total) * 100) : null;
+    items.push({
+      id: w.id,
+      word: w.word,
+      meaning: Array.isArray(w.meanings) ? w.meanings[0] : (w.meanings || ''),
+      allMeanings: Array.isArray(w.meanings) ? w.meanings.join(' · ') : (w.meanings || ''),
+      level: w.level,
+      partOfSpeech: w.partOfSpeech || 'noun',
+      exampleSentence: w.exampleSentence || '',
+      exampleTranslation: w.exampleTranslation || '',
+      incorrectCount: errors,
+      correctCount: corrects,
+      totalAnswers: total,
+      accuracy,
+      lastReviewedAt: p.lastReviewedAt || null,
+      lastMistakeAt: p.mistakeHistory?.at(-1)?.at || p.lastReviewedAt || null,
+    });
+  }
+  items.sort((a, b) => b.incorrectCount - a.incorrectCount || (b.lastMistakeAt || 0) - (a.lastMistakeAt || 0));
+  return {
+    totalMistakeWords: items.length,
+    top10: items.slice(0, limit),
+  };
 }
 export const totalSeconds = () => Object.values(state.daily).reduce((a, d) => a + (d.seconds || 0), 0);
 

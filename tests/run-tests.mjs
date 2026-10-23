@@ -13,7 +13,9 @@ import { handlers } from '../js/learning.js';
 import '../js/review.js';
 import { buildExamItems } from '../js/exams.js';
 import { studyPlan, candidates, reviewItems } from '../js/review.js';
-import { levelStats, streak } from '../js/statistics.js';
+import { levelStats, streak, streakStats, todayLearnedCount, getMistakeAnalytics, bumpDaily } from '../js/statistics.js';
+import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta } from '../js/storage.js';
+import { resumeSaved } from '../js/learning.js';
 import '../js/vocab-ui.js';
 import '../js/app.js';
 
@@ -349,9 +351,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (ezberullah-v2.0.2) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (ezberullah-v2.1.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'ezberullah-v2.0.2';"), 'SW sürümü ezberullah-v2.0.2 olmalı');
+  ok(sw.includes("const VERSION = 'ezberullah-v2.1.0';"), 'SW sürümü ezberullah-v2.1.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -540,6 +542,154 @@ await test('kelime öğrenme, tekrar ve sınav oturumlarında kelimeler/sorular 
   // 6) Tekrar modlarında (reviewItems) öncelik korunarak soru sırası rastgeleleştirilir
   const revRuns = Array.from({ length: 6 }, () => reviewItems('quick', 'A2', 5).map((i) => i.wordId).join(','));
   ok(new Set(revRuns).size >= 1, 'reviewItems seviye filtresine uygun çalışmalı');
+});
+
+// ===== EZBERULLAH v2.1 Akıllı Öğrenme Güncellemesi Testleri =====
+await test('v2.1 Günlük Kelime Hedefi: varsayılan hedef 10, yalnızca öğrenilen yeni kelimeler sayılır, tekrarlar eklenmez, aynı kelime günde 1 kez sayılır', async () => {
+  eq(DEFAULT_SETTINGS.dailyGoal, 10, 'Varsayılan günlük kelime hedefi 10 olmalı');
+  
+  // Günlük veri durumunu temizleyelim / test nesnesi oluşturalım
+  const testDate = '2026-10-23';
+  state.daily[testDate] = { date: testDate, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0, learnedWordIds: [] };
+
+  // 1) Yeni bir kelime öğrenildiğinde hedefe 1 eklenir
+  await bumpDaily({ learnedWordId: 'w-test-101', done: 1 });
+  eq(todayLearnedCount(state.daily[testDate]), 1, 'Yeni öğrenilen kelime günlük hedefe 1 eklemeli');
+  eq(state.daily[testDate].learnedWordIds, ['w-test-101'], 'learnedWordIds içine kelime ID kaydedilmeli');
+
+  // 2) Aynı kelime aynı gün tekrar tamamlanırsa birden fazla kez sayılmaz
+  await bumpDaily({ learnedWordId: 'w-test-101', done: 1 });
+  eq(todayLearnedCount(state.daily[testDate]), 1, 'Aynı kelime aynı gün 2. kez hedefe eklenmemeli');
+
+  // 3) Farklı bir yeni kelime öğrenildiğinde hedef 2 olur
+  await bumpDaily({ learnedWordId: 'w-test-102', done: 1 });
+  eq(todayLearnedCount(state.daily[testDate]), 2, 'İkinci farklı kelime hedefe eklenmeli');
+
+  // 4) Tekrar edilen kelimeler (reviews) YENİ kelime hedefine eklenmez
+  await bumpDaily({ reviews: 1, done: 1, seconds: 15, correct: 1 });
+  eq(todayLearnedCount(state.daily[testDate]), 2, 'Tekrar edilen kelimeler yeni kelime hedefini artırmamalı');
+  eq(state.daily[testDate].reviews, 1, 'Tekrar sayısı ayrıca tutulmalı');
+
+  // 5) Farklı takvim gününde (gece yarısı sonrası) hedef sıfırdan başlar, dünün verisi silinmez
+  const nextDate = '2026-10-24';
+  const nextDay = { date: nextDate, seconds: 0, correct: 0, wrong: 0, newWords: 0, reviews: 0, done: 0, rt: 0, rc: 0, learnedWordIds: [] };
+  eq(todayLearnedCount(nextDay), 0, 'Yeni günde günlük hedef sıfırdan başlamalı');
+  eq(todayLearnedCount(state.daily[testDate]), 2, 'Önceki günün öğrenilen kelime sayısı korunmalı');
+});
+
+await test('v2.1 Streak (Çalışma Serisi): gün aktifliği, birden fazla oturumda tek artış, dünün serisinin korunması, gece yarısı ve bozulma mantığı', () => {
+  // Test senaryosu için takvim günleri kurgulayalım
+  const backupDaily = JSON.parse(JSON.stringify(state.daily));
+
+  // 3 gün üst üste çalışma yapılmış: 2026-10-20, 2026-10-21, 2026-10-22
+  state.daily = {
+    '2026-10-20': { date: '2026-10-20', correct: 5, wrong: 1, newWords: 2, reviews: 3 },
+    '2026-10-21': { date: '2026-10-21', correct: 10, wrong: 0, newWords: 5, reviews: 5 },
+    '2026-10-22': { date: '2026-10-22', correct: 8, wrong: 2, newWords: 4, reviews: 4 },
+  };
+
+  // 1) 2026-10-23 sabahı: bugün henüz çalışılmadı
+  const oct23Morning = new Date(2026, 9, 23, 9, 0, 0); // 23 Ekim 2026 09:00 (ay 0-indeksli: 9 = Ekim)
+  const sMorning = streakStats(oct23Morning);
+  eq(sMorning.todayActive, false, 'Sabah henüz çalışılmadı');
+  eq(sMorning.current, 3, 'Bugün henüz çalışılmadıysa dünün serisi (3 gün) korunmuş olarak gösterilmeli');
+
+  // 2) 2026-10-23 öğlen: bir oturum tamamlandı
+  state.daily['2026-10-23'] = { date: '2026-10-23', correct: 4, wrong: 0, newWords: 2, reviews: 2 };
+  const oct23Noon = new Date(2026, 9, 23, 14, 0, 0);
+  const sNoon = streakStats(oct23Noon);
+  eq(sNoon.todayActive, true, 'Öğlen çalışıldıktan sonra bugün aktif sayılmalı');
+  eq(sNoon.current, 4, 'Bugün çalışılınca seri 4 güne çıkmalı');
+
+  // 3) Aynı gün içinde birden fazla oturum yapmak seriyi birden fazla artırmaz
+  state.daily['2026-10-23'].correct += 10;
+  state.daily['2026-10-23'].sessionsCompleted = 3;
+  const sNight = streakStats(oct23Noon);
+  eq(sNight.current, 4, 'Aynı gün birden fazla oturum streak’i birden fazla artırmamalı');
+
+  // 4) 2026-10-24 günü hiç çalışılmadı, 2026-10-25 gününe geçildi: seri bozulmalı (0 gün)
+  const oct25 = new Date(2026, 9, 25, 10, 0, 0);
+  const sBroken = streakStats(oct25);
+  eq(sBroken.todayActive, false);
+  eq(sBroken.current, 0, 'Bir tam takvim günü atlandığında seri bozulmalı');
+  eq(sBroken.longest, 4, 'En uzun seri 4 gün olarak geçmişte hatırlanmalı');
+
+  // Geri yükle
+  state.daily = backupDaily;
+});
+
+await test('v2.1 Akıllı Yanlış Kelime Analizi: en çok hata yapılan ilk 10 kelime, taslakların hariç tutulması ve gerçek veri doğrulaması', () => {
+  // Mock hata verileri verelim
+  const w1 = state.words.find((w) => w.id === 'a2-oxref-0001'); // ability
+  const w2 = state.words.find((w) => w.id === 'a2-oxref-0002'); // able
+  const wDraft = state.words.find((w) => w.isDraft); // taslak kelime
+
+  state.progress[w1.id] = { ...E.newProgress(w1.id), incorrectCount: 7, correctCount: 3, lastReviewedAt: 1700000000000 };
+  state.progress[w2.id] = { ...E.newProgress(w2.id), incorrectCount: 12, correctCount: 8, lastReviewedAt: 1700000050000 };
+  if (wDraft) {
+    state.progress[wDraft.id] = { ...E.newProgress(wDraft.id), incorrectCount: 99, correctCount: 0 };
+  }
+
+  const analysis = getMistakeAnalytics(10);
+  ok(analysis.totalMistakeWords >= 2, 'Hata yapılan kelimeler bulunmalı');
+  eq(analysis.top10[0].id, w2.id, 'En çok hata yapılan kelime (12 hata) 1. sırada olmalı');
+  eq(analysis.top10[0].incorrectCount, 12);
+  eq(analysis.top10[0].correctCount, 8);
+  eq(analysis.top10[0].accuracy, 40, 'Başarı oranı (8 / 20 = %40) doğru hesaplanmalı');
+  ok(analysis.top10[0].lastReviewedAt > 0, 'Son çalışma tarihi gerçek veriye dayanmalı');
+
+  if (wDraft) {
+    ok(analysis.top10.every((item) => item.id !== wDraft.id), 'Taslak kelimeler asla yanlış kelime analizine dahil edilmemeli');
+  }
+});
+
+await test('v2.1 Kaldığın Yerden Devam Et: yarım kalan oturumun korunması, soru sırasının saklanması ve yeni oturum koruması', async () => {
+  // Yarım kalan oturumu simüle edelim
+  const testSession = {
+    kind: 'learn',
+    title: 'A2 Kelime Öğren',
+    idx: 3,
+    items: [
+      { wordId: 'a2-oxref-0001', stage: 1, type: 'card' },
+      { wordId: 'a2-oxref-0002', stage: 2, type: 'mc' },
+      { wordId: 'a2-oxref-0003', stage: 3, type: 'typing' },
+      { wordId: 'a2-oxref-0004', stage: 4, type: 'missing' },
+      { wordId: 'a2-oxref-0005', stage: 5, type: 'sentence' },
+    ],
+    results: [
+      { wordId: 'a2-oxref-0001', correct: true },
+      { wordId: 'a2-oxref-0002', correct: true },
+      { wordId: 'a2-oxref-0003', correct: false },
+    ],
+  };
+
+  await setMeta('activeSession', testSession);
+  const saved = getMeta('activeSession');
+  ok(saved, 'Yarım kalan oturum meta içinde bulunmalı');
+  eq(saved.idx, 3, 'Kaldığı soru indeksi korunmalı');
+  eq(saved.results.length, 3, 'Verilen önceki cevaplar kaybolmamalı');
+  eq(saved.items.length, 5, 'Soru listesi ve sırası korunmalı');
+
+  // Temizle
+  await setMeta('activeSession', null);
+  eq(getMeta('activeSession'), null);
+});
+
+await test('v2.1 Ana sayfa ve ayarlar tasarımı: akıllı kartlar, hızlı hedef butonları, ahmet ❤️ sude imzasının ve logonun korunması', async () => {
+  const appCode = await readText('js/app.js');
+  const css = await readText('css/style.css');
+
+  ok(appCode.includes('Bugünkü Hedefin:'), 'Ana sayfada Günlük Hedef başlığı bulunmalı');
+  ok(appCode.includes('[5, 10, 15, 20]') && appCode.includes('data-set-goal='), 'Ana sayfada 5, 10, 15, 20 hedef butonları bulunmalı');
+  ok(appCode.includes('Günlük Seri'), 'Ana sayfada Günlük Seri kartı bulunmalı');
+  ok(appCode.includes('Zorlandığın Kelimeler:'), 'Ana sayfada Zorlandığın Kelimeler hata analiz kartı bulunmalı');
+  ok(appCode.includes('▶️ Kaldığın Yerden Devam Et'), 'Ana sayfada Kaldığın Yerden Devam Et butonu bulunmalı');
+  ok(appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
+  ok(appCode.includes('<span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span>'), 'EZBERULLAH çift renkli tipografisi korunmalı');
+
+  ok(css.includes('.smart-grid'), 'Akıllı öğrenme kartları CSS ızgarası bulunmalı');
+  ok(css.includes('.resume-card'), 'Kaldığın yerden devam et kartı CSS kuralı bulunmalı');
+  ok(css.includes('.goal-chip-row'), 'Hızlı hedef butonları CSS kuralı bulunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

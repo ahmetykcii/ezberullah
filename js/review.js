@@ -1,7 +1,7 @@
 // Tekrar modları (Akıllı Tekrar, Hızlı Tekrar, Yanlışlarım, Yazarak Çalışma, Dinleyerek Çalışma) ve sınav tarihine göre çalışma planı.
-import { state, getSettings, getProgress, saveProgress } from './storage.js';
+import { state, getSettings, getProgress, saveProgress, getMeta } from './storage.js';
 import * as E from './engine.js';
-import { $$, esc, toast } from './ui.js';
+import { $$, esc, toast, confirmDialog } from './ui.js';
 import { LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { handlers, startSession, summaryHtml } from './learning.js';
 import { bumpDaily } from './statistics.js';
@@ -48,6 +48,7 @@ handlers.review = {
     return {};
   },
   async onDone(results, sess) {
+    await bumpDaily({ sessionsCompleted: 1 });
     const ok = results.filter((r) => r.correct).length;
     const bad = [...new Set(results.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
     return { html: summaryHtml({ title: `${sess.title} Tamamlandı`, big: `${ok}/${results.length}`, sub: 'doğru cevap',
@@ -56,6 +57,11 @@ handlers.review = {
 };
 
 export async function startReview(mode, level = '') {
+  const saved = getMeta('activeSession');
+  if (saved && saved.idx < (saved.items?.length || 0)) {
+    const ok = await confirmDialog(`Yarım kalan bir oturumunuz var: "${saved.title}" (${saved.idx}/${saved.items.length}). Yeni bir tekrar oturumu başlatılsın mı?`, { okLabel: 'Yeni Oturumu Başlat', cancelLabel: 'Vazgeç', danger: true });
+    if (!ok) return;
+  }
   const items = reviewItems(mode, level);
   if (!items.length) return toast(mode === 'smart' ? 'Şu an tekrar zamanı gelen kelime yok.' : mode === 'mistakes' ? 'Henüz yanlış yaptığınız kelime yok.' : 'Önce Kelime Öğren bölümünden birkaç kelime öğrenin.');
   await startSession({ kind: 'review', title: MODES[mode].name, items });
