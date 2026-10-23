@@ -312,6 +312,35 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .m-wrong{color:var(--no);text-decoration:line-through;text-decoration-thickness:1px;overflow-wrap:anywhere}.m-right{color:var(--ok);font-weight:600;overflow-wrap:anywhere}.mistakes p{margin:4px 0 0}
 .lesson-cta{margin:42px 0 12px}.lesson-cta p{margin:12px 0 0}
 
+/* ===== v3.2 Akıllı İpucu & Cümle Değerlendirme ===== */
+.hint-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;margin:4px 0 12px}
+.hint-toggle{font-size:.85rem;color:var(--ac);padding:6px 14px;border-radius:20px;background:var(--ac-soft);border:none;cursor:pointer}
+.hint-content{width:100%;display:flex;flex-direction:column;gap:12px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;text-align:left}
+.hint-step{display:flex;flex-direction:column;gap:6px;font-size:.92rem;line-height:1.5}
+.hint-step p{margin:0}
+.hint-badge{display:inline-block;align-self:flex-start;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ac);background:var(--ac-soft);padding:3px 8px;border-radius:6px}
+.hint-frame code{display:block;background:var(--bg-subtle, var(--bg));border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-family:inherit;font-weight:600;font-size:.95rem;color:var(--tx)}
+.hint-step blockquote{margin:4px 0 0;padding:10px 14px;border-left:3px solid var(--ac);background:var(--bg-subtle, var(--bg));border-radius:0 8px 8px 0}
+.hint-step blockquote small{display:block;margin-top:4px;color:var(--tx-sec);font-size:.85rem}
+
+/* ===== Cümle Değerlendirme Uyarı & Hata Mesajları ===== */
+.prod-msg{width:100%;margin:4px 0 0}
+.eval-note{padding:12px 14px;border-radius:12px;font-size:.88rem;line-height:1.45;text-align:left;display:flex;flex-direction:column;gap:8px}
+.eval-note.error{background:rgba(239, 68, 68, .08);color:var(--no);border:1px solid rgba(239, 68, 68, .2)}
+.eval-note.warn{background:rgba(245, 158, 11, .08);color:var(--tx);border:1px solid rgba(245, 158, 11, .25)}
+.ambiguous-actions{display:flex;gap:8px;margin-top:6px}
+
+/* ===== v3.2 Serbest Seviye Seçimi Modal ===== */
+.level-picker-list{display:flex;flex-direction:column;gap:10px;margin:16px 0 8px}
+.level-picker-btn{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;padding:14px 16px;background:var(--card);border:1px solid var(--bd);border-radius:14px;cursor:pointer;text-align:left;color:var(--tx);transition:border-color .15s ease, background .15s ease}
+.level-picker-btn:hover{border-color:var(--ac);background:var(--ac-soft)}
+.level-picker-btn.active{border-color:var(--ac);background:var(--ac-soft)}
+.level-picker-info{display:flex;align-items:center;gap:14px}
+.level-picker-code{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:var(--ac);color:#fff;font-weight:700;font-size:1rem;flex-shrink:0}
+.level-picker-texts{display:flex;flex-direction:column;gap:2px}
+.level-picker-texts b{font-size:.96rem;font-weight:600}
+.level-picker-badge{font-size:.72rem;font-weight:700;color:var(--ac);background:var(--card);border:1px solid var(--ac);padding:3px 8px;border-radius:6px;flex-shrink:0}
+
 /* ===== Duyarlı yerleşim ===== */
 @media(max-width:860px){
  #sidebar{display:none}

@@ -1,6 +1,6 @@
 // VELUNO v3.1 — uygulama giriş noktası: açılış (hayrat) ekranı, router, Learning Home, Diğer, Ayarlar, Tema Sistemi, PWA kaydı.
 import { initStorage, state, getSettings, setSetting, getMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
-import { seedBuiltIn, LEVELS } from './vocabulary.js';
+import { seedBuiltIn, LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { $, $$, esc, toast, confirmDialog, openModal, ICONS } from './ui.js';
 import { renderLearn, initKeys, abortSession, resumeSaved, startLearn } from './learning.js';
 import { renderReview, studyPlan, startReview } from './review.js';
@@ -98,13 +98,39 @@ function route() {
   $('#view').focus({ preventScroll: true });
 }
 
-/* ---------- Ana Sayfa (Learning Home) ---------- */
-/** Ana eylemin açacağı seviye: son kullanılan seviye; bitmişse tamamlanmamış ilk seviye. */
-function pickLearnLevel() {
-  const pref = getMeta('learnLevel');
-  const open = (l) => { const x = levelStats(l); return x.total > 0 && x.completion < 100; };
-  if (LEVELS.includes(pref) && open(pref)) return pref;
-  return LEVELS.find(open) || (LEVELS.includes(pref) ? pref : LEVELS[0]);
+/* ---------- Ana Sayfa (Learning Home) & Serbest Seviye Seçimi (v3.2) ---------- */
+export function openLevelSelectorModal(onSelect) {
+  const current = getMeta('learnLevel');
+  openModal({
+    title: 'Bugün ne öğrenmek istersin?',
+    html: `<p class="muted small">İstediğin seviyeden serbestçe başlayabilirsin. İlerlemen her seviyede ayrı korunur.</p>
+      <div class="level-picker-list">
+        ${LEVELS.map((lvl) => {
+          const stats = levelStats(lvl);
+          const isCur = lvl === current;
+          const sub = lvl === 'A2' ? 'Temel (Elementary)' : lvl === 'B1' ? 'Orta (Intermediate)' : 'İleri (Upper Intermediate)';
+          return `<button type="button" class="level-picker-btn ${isCur ? 'active' : ''}" data-pick-level="${lvl}">
+            <div class="level-picker-info">
+              <span class="level-picker-code">${lvl}</span>
+              <div class="level-picker-texts">
+                <b>${sub}</b>
+                <span class="muted small">${stats.completed}/${stats.total} kelime tamamlandı (%${stats.completion})</span>
+              </div>
+            </div>
+            ${isCur ? '<span class="level-picker-badge">Mevcut</span>' : ICONS.chev}
+          </button>`;
+        }).join('')}
+      </div>`,
+    onMount(b, api) {
+      $$('[data-pick-level]', b).forEach((btn) => {
+        btn.onclick = async () => {
+          const picked = btn.dataset.pickLevel;
+          api.close();
+          if (onSelect) await onSelect(picked);
+        };
+      });
+    },
+  });
 }
 
 function openGoalModal(onDone) {
@@ -130,14 +156,33 @@ function renderDashboard(v) {
   const tWords = todayLearnedCount(t);
   const reached = tWords >= dailyGoal;
   const goalPct = Math.min(100, Math.round((tWords / dailyGoal) * 100));
-  const saved = getMeta('activeSession');
-  const hasSaved = saved && saved.idx < (saved.items?.length || 0);
+
+  const prefLevel = getMeta('learnLevel');
+  const level = LEVELS.includes(prefLevel) ? prefLevel : null;
+  const byLevel = getMeta('activeSessionsByLevel') || {};
+  const activeSaved = level ? byLevel[level] : getMeta('activeSession');
+  const hasSaved = activeSaved && activeSaved.idx < (activeSaved.items?.length || 0);
+
   const strk = streakStats();
   const due = levelStats('').due;
   const gNext = nextGrammarTopic();
   const plan = studyPlan();
-  const level = pickLearnLevel();
   const row = (attrs, main, sub = '') => `<li><${attrs.href ? 'a' : 'button type="button"'} class="list-row linkrow" ${attrs.href ? `href="${attrs.href}"` : `id="${attrs.id}"`}><div class="row-main"><b>${main}</b>${sub ? `<span class="muted small">${sub}</span>` : ''}</div>${ICONS.chev}</${attrs.href ? 'a' : 'button'}></li>`;
+
+  const levelName = level ? (level === 'A2' ? 'Temel' : level === 'B1' ? 'Orta' : 'İleri') : '';
+
+  let ctaHtml = '';
+  if (!level) {
+    ctaHtml = `<button class="btn primary xl block" id="go-pick-level">Öğrenmeye Başla</button>
+      <p class="muted small center">Seviyeni seçerek başla · A2, B1 veya B2</p>`;
+  } else if (hasSaved) {
+    ctaHtml = `<button class="btn primary xl block" id="resume">Kaldığın Yerden Devam Et — ${level}</button>
+      <p class="muted small center">${esc(activeSaved.title)} · ${activeSaved.idx}/${activeSaved.items.length} · <button type="button" class="text-btn" id="change-level">Seviyeyi Değiştir</button> · <button type="button" class="text-btn" id="discard">Vazgeç</button></p>`;
+  } else {
+    ctaHtml = `<button class="btn primary xl block" id="go-learn">Öğrenmeye Devam Et — ${level}</button>
+      <p class="muted small center">${level} — ${levelName} Seviye · <button type="button" class="text-btn" id="change-level">Seviyeyi Değiştir</button></p>`;
+  }
+
   v.innerHTML = `<div class="page home">
   <header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="VELUNO logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
   <section class="today" aria-label="Bugünkü hedef">
@@ -146,9 +191,7 @@ function renderDashboard(v) {
     <div class="today-sub muted small">Günlük Seri: <b>${strk.current} gün</b>${reached ? ' · Hedef tamamlandı' : ''}</div>
   </section>
   <div class="cta-block">
-    ${hasSaved
-      ? `<button class="btn primary xl block" id="resume">Kaldığın Yerden Devam Et</button><p class="muted small center">${esc(saved.title)} · ${saved.idx}/${saved.items.length} · <button type="button" class="text-btn" id="discard">Vazgeç</button></p>`
-      : `<button class="btn primary xl block" id="go-learn">Öğrenmeye Devam Et</button><p class="muted small center">${level} seviyesi</p>`}
+    ${ctaHtml}
   </div>
   <ul class="list quiet">
     ${due ? row({ href: '#/review' }, `${due} kelime tekrar bekliyor`, 'Kısa bir tekrar turu') : ''}
@@ -156,11 +199,44 @@ function renderDashboard(v) {
     ${plan && !plan.past ? row({ href: '#/statistics' }, `Sınava ${plan.days} gün kaldı`, `Önerilen günlük hedef: ${plan.suggested}`) : ''}
   </ul>
   </div>`;
-  const gl = $('#go-learn', v); if (gl) gl.onclick = () => startLearn(level);
+
+  const onLevelChange = async (newLevel) => {
+    await setMeta('learnLevel', newLevel);
+    const byL = getMeta('activeSessionsByLevel') || {};
+    if (byL[newLevel]) {
+      await setMeta('activeSession', byL[newLevel]);
+    } else {
+      await setMeta('activeSession', null);
+    }
+    renderDashboard(v);
+  };
+
+  const gpl = $('#go-pick-level', v);
+  if (gpl) gpl.onclick = () => openLevelSelectorModal(async (lvl) => { await setMeta('learnLevel', lvl); await startLearn(lvl); });
+
+  const gl = $('#go-learn', v);
+  if (gl) gl.onclick = () => startLearn(level);
+
+  const cl = $('#change-level', v);
+  if (cl) cl.onclick = () => openLevelSelectorModal(onLevelChange);
+
   const gg = $('#go-grammar', v); if (gg) gg.onclick = () => gotoGrammarLesson(gNext.id);
   $('#edit-goal', v).onclick = () => openGoalModal(() => renderDashboard(v));
-  const rs = $('#resume', v); if (rs) rs.onclick = async () => { if (!(await resumeSaved())) toast('Oturum devam ettirilemedi.', 'error'); };
-  const dc = $('#discard', v); if (dc) dc.onclick = async () => { if (await confirmDialog('Yarım kalan oturum silinsin mi? (Verdiğiniz cevaplar zaten kaydedildi.)', { danger: true })) { const { setMeta } = await import('./storage.js'); await setMeta('activeSession', null); renderDashboard(v); } };
+  const rs = $('#resume', v);
+  if (rs) rs.onclick = async () => { if (!(await resumeSaved(level))) toast('Oturum devam ettirilemedi.', 'error'); };
+  const dc = $('#discard', v);
+  if (dc) dc.onclick = async () => {
+    if (await confirmDialog('Yarım kalan oturum silinsin mi? (Verdiğiniz cevaplar zaten kaydedildi.)', { danger: true })) {
+      const { setMeta } = await import('./storage.js');
+      await setMeta('activeSession', null);
+      const byL = getMeta('activeSessionsByLevel') || {};
+      if (level && byL[level]) {
+        delete byL[level];
+        await setMeta('activeSessionsByLevel', byL);
+      }
+      renderDashboard(v);
+    }
+  };
 }
 
 /* ---------- Diğer ---------- */

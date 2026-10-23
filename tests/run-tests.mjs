@@ -361,9 +361,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v3.1.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v3.2.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v3.1.0';"), 'SW sürümü veluno-v3.1.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v3.2.0';"), 'SW sürümü veluno-v3.2.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -988,6 +988,184 @@ await test('v2.2 [20] Henüz hazır olmayan (Yakında) 35 dersin açılmaması v
     eq(G.buildGrammarMiniQuiz(t.id), [], `${t.id} için soru üretilmemeli`);
     eq(G.openGrammarLesson(t.id, null), false, `${t.id} dersi açılmamalı`);
   }
+});
+
+/* ==========================================================================
+   8) VELUNO v3.2 — Intelligent Sentence Learning & Free Level Selection
+   ========================================================================== */
+out('\n8) VELUNO v3.2 — Intelligent Sentence Learning & Free Level Selection');
+
+const abroadWord = {
+  id: 'a2-abroad-test',
+  level: 'A2',
+  word: 'abroad',
+  meanings: ['yurt dışında', 'yurt dışına'],
+  partOfSpeech: 'adverb',
+  exampleSentence: 'My sister wants to study abroad next year.',
+  exampleTranslation: 'Kız kardeşim gelecek yıl yurt dışında okumak istiyor.',
+  collocations: ['travel abroad', 'live abroad'],
+};
+
+await test('v3.2 [1] Cümle Değerlendirme: Örnek cümleden farklı geçerli özgün cümleler kabul edilir', () => {
+  const candidates = [
+    'I want to study abroad.',
+    'My brother lives abroad.',
+    'She will travel abroad next year.',
+    'We traveled abroad last summer.',
+    'I have never been abroad.',
+  ];
+  for (const c of candidates) {
+    const res = E.evaluateSentence(abroadWord, c);
+    ok(res.ok === true, `"${c}" kabul edilmeliydi: ${res.message}`);
+    eq(res.status, 'valid', `"${c}" durumu valid olmalı`);
+    ok(E.checkProduction(abroadWord, c) === true, `checkProduction("${c}") true dönmeli`);
+  }
+});
+
+await test('v3.2 [2] Cümle Değerlendirme: 4 kelimeden kısa giriş ve boş giriş reddedilir, açıklayıcı Türkçe neden döner', () => {
+  const emptyRes = E.evaluateSentence(abroadWord, '');
+  eq(emptyRes.status, 'needs_fix');
+  eq(emptyRes.ok, false);
+  ok(emptyRes.message.includes('bir cümle yazın'));
+
+  const shortRes = E.evaluateSentence(abroadWord, 'I live abroad.'); // 3 kelime
+  eq(shortRes.status, 'needs_fix');
+  eq(shortRes.ok, false);
+  ok(shortRes.message.includes('en az 4 kelimeden'));
+});
+
+await test('v3.2 [3] Cümle Değerlendirme: Hedef kelime bulunmadığında reddedilir ve kelime ismi belirtilir', () => {
+  const res = E.evaluateSentence(abroadWord, 'I love to study English every day.');
+  eq(res.status, 'needs_fix');
+  eq(res.ok, false);
+  ok(res.message.includes('abroad'));
+  ok(res.message.includes('bulunamadı'));
+});
+
+await test('v3.2 [4] Cümle Değerlendirme: Hedef kelimenin başka kelimenin içinde alt dize olarak geçmesi yanlış pozitif oluşturmaz', () => {
+  const boardWord = { id: 'test-board', word: 'board', meanings: ['tahta'], partOfSpeech: 'noun' };
+  // "skateboard" kelimesinde "board" alt karakter dizesi olarak geçer ama bağımsız değildir
+  const res1 = E.evaluateSentence(boardWord, 'He bought a new skateboard yesterday.');
+  eq(res1.status, 'needs_fix', 'skateboard kelimesi board olarak eşleşmemeli');
+  eq(res1.ok, false);
+
+  const admitWord = { id: 'test-admit', word: 'admit', meanings: ['itiraf etmek'], partOfSpeech: 'verb' };
+  const res2 = E.evaluateSentence(admitWord, 'She works in hospital administration now.');
+  eq(res2.status, 'needs_fix', 'administration kelimesi admit olarak eşleşmemeli');
+  eq(res2.ok, false);
+});
+
+await test('v3.2 [5] Cümle Değerlendirme: Büyük/küçük harf, kesme işareti (\'s) ve noktalama farklılıkları esnekçe tolere edilir', () => {
+  const res = E.evaluateSentence(abroadWord, '   YES, MY SISTER LIVES ABROAD!   ');
+  eq(res.status, 'valid');
+  eq(res.ok, true);
+
+  const aptWord = { id: 'test-apt', word: 'apartment', meanings: ['daire'], partOfSpeech: 'noun' };
+  const resApt = E.evaluateSentence(aptWord, 'We visited my friend\'s apartment yesterday.');
+  eq(resApt.status, 'valid');
+  eq(resApt.ok, true);
+});
+
+await test('v3.2 [6] Cümle Değerlendirme: Fiil, isim ve sıfatların yaygın morfolojik çekimleri desteklenir', () => {
+  const writeWord = { id: 'test-write', word: 'write', meanings: ['yazmak'], partOfSpeech: 'verb' };
+  const resWrote = E.evaluateSentence(writeWord, 'I wrote a long letter yesterday.');
+  eq(resWrote.status, 'valid', 'wrote çekimli biçimi kabul edilmeli');
+
+  const buyWord = { id: 'test-buy', word: 'buy', meanings: ['satın almak'], partOfSpeech: 'verb' };
+  const resBought = E.evaluateSentence(buyWord, 'She bought a nice car last week.');
+  eq(resBought.status, 'valid', 'bought çekimli biçimi kabul edilmeli');
+
+  const childWord = { id: 'test-child', word: 'child', meanings: ['çocuk'], partOfSpeech: 'noun' };
+  const resChildren = E.evaluateSentence(childWord, 'The children are playing outside now.');
+  eq(resChildren.status, 'valid', 'children düzensiz çoğul biçimi kabul edilmeli');
+});
+
+await test('v3.2 [7] Cümle Değerlendirme: Belirsiz / şüpheli yapılar kesin yanlış sayılmaz; status: ambiguous döner ve ilerleme engellenmez', () => {
+  const resPlaceholder = E.evaluateSentence(abroadWord, 'I want to ... abroad.');
+  eq(resPlaceholder.status, 'ambiguous');
+  eq(resPlaceholder.ok, true, 'Belirsiz değerlendirmede ok true olmalı; hata olarak kaydedilmemeli');
+  ok(resPlaceholder.message.includes('dil bilgisi'), 'Bilgilendirici açıklama içermeli');
+});
+
+await test('v3.2 [8] 3 Aşamalı İpucu: getWordHints her kelimede 3 aşamalı ipucu üretir', () => {
+  const hints = E.getWordHints(abroadWord);
+  ok(typeof hints.usage === 'string' && hints.usage.length > 10, 'İpucu 1 kullanım açıklaması olmalı');
+  ok(hints.usage.includes('Abroad'), 'Abroad kelimesi kullanımda yer almalı');
+  ok(typeof hints.frame === 'string' && hints.frame.includes('abroad'), 'İpucu 2 cümle kalıbı olmalı');
+  eq(hints.exampleSentence, abroadWord.exampleSentence, 'İpucu 3 örnek cümle olmalı');
+  ok(hints.exampleNote.toLowerCase().includes('kendi cümleni yazabilirsin'), 'Örnek cümlenin referans olduğu belirtilmeli');
+});
+
+await test('v3.2 [9] 3 Aşamalı İpucu: Eksik veya taslak verilerde çökmez, güvenli ve tutarlı geri bildirim sağlar; A2, B1 ve B2 seviyelerinde çalışır', () => {
+  const a2w = state.words.find((w) => w.level === 'A2' && !w.isDraft);
+  const b1w = state.words.find((w) => w.level === 'B1' && !w.isDraft);
+  const b2w = state.words.find((w) => w.level === 'B2' && !w.isDraft);
+  for (const w of [a2w, b1w, b2w].filter(Boolean)) {
+    const h = E.getWordHints(w);
+    ok(h.usage && h.frame && h.exampleSentence, `${w.level} kelimesi (${w.word}) için ipuçları tam üretilmeli`);
+  }
+  // Boş veya eksik kelimede de çökmemeli
+  const dummyHints = E.getWordHints({});
+  ok(dummyHints !== null, 'Boş nesnede çökmemeli');
+});
+
+await test('v3.2 [10] 3 Aşamalı İpucu: İpucu kullanımı puan düşürmez, yanlış kelimeler havuzuna eklemez, SRS başarısızlığı sayılmaz', async () => {
+  const w = state.words.find((x) => x.id === 'a2-apartment-001');
+  const p = getProgress(w.id);
+  const beforeScore = p.masteryScore;
+  const beforeIncorrect = p.incorrectCount;
+  // İpucu üretimi saf fonksiyondur, hiçbir ilerleme verisini değiştirmez
+  const h = E.getWordHints(w);
+  ok(h.usage && h.frame);
+  const afterP = getProgress(w.id);
+  eq(afterP.masteryScore, beforeScore);
+  eq(afterP.incorrectCount, beforeIncorrect);
+});
+
+await test('v3.2 [11] Serbest Seviye Seçimi: A2, B1 ve B2 seviyelerinin tamamı ön koşulsuz ve kilit olmaksızın doğrudan başlatılabilir', () => {
+  // A2 tamamlanmamış olsa bile B1 ve B2 kelime grupları başarıyla filtrelenir ve üretilir
+  for (const lvl of ['A2', 'B1', 'B2']) {
+    const words = state.words.filter((w) => w.level === lvl);
+    const batch = E.learnBatch(words, state.progress, 5);
+    ok(batch.length > 0, `${lvl} seviyesinde grup başlatılabilmeli`);
+    ok(batch.every((w) => w.level === lvl), `${lvl} grubundaki kelimelerin seviyesi doğru olmalı`);
+  }
+});
+
+await test('v3.2 [12] Serbest Seviye Seçimi: Seçilen seviye (learnLevel) kaydedilir ve hatırlanır', async () => {
+  await setMeta('learnLevel', 'B1');
+  eq(getMeta('learnLevel'), 'B1', 'Seçilen seviye B1 olarak kaydedilmeli');
+  await setMeta('learnLevel', 'B2');
+  eq(getMeta('learnLevel'), 'B2', 'Seviye B2 olarak güncellenebilmeli');
+  await setMeta('learnLevel', 'A2');
+  eq(getMeta('learnLevel'), 'A2');
+});
+
+await test('v3.2 [13] Serbest Seviye Seçimi: Seviye değiştirildiğinde önceki seviyenin yarım kalan oturumu (activeSessionsByLevel) silinmez, korunur', async () => {
+  const byLevel = {
+    A2: { kind: 'learn', title: 'A2 Kelime Öğren', level: 'A2', idx: 2, items: [{ wordId: 'a2-1' }, { wordId: 'a2-2' }, { wordId: 'a2-3' }] },
+    B1: { kind: 'learn', title: 'B1 Kelime Öğren', level: 'B1', idx: 1, items: [{ wordId: 'b1-1' }, { wordId: 'b1-2' }] },
+  };
+  await setMeta('activeSessionsByLevel', byLevel);
+  await setMeta('learnLevel', 'B1');
+  await setMeta('activeSession', byLevel.B1);
+
+  // Kullanıcı B1'deyken A2 oturumu hala hafızada korunuyor
+  const stored = getMeta('activeSessionsByLevel');
+  ok(stored.A2 && stored.A2.idx === 2, 'A2 oturumu silinmemiş olmalı');
+  ok(stored.B1 && stored.B1.idx === 1, 'B1 oturumu korunmalı');
+});
+
+await test('v3.2 [14] Veri ve İmza Bütünlüğü: 1.320 kelime (931 aktif + 389 taslak), 38 grammar konusu, 60 soru ve "ahmet ❤️ sude" imzası aynen korunur', async () => {
+  const allDataWords = [...data.A2, ...data.B1, ...data.B2];
+  eq(allDataWords.length, 1320, 'Toplam 1.320 kelime korunmalı');
+  eq(allDataWords.filter((w) => !w.isDraft).length, 931, '931 aktif kelime korunmalı');
+  eq(allDataWords.filter((w) => w.isDraft).length, 389, '389 taslak kelime korunmalı');
+  eq(G.GRAMMAR_TOPICS.length, 38, '38 grammar konusu korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 60, '60 grammar sorusu korunmalı');
+
+  const appSrc = await readText('js/app.js');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası harfi harfine korunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
