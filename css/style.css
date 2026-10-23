@@ -15,6 +15,29 @@
   --ok:#3FB97C;--ok-bg:#183528;--warn:#E0AB45;--warn-bg:#3A2F1B;--no:#E07A7A;--no-bg:#3B2023;
   color-scheme:dark;
 }
+:root[data-theme=studio]{
+  /* VELUNO Studio — Primary Colors */
+  --studio-bg:#131F23;
+  --studio-primary:#92D332;
+  --studio-border:#37464F;
+  --studio-accent:#CD82FF;
+  /* VELUNO Studio — Supporting Colors */
+  --studio-surface:#1B2A2F;
+  --studio-surface-elevated:#24353B;
+  --studio-text:#F2F6F5;
+  --studio-text-secondary:#A7B6BC;
+  --studio-button-text:#131F23;
+  --studio-primary-soft:#293D2B;
+  --studio-accent-soft:#34283F;
+
+  /* VELUNO semantic variables */
+  --bg:#131F23;--card:#1B2A2F;--surf:#24353B;
+  --tx:#F2F6F5;--tx-sec:#A7B6BC;--tx2:#7E9199;
+  --bd:#37464F;
+  --ac:#92D332;--ac2:#80BC28;--ac-soft:#293D2B;--on-ac:#131F23;
+  --ok:#2CE58B;--ok-bg:#153826;--warn:#FFB340;--warn-bg:#382B14;--no:#FF6B6B;--no-bg:#3E1E22;
+  color-scheme:dark;
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 Inter,-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background-color var(--dur),color var(--dur)}
@@ -159,6 +182,19 @@ input.switch:checked{background:var(--ac)}input.switch:checked::after{transform:
 input[type=range]{accent-color:var(--ac);width:130px}
 .settings label.list-row{cursor:pointer}
 
+/* ===== Ayarlar Tema Seçim Izgarası (2x2) ===== */
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%}
+.theme-card-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surf);border:1.5px solid var(--bd);border-radius:12px;color:var(--tx);font:600 .9rem Inter,sans-serif;cursor:pointer;text-align:left;min-height:52px;transition:border-color var(--dur),background var(--dur),box-shadow var(--dur)}
+.theme-card-btn:hover{border-color:var(--ac)}
+.theme-card-btn.active{border-color:var(--ac);background:var(--card);box-shadow:0 0 0 1px var(--ac)}
+.theme-preview{width:32px;height:32px;border-radius:8px;position:relative;flex-shrink:0;overflow:hidden;border:1px solid rgba(128,128,128,.2);display:flex;flex-direction:column;justify-content:flex-end;padding:3px}
+.theme-swatch-bar{height:6px;width:16px;border-radius:3px}
+.theme-p-light{background:#F7F9FC}.theme-p-light .theme-swatch-bar{background:#4F8EF7}
+.theme-p-dark{background:#101317}.theme-p-dark .theme-swatch-bar{background:#6FA8FF}
+.theme-p-auto{background:#101317;position:relative}.theme-p-auto::before{content:'';position:absolute;top:0;left:0;bottom:0;width:50%;background:#F7F9FC;z-index:0}
+.theme-p-auto .theme-swatch-bar{background:#4F8EF7;position:relative;z-index:1}
+.theme-p-studio{background:#131F23;border-color:#37464F}.theme-p-studio .theme-swatch-bar{background:#92D332}
+
 details.more{border-top:1px solid var(--bd);margin-top:22px}
 details.more>summary{list-style:none;cursor:pointer;padding:15px 0;font-weight:600;color:var(--tx-sec);display:flex;justify-content:space-between;align-items:center;min-height:48px}
 details.more>summary::-webkit-details-marker{display:none}
@@ -269,6 +305,32 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .heat{display:grid;grid-template-rows:repeat(7,11px);grid-auto-flow:column;grid-auto-columns:11px;gap:3px;overflow-x:auto;padding-bottom:6px}
 .hm{display:inline-block;width:11px;height:11px;border-radius:3px;background:var(--surf)}.hm.l1{background:#CFE1FF}.hm.l2{background:#9AC0FF}.hm.l3{background:#6FA8FF}.hm.l4{background:#3B7BF2}
 :root[data-theme=dark] .hm.l1{background:#1E314D}:root[data-theme=dark] .hm.l2{background:#294978}:root[data-theme=dark] .hm.l3{background:#3D6DB5}:root[data-theme=dark] .hm.l4{background:#6FA8FF}
+:root[data-theme=studio] .hm.l1{background:#1B3528}:root[data-theme=studio] .hm.l2{background:#265538}:root[data-theme=studio] .hm.l3{background:#4F8C22}:root[data-theme=studio] .hm.l4{background:#92D332}
+
+/* ===== VELUNO Studio Bileşen Vurguları & Arayüz Kuralları ===== */
+:root[data-theme=studio] #sidebar a.active{background:#34283F;color:#CD82FF;font-weight:600}
+:root[data-theme=studio] #bottomnav a.active{color:#CD82FF;font-weight:600}
+:root[data-theme=studio] .meaning,
+:root[data-theme=studio] .eyebrow,
+:root[data-theme=studio] .sigil,
+:root[data-theme=studio] .row-ic,
+:root[data-theme=studio] .text-btn,
+:root[data-theme=studio] .back-link,
+:root[data-theme=studio] .formula code,
+:root[data-theme=studio] .step-cta{color:#CD82FF}
+:root[data-theme=studio] .chip:not(.alt):not(.ok):not(.bad){background:#34283F;color:#CD82FF}
+:root[data-theme=studio] .seg-btn.active{background:#1B2A2F;color:#CD82FF;box-shadow:none}
+:root[data-theme=studio] .step.done:not(:last-child)::before{background:#CD82FF}
+:root[data-theme=studio] .step.done .step-node{background:#34283F;border-color:#CD82FF;color:#CD82FF}
+:root[data-theme=studio] .step.active .step-node{background:#CD82FF;border-color:#CD82FF;color:#131F23}
+:root[data-theme=studio] .note{background:#34283F;border-left:3px solid #CD82FF}
+:root[data-theme=studio] .hint-toggle{background:#34283F;color:#CD82FF}
+:root[data-theme=studio] .hint-badge{background:#34283F;color:#CD82FF}
+:root[data-theme=studio] .hint-step blockquote{border-left-color:#CD82FF}
+:root[data-theme=studio] .level-picker-btn.active{border-color:#CD82FF;background:#34283F}
+:root[data-theme=studio] .level-picker-badge{color:#CD82FF;border-color:#CD82FF;background:transparent}
+:root[data-theme=studio] .level-picker-code{background:var(--ac);color:var(--on-ac)}
+:root[data-theme=studio] .opt.right .opt-n{background:var(--ok);color:#131F23}
 .ring-bg{fill:none;stroke:var(--surf);stroke-width:8}.ring-fg{fill:none;stroke:var(--ac);stroke-width:8;stroke-linecap:round}.ring-t{fill:var(--tx);font:700 16px Inter,sans-serif}
 
 /* ===== Grammar: öğrenme yolu ===== */
@@ -359,6 +421,11 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
  body.kb-open #toasts,body.focus #toasts{bottom:16px}
  .formula{grid-template-columns:1fr}
  .today-label{font-size:1.1rem}
+}
+@media(max-width:440px){
+ .theme-grid{gap:8px}
+ .theme-card-btn{padding:10px 8px;font-size:.82rem;gap:8px}
+ .theme-preview{width:26px;height:26px}
 }
 @media(max-width:374px){
  main{padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}

@@ -361,9 +361,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.1.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.2.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.1.0';"), 'SW sürümü veluno-v4.1.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.2.0';"), 'SW sürümü veluno-v4.2.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1268,9 +1268,9 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası harfi harfine korunmalı');
 });
 
-await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü veluno-v4.1.0 olarak güncellenmiştir', async () => {
+await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.1.0';"), 'SW sürümü veluno-v4.1.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.2.0';"), 'SW sürümü veluno-v4.2.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1368,6 +1368,96 @@ await test('v4.1 [5] Phase E: Yeni Eklenen 704 Kelimenin Soru Üretimi ve Seviye
       eq(q.type, qType, `${w.id} için ${qType} tipi soru üretilebilmeli`);
     }
   }
+});
+
+out('\n12) VELUNO Studio Theme Update');
+
+await test('Studio [1] VELUNO Studio temasının seçilmesi, saklanması ve ayarlar arayüzü', async () => {
+  const appCode = await readText('js/app.js');
+  const css = await readText('css/style.css');
+
+  // 4 seçenek bulunmalı: Açık, Koyu, Otomatik ve VELUNO Studio
+  ok(appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="dark"') && appCode.includes('data-set-theme="auto"') && appCode.includes('data-set-theme="studio"'), 'Ayarlarda 4 tema butonu (light, dark, auto, studio) tanımlı olmalı');
+  ok(appCode.includes('>Açık</button>') && appCode.includes('>Koyu</button>') && appCode.includes('>Otomatik</button>') && appCode.includes('>VELUNO Studio</button>'), 'Ayarlarda Açık, Koyu, Otomatik ve VELUNO Studio etiketleri bulunmalı');
+
+  // 2x2 ızgara ve önizleme swatch sınıfları CSS ve JS'de mevcut olmalı
+  ok(appCode.includes('class="theme-grid"') && css.includes('.theme-grid{display:grid'), '2x2 tema seçim ızgarası tanımlı olmalı');
+  ok(css.includes('.theme-card-btn') && css.includes('.theme-p-studio'), 'Studio tema kartı ve önizleme swatch stili mevcut olmalı');
+});
+
+await test('Studio [2] resolveTheme() fonksiyonu ve cihaz tema bağımsızlığı', () => {
+  // Studio doğrudan studio dönmeli; cihazın koyu/açık modundan etkilenmemeli
+  eq(resolveTheme('studio', false), 'studio', 'Studio teması açık cihaz ayarında studio dönmeli');
+  eq(resolveTheme('studio', true), 'studio', 'Studio teması koyu cihaz ayarında studio dönmeli');
+  eq(resolveTheme('studio'), 'studio', 'Studio teması argümansız studio dönmeli');
+
+  // Eski temalar eksiksiz korunmalı
+  eq(resolveTheme('light', true), 'light');
+  eq(resolveTheme('light', false), 'light');
+  eq(resolveTheme('dark', true), 'dark');
+  eq(resolveTheme('dark', false), 'dark');
+  eq(resolveTheme('auto', true), 'dark');
+  eq(resolveTheme('auto', false), 'light');
+});
+
+await test('Studio [3] index.html açılış scripti ve Safari theme-color meta etiketi (#131F23)', async () => {
+  const html = await readText('index.html');
+  const appCode = await readText('js/app.js');
+
+  // index.html inline scripti studio değerini çözebilmeli
+  ok(html.includes("pref === 'studio'") && html.includes("'studio'"), 'index.html inline scripti studio tercihini tanımalı');
+  ok(html.includes("studio: '#131F23'"), 'index.html inline scripti studio için #131F23 theme-color tanımlamalı');
+  ok(appCode.includes("studio: '#131F23'"), 'applySettings() studio için #131F23 theme-color ayarlamalı');
+});
+
+await test('Studio [4] Studio renk paleti, değişkenler ve durum renkleri (#92D332, #131F23, #37464F, #CD82FF)', async () => {
+  const css = await readText('css/style.css');
+
+  // Ana renkler
+  ok(css.includes('--studio-bg:#131F23') || css.includes('--studio-bg: #131F23'), 'Studio bg #131F23 olmalı');
+  ok(css.includes('--studio-primary:#92D332') || css.includes('--studio-primary: #92D332'), 'Studio primary #92D332 olmalı');
+  ok(css.includes('--studio-border:#37464F') || css.includes('--studio-border: #37464F'), 'Studio border #37464F olmalı');
+  ok(css.includes('--studio-accent:#CD82FF') || css.includes('--studio-accent: #CD82FF'), 'Studio accent #CD82FF olmalı');
+
+  // Yardımcı renkler
+  for (const token of ['#1B2A2F', '#24353B', '#F2F6F5', '#A7B6BC', '#293D2B', '#34283F']) {
+    ok(css.includes(token), `Studio yardımcı rengi ${token} css içinde bulunmalı`);
+  }
+
+  // Durum renkleri (yeşil ana buton ile karışmayı önleyen emerald #2CE58B ve mercan #FF6B6B)
+  ok(css.includes('#2CE58B') && css.includes('#153826'), 'Doğru cevap emerald #2CE58B ve #153826 soft bg olmalı');
+  ok(css.includes('#FFB340') && css.includes('#382B14'), 'Uyarı #FFB340 ve #382B14 soft bg olmalı');
+  ok(css.includes('#FF6B6B') && css.includes('#3E1E22'), 'Hata #FF6B6B ve #3E1E22 soft bg olmalı');
+});
+
+await test('Studio [5] Bileşen düzeyinde mor vurgular, navigasyon ve kontrast uyumu', async () => {
+  const css = await readText('css/style.css');
+
+  // Aktif menü öğeleri mor vurgulu olmalı (#CD82FF ve #34283F)
+  ok(css.includes(':root[data-theme=studio] #sidebar a.active') && css.includes('#34283F') && css.includes('#CD82FF'), 'Kenar çubuğu aktif öğesi mor arkaplan ve mor yazıya sahip olmalı');
+  ok(css.includes(':root[data-theme=studio] #bottomnav a.active') && css.includes('#CD82FF'), 'Mobil alt menü aktif öğesi mor yazıya sahip olmalı');
+
+  // Kelime anlamı ve rozetler mor vurgulu
+  ok(css.includes(':root[data-theme=studio] .meaning') && css.includes(':root[data-theme=studio] .step.done .step-node'), 'Grammar adımları ve kelime anlamları mor vurgu içermeli');
+  ok(css.includes(':root[data-theme=studio] .step.active .step-node'), 'Grammar aktif adımı Studio için tanımlı olmalı');
+
+  // Ana butonlar yeşil zemin üzerinde koyu yazı (#131F23) içermeli
+  ok(css.includes('--on-ac:#131F23') || css.includes('--on-ac: #131F23'), 'Studio temasında buton üstü metin rengi koyu petrol (#131F23) olmalı');
+});
+
+await test('Studio [6] Mevcut sistemlerin, 2.024 kelimenin, 38 Grammar konusunun ve "ahmet ❤️ sude" imzasının korunması', async () => {
+  const allWords = [...data.A2, ...data.B1, ...data.B2];
+  const activeWords = allWords.filter((w) => !w.isDraft);
+  const draftWords = allWords.filter((w) => w.isDraft);
+
+  eq(allWords.length, 2024, 'Toplam kelime sayısı 2.024 olarak korunmalı');
+  eq(activeWords.length, 2010, 'Aktif kelime sayısı 2.010 olarak korunmalı');
+  eq(draftWords.length, 14, 'Taslak kelime sayısı 14 olarak korunmalı');
+  eq(G.GRAMMAR_TOPICS.length, 38, '38 Grammar konusu korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 760, '760 Grammar sorusu korunmalı');
+
+  const appSrc = await readText('js/app.js');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

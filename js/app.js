@@ -15,6 +15,7 @@ const INTRO_KEY = 'lexora_intro_seen';
 
 /* ---------- Tema Çözümleme & Ayarların Uygulanması ---------- */
 export function resolveTheme(themePref = 'light', prefersDark = null) {
+  if (themePref === 'studio') return 'studio';
   if (themePref === 'dark') return 'dark';
   if (themePref === 'auto') {
     const isDark = prefersDark !== null
@@ -34,7 +35,10 @@ export function applySettings() {
   r.classList.toggle('no-anim', !s.animations);
   r.classList.toggle('reduce', !!s.reducedMotion);
   const metaTheme = document.getElementById('meta-theme-color');
-  if (metaTheme) metaTheme.setAttribute('content', resolved === 'dark' ? '#101317' : '#F7F9FC');
+  if (metaTheme) {
+    const metaColors = { dark: '#101317', studio: '#131F23', light: '#F7F9FC' };
+    metaTheme.setAttribute('content', metaColors[resolved] || '#F7F9FC');
+  }
 }
 
 /* ---------- Açılış ekranı ---------- */
@@ -254,19 +258,20 @@ function renderMore(v) {
 /* ---------- Ayarlar (iOS tarzı liste) ---------- */
 function renderSettings(v) {
   const s = getSettings();
-  const curTheme = ['light', 'dark', 'auto'].includes(s.theme) ? s.theme : 'light';
+  const curTheme = ['light', 'dark', 'auto', 'studio'].includes(s.theme) ? s.theme : 'light';
   const sw = (id, label, on, desc = '') => `<label class="list-row"><span class="row-main"><b>${label}</b>${desc ? `<span class="muted small">${desc}</span>` : ''}</span><input type="checkbox" class="switch" id="${id}" ${on ? 'checked' : ''}></label>`;
   const btnRow = (id, label, cls = '') => `<li><button type="button" class="list-row linkrow ${cls}" id="${id}"><span class="row-main"><b>${label}</b></span>${ICONS.chev}</button></li>`;
   v.innerHTML = `<div class="page settings"><h1>Ayarlar</h1>
 
   <h2 class="group-title">Görünüm</h2>
   <div class="list"><div class="list-row stack"><span class="row-main"><b>Tema</b></span>
-    <div class="seg full" role="group" aria-label="Tema seçimi">
-      <button type="button" class="seg-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light">Açık</button>
-      <button type="button" class="seg-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark">Koyu</button>
-      <button type="button" class="seg-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto">Otomatik</button>
+    <div class="theme-grid" role="group" aria-label="Tema seçimi">
+      <button type="button" class="theme-card-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light"><span class="theme-preview theme-p-light" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Açık</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark"><span class="theme-preview theme-p-dark" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Koyu</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto"><span class="theme-preview theme-p-auto" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Otomatik</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'studio' ? 'active' : ''}" data-set-theme="studio"><span class="theme-preview theme-p-studio" aria-hidden="true"><span class="theme-swatch-bar"></span></span>VELUNO Studio</button>
     </div></div></div>
-  <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder.</p>
+  <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder. VELUNO Studio, petrol ve lime yeşili özel tasarım sunar.</p>
 
   <h2 class="group-title">Günlük Hedef</h2>
   <ul class="list">
@@ -291,7 +296,7 @@ function renderSettings(v) {
 
   <h2 class="group-title">Hakkında</h2>
   <div class="list">
-    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v4.1</span></div>
+    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v4.2</span></div>
     <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
   </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
