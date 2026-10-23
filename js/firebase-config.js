@@ -3,7 +3,7 @@
 // GİZLİ YÖNETİCİ ANAHTARLARI VEYA SERVİS HESABI ŞİFRELERİ KESİNLİKLE BURAYA EKLENMEZ.
 
 export const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAWfIEIlRjOygfTUOctAsoVodCazyDYvQK",
+  apiKey: "AIzaSyAWflEtIRjOygfTUOctAsoVodCazyDYvQk",
   authDomain: "veluno-private.firebaseapp.com",
   projectId: "veluno-private",
   storageBucket: "veluno-private.firebasestorage.app",
