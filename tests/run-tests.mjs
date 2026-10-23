@@ -18,7 +18,7 @@ import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta, getGrammar
 import { resumeSaved } from '../js/learning.js';
 import * as G from '../js/grammar.js';
 import '../js/vocab-ui.js';
-import '../js/app.js';
+import { resolveTheme } from '../js/app.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
@@ -352,14 +352,14 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (ezberullah-v2.2.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v3.0.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'ezberullah-v2.2.0';"), 'SW sürümü ezberullah-v2.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v3.0.0';"), 'SW sürümü veluno-v3.0.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
 });
-await test('EZBERULLAH marka dönüşümü, kitap+beyin logosu, çift renkli tipografi ve "ahmet ❤️ sude" özel imzası doğrulandı', async () => {
+await test('VELUNO marka dönüşümü, modern safir-mavi ikon sistemi, Apple benzeri tasarım ve "ahmet ❤️ sude" özel imzası doğrulandı', async () => {
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
   const css = await readText('css/style.css');
@@ -368,26 +368,59 @@ await test('EZBERULLAH marka dönüşümü, kitap+beyin logosu, çift renkli tip
   const svgIcon = await readText('assets/icons/icon.svg');
   const svgLogoFull = await readText('assets/icons/logo-full.svg');
 
-  ok(html.includes('<title>EZBERULLAH'), 'Tarayıcı sekmesi başlığı EZBERULLAH olmalı');
-  ok(html.includes('✦ EZBERULLAH ✦'), 'Açılış ekranında EZBERULLAH imzası bulunmalı');
-  ok(html.includes('<b class="brand-name" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></b>'), 'Sol menüde çift renkli EZBERULLAH başlığı bulunmalı');
-  ok(!html.includes('LEXORA'), 'index.html içinde eski LEXORA adı kalmamalı');
+  ok(html.includes('<title>VELUNO'), 'Tarayıcı sekmesi başlığı VELUNO olmalı');
+  ok(html.includes('✦ VELUNO ✦'), 'Açılış ekranında VELUNO imzası bulunmalı');
+  ok(html.includes('<b class="brand-name" aria-label="VELUNO">VELUNO</b>'), 'Sol menüde VELUNO başlığı bulunmalı');
+  ok(!html.includes('LEXORA') && !html.includes('EZBERULLAH'), 'index.html içinde eski LEXORA veya EZBERULLAH adı kalmamalı');
   ok(!html.includes('ahmet') && !html.includes('sude'), 'ahmet ❤️ sude imzası index.html / kenar çubuğunda değil yalnızca Ana Sayfada olmalı');
+  ok(html.includes('class="nav-ic"') && html.includes('<svg viewBox="0 0 24 24"'), 'Navigasyonda ince çizgili modern monokrom SVG ikonlar kullanılmalı');
 
-  eq(mf1.short_name, 'EZBERULLAH');
-  ok(mf1.name.startsWith('EZBERULLAH'));
-  eq(mf2.short_name, 'EZBERULLAH');
+  eq(mf1.short_name, 'VELUNO');
+  ok(mf1.name.startsWith('VELUNO'));
+  eq(mf1.background_color, '#F7F9FC');
+  eq(mf1.theme_color, '#F7F9FC');
+  eq(mf2.short_name, 'VELUNO');
   ok(mf1.icons.some((i) => i.src === 'assets/icons/apple-touch-icon.png' && i.sizes === '180x180'));
-  ok(svgIcon.includes('aria-label="EZBERULLAH"') && svgIcon.includes('#F5F2EB') && svgIcon.includes('#EED49E') && !svgIcon.includes('<text'), 'Telefon/uygulama ikonunda yalnızca kitap + beyin + yıldız sembolü bulunmalı');
-  ok(svgLogoFull.includes('<tspan fill="#F5F2EB">EZBER</tspan><tspan fill="#D4B475">ULLAH</tspan>'), 'Tam logoda EZBER kırık beyaz, ULLAH şampanya altını olmalı');
+  ok(svgIcon.includes('aria-label="VELUNO"') && svgIcon.includes('#4F8EF7') && !svgIcon.includes('<text'), 'Telefon/uygulama ikonunda yalnızca VELUNO sembolü bulunmalı');
+  ok(svgLogoFull.includes('VELUNO'), 'Tam logoda VELUNO başlığı olmalı');
 
-  ok(appCode.includes('<h1 class="hero-title" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></h1>'), 'Ana sayfada EZBER kırık beyaz, ULLAH şampanya altını olmalı');
-  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Ana sayfada küçük harfli ahmet ❤️ sude imzası bulunmalı');
-  ok(css.includes('.ez-w{color:#F5F2EB}') && css.includes('.ez-g{color:#D4B475}'), 'EZBER kırık beyaz (#F5F2EB) ve ULLAH şampanya altını (#D4B475) CSS renkleri tanımlanmalı');
+  ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı bulunmalı');
+  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Ana sayfada küçük harfli ahmet ❤️ sude imzası dokunulmadan korunmalı');
   ok(css.includes('.hero-sig{') && css.includes('text-transform:lowercase') && css.includes('font-weight:300') && css.includes('align-self:flex-end'), 'İmza CSS kuralları (küçük harf, ince font, sağ alt hiza) bulunmalı');
   ok(css.includes('.sig-heart{color:#EF4444'), 'Kalp kırmızı renkte (#EF4444) tanımlanmalı');
+  ok(!css.includes('#D4B475') && !css.includes('#C9A86A'), 'Eski sarı/altın renk kodları (#D4B475, #C9A86A) tamamen kaldırılmış olmalı');
 });
-await test('iPhone / Safari uyumluluğu (safe-area, viewport-fit, apple-touch-icon, klavye ve TTS) doğrulandı', async () => {
+await test('VELUNO Tema Sistemi: Açık tema varsayılan, Koyu ve Otomatik (Cihaz Teması) seçenekleri, renk paletleri ve parlama önleyici script doğrulandı', async () => {
+  const html = await readText('index.html');
+  const appCode = await readText('js/app.js');
+  const css = await readText('css/style.css');
+
+  // 1) Varsayılan tema Açık (light) olmalı
+  eq(DEFAULT_SETTINGS.theme, 'light', 'DEFAULT_SETTINGS.theme varsayılan olarak light olmalı');
+  ok(html.includes('<html lang="tr" data-theme="light">'), 'index.html varsayılan olarak data-theme="light" ile başlamalı');
+  ok(html.includes('prefers-color-scheme: dark') && html.includes('document.documentElement.dataset.theme'), 'Sayfa yenilemesinde yanlış tema parlamasını (flash) önleyen inline script bulunmalı');
+
+  // 2) resolveTheme fonksiyonu light / dark / auto modlarını doğru çözümlemeli
+  eq(resolveTheme('light', true), 'light');
+  eq(resolveTheme('light', false), 'light');
+  eq(resolveTheme('dark', false), 'dark');
+  eq(resolveTheme('dark', true), 'dark');
+  eq(resolveTheme('auto', true), 'dark', 'Otomatik modda cihaz koyu ise dark dönmeli');
+  eq(resolveTheme('auto', false), 'light', 'Otomatik modda cihaz açık ise light dönmeli');
+
+  // 3) Ayarlar menüsünde Açık, Koyu ve Otomatik seçenekleri bulunmalı
+  ok(appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="dark"') && appCode.includes('data-set-theme="auto"'), 'Ayarlarda Açık / Koyu / Otomatik tema butonları bulunmalı');
+  ok(appCode.includes('<option value="auto"'), 'Ayarlar tema seçim kutusunda Otomatik (Cihaz Teması) seçeneği bulunmalı');
+
+  // 4) Açık ve Koyu tema renk paletleri şartnameye birebir uymalı
+  for (const token of ['#F7F9FC', '#FFFFFF', '#F1F4F8', '#17243B', '#738098', '#E5E9F0', '#4F8EF7', '#EAF2FF', '#2F9E66', '#D89B2B', '#D96B6B']) {
+    ok(css.includes(token), `Açık tema renk paletinde ${token} bulunmalı`);
+  }
+  for (const token of ['#101317', '#1B2027', '#252B33', '#F3F5F7', '#9BA6B5', '#303741', '#6FA8FF', '#1E314D', '#3FB97C', '#E0AB45', '#E07A7A']) {
+    ok(css.includes(token), `Koyu tema renk paletinde ${token} bulunmalı`);
+  }
+});
+await test('iPhone / Safari uyumluluğu (safe-area, viewport-fit, apple-touch-icon, klavye ve TTS) ve yedek uyumluluğu doğrulandı', async () => {
   const html = await readText('index.html');
   const css = await readText('css/style.css');
   const uiCode = await readText('js/ui.js');
@@ -395,7 +428,7 @@ await test('iPhone / Safari uyumluluğu (safe-area, viewport-fit, apple-touch-ic
 
   ok(html.includes('viewport-fit=cover'), 'viewport-fit=cover bulunmalı');
   ok(html.includes('name="apple-mobile-web-app-capable" content="yes"'), 'iOS web-app meta etiketi bulunmalı');
-  ok(html.includes('name="apple-mobile-web-app-title" content="EZBERULLAH"'), 'iOS ana ekran başlığı EZBERULLAH olmalı');
+  ok(html.includes('name="apple-mobile-web-app-title" content="VELUNO"'), 'iOS ana ekran başlığı VELUNO olmalı');
   ok(html.includes('rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png"'), '180x180 apple-touch-icon bağlantısı bulunmalı');
   ok(css.includes('env(safe-area-inset-top)') && css.includes('env(safe-area-inset-bottom)'), 'Safari safe-area boşlukları bulunmalı');
   ok(css.includes('body.kb-open #bottomnav{display:none}'), 'Mobil klavye açıldığında alt menü gizlenmeli');
@@ -403,10 +436,12 @@ await test('iPhone / Safari uyumluluğu (safe-area, viewport-fit, apple-touch-ic
   ok(uiCode.includes('NOVELTY_VOICES') && uiCode.includes('PREFERRED_VOICES'), 'iOS Safari doğal İngilizce ses seçimi bulunmalı');
   ok(learnCode.includes('enterkeyhint="done"'), 'iPhone klavyesi için enterkeyhint="done" bulunmalı');
 
-  // Hem yeni EZBERULLAH hem eski LEXORA yedekleri geçerli kabul edilmeli
+  // Hem yeni VELUNO hem eski EZBERULLAH ve LEXORA yedekleri geçerli kabul edilmeli
   const b = buildBackup();
-  eq(b.app, 'EZBERULLAH');
+  eq(b.app, 'VELUNO');
   eq(validateBackup(b), []);
+  const ezBackup = { ...JSON.parse(JSON.stringify(b)), app: 'EZBERULLAH' };
+  eq(validateBackup(ezBackup), []);
   const legacyB = { ...JSON.parse(JSON.stringify(b)), app: 'LEXORA' };
   eq(validateBackup(legacyB), []);
 });
@@ -686,7 +721,7 @@ await test('v2.1 Ana sayfa ve ayarlar tasarımı: akıllı kartlar, hızlı hede
   ok(appCode.includes('Zorlandığın Kelimeler:'), 'Ana sayfada Zorlandığın Kelimeler hata analiz kartı bulunmalı');
   ok(appCode.includes('▶️ Kaldığın Yerden Devam Et'), 'Ana sayfada Kaldığın Yerden Devam Et butonu bulunmalı');
   ok(appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
-  ok(appCode.includes('<span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span>'), 'EZBERULLAH çift renkli tipografisi korunmalı');
+  ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı bulunmalı');
 
   ok(css.includes('.smart-grid'), 'Akıllı öğrenme kartları CSS ızgarası bulunmalı');
   ok(css.includes('.resume-card'), 'Kaldığın yerden devam et kartı CSS kuralı bulunmalı');

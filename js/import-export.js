@@ -147,18 +147,18 @@ export function buildBackup() {
     meta.push({ key: 'grammarProgress', value: { ...state.grammarProgress } });
   }
   return {
-    app: 'EZBERULLAH', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(),
+    app: 'VELUNO', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(),
     words: state.words, progress: Object.values(state.progress), exams: state.exams, daily: Object.values(state.daily),
     grammarProgress: Object.values(state.grammarProgress || {}),
     meta, settings: getSettings(),
   };
 }
-/** Geri yüklemeden önce doğrular. Hata listesi döner (boşsa geçerli). Eski LEXORA ve yeni EZBERULLAH yedeklerini destekler. */
+/** Geri yüklemeden önce doğrular. Hata listesi döner (boşsa geçerli). VELUNO, EZBERULLAH ve LEXORA yedeklerini destekler. */
 export function validateBackup(o) {
   const e = [];
-  if (!o || typeof o !== 'object' || (o.app !== 'EZBERULLAH' && o.app !== 'LEXORA')) return ['Bu bir EZBERULLAH yedek dosyası değil'];
+  if (!o || typeof o !== 'object' || (o.app !== 'VELUNO' && o.app !== 'EZBERULLAH' && o.app !== 'LEXORA')) return ['Bu bir VELUNO yedek dosyası değil'];
   if (typeof o.schemaVersion !== 'number') e.push('Şema sürümü eksik');
-  else if (o.schemaVersion > SCHEMA_VERSION) e.push('Yedek daha yeni bir EZBERULLAH sürümünden; uygulamayı güncelleyin');
+  else if (o.schemaVersion > SCHEMA_VERSION) e.push('Yedek daha yeni bir VELUNO sürümünden; uygulamayı güncelleyin');
   for (const k of ['words', 'progress', 'exams', 'daily', 'meta']) if (!Array.isArray(o[k])) e.push(`"${k}" listesi eksik veya hatalı`);
   if (o.grammarProgress !== undefined && !Array.isArray(o.grammarProgress) && typeof o.grammarProgress !== 'object') {
     e.push('"grammarProgress" alanı geçersiz');
@@ -190,7 +190,7 @@ export function downloadFile(name, text, type = 'application/json') {
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 export function exportBackup() {
-  downloadFile(`ezberullah-yedek-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(buildBackup(), null, 1));
+  downloadFile(`veluno-yedek-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(buildBackup(), null, 1));
   toast('Yedek dosyası indirildi.', 'success');
 }
 export function pickAndRestore() {

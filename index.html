@@ -1,18 +1,34 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="dark">
+<html lang="tr" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EZBERULLAH — Daha akıllıca öğren, daha uzun süre hatırla.</title>
-<meta name="description" content="EZBERULLAH: A2, B1 ve B2 seviyelerinde İngilizce kelime öğrenme, akıllı tekrar, sınavlar ve istatistikler. Ücretsiz ve çevrimdışı çalışır.">
-<meta name="theme-color" content="#09090B" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
+<title>VELUNO — Daha akıllıca öğren, daha uzun süre hatırla.</title>
+<meta name="description" content="VELUNO: A2, B1 ve B2 seviyelerinde İngilizce kelime öğrenme, Grammar Academy, akıllı tekrar, sınavlar ve istatistikler. Ücretsiz ve çevrimdışı çalışır.">
+<meta name="theme-color" content="#F7F9FC" id="meta-theme-color">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="EZBERULLAH">
-<meta name="application-name" content="EZBERULLAH">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="VELUNO">
+<meta name="application-name" content="VELUNO">
 <meta name="format-detection" content="telephone=no">
+<script>
+(function(){
+  try {
+    var raw = localStorage.getItem('lexora_settings');
+    var pref = (raw && JSON.parse(raw).theme) || 'light';
+    var resolved = pref === 'auto'
+      ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : (pref === 'dark' ? 'dark' : 'light');
+    document.documentElement.dataset.theme = resolved;
+    document.documentElement.dataset.themeMode = pref;
+    var mt = document.getElementById('meta-theme-color');
+    if (mt) mt.setAttribute('content', resolved === 'dark' ? '#101317' : '#F7F9FC');
+  } catch (e) {
+    document.documentElement.dataset.theme = 'light';
+  }
+})();
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/icons/icon-192.png" sizes="192x192" type="image/png">
@@ -28,7 +44,7 @@
 <section id="intro" hidden aria-label="Açılış">
   <div class="glow"></div>
   <div class="intro-inner">
-    <div class="sigil rv" aria-hidden="true">✦ EZBERULLAH ✦</div>
+    <div class="sigil rv" aria-hidden="true">✦ VELUNO ✦</div>
     <h1 class="i-title rv t1">AHMET YAKICI’NIN</h1>
     <h1 class="i-title rv t2">HAYRATIDIR.</h1>
     <div class="rule rv t3" aria-hidden="true"></div>
@@ -46,36 +62,60 @@
 <div id="app" hidden>
   <aside id="sidebar" aria-label="Ana menü">
     <div class="brand">
-      <img class="logo-img" src="assets/icons/icon.svg" width="40" height="40" alt="EZBERULLAH logosu">
-      <div><b class="brand-name" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></b><small>Daha akıllıca öğren.</small></div>
+      <img class="logo-img" src="assets/icons/icon.svg" width="40" height="40" alt="VELUNO logosu">
+      <div><b class="brand-name" aria-label="VELUNO">VELUNO</b><small>Daha akıllıca öğren.</small></div>
     </div>
     <nav>
-      <a data-nav="dashboard" href="#/dashboard"><span>🏠</span>Ana Sayfa</a>
-      <a data-nav="learn" href="#/learn"><span>📖</span>Kelime Öğren</a>
-      <a data-nav="review" href="#/review"><span>🧠</span>Akıllı Tekrar</a>
-      <a data-nav="grammar" href="#/grammar"><span>🎓</span>Grammar Academy</a>
-      <a data-nav="vocabulary" href="#/vocabulary"><span>📚</span>Kelime Havuzum</a>
-      <a data-nav="exams" href="#/exams"><span>📝</span>Sınavlar</a>
-      <a data-nav="statistics" href="#/statistics"><span>📊</span>İstatistikler</a>
-      <a data-nav="settings" href="#/settings"><span>⚙️</span>Ayarlar</a>
+      <a data-nav="dashboard" href="#/dashboard">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V9.5"/><path d="M9.5 20.5v-6h5v6"/></svg></span>
+        Ana Sayfa
+      </a>
+      <a data-nav="learn" href="#/learn">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3H11v17H4.5A2.5 2.5 0 0 0 2 22.5v-17Z"/><path d="M22 5.5A2.5 2.5 0 0 0 19.5 3H13v17h6.5a2.5 2.5 0 0 1 2.5 2.5v-17Z"/></svg></span>
+        Kelime Öğren
+      </a>
+      <a data-nav="review" href="#/review">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-15.4-6.4L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 15.4 6.4L21 16"/><path d="M16 16h5v5"/></svg></span>
+        Akıllı Tekrar
+      </a>
+      <a data-nav="grammar" href="#/grammar">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"/><path d="M22 10v6"/></svg></span>
+        Grammar Academy
+      </a>
+      <a data-nav="vocabulary" href="#/vocabulary">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L2 8l10 5 10-5-10-5Z"/><path d="M2 13l10 5 10-5"/><path d="M2 17.5l10 5 10-5"/></svg></span>
+        Kelime Havuzum
+      </a>
+      <a data-nav="exams" href="#/exams">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M9 12l2 2 4-4"/><path d="M8 7h8"/><path d="M8 17h5"/></svg></span>
+        Sınavlar
+      </a>
+      <a data-nav="statistics" href="#/statistics">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V5"/><path d="M16 20v-7"/><path d="M22 20V8"/></svg></span>
+        İstatistikler
+      </a>
+      <a data-nav="settings" href="#/settings">
+        <span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.2" fill="var(--card)"/><circle cx="15" cy="12" r="2.2" fill="var(--card)"/><circle cx="10" cy="18" r="2.2" fill="var(--card)"/></svg></span>
+        Ayarlar
+      </a>
     </nav>
   </aside>
   <main id="view" tabindex="-1"></main>
   <nav id="bottomnav" aria-label="Alt menü">
-    <a data-nav="dashboard" href="#/dashboard"><span>🏠</span>Ana Sayfa</a>
-    <a data-nav="learn" href="#/learn"><span>📖</span>Öğren</a>
-    <a data-nav="review" href="#/review"><span>🧠</span>Tekrar</a>
-    <a data-nav="grammar" href="#/grammar"><span>🎓</span>Grammar</a>
-    <a data-nav="vocabulary" href="#/vocabulary"><span>📚</span>Havuzum</a>
-    <a data-nav="exams" href="#/exams"><span>📝</span>Sınavlar</a>
-    <a data-nav="statistics" href="#/statistics"><span>📊</span>İstatistik</a>
-    <a data-nav="settings" href="#/settings"><span>⚙️</span>Ayarlar</a>
+    <a data-nav="dashboard" href="#/dashboard"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V9.5"/></svg></span>Ana Sayfa</a>
+    <a data-nav="learn" href="#/learn"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3H11v17H4.5A2.5 2.5 0 0 0 2 22.5v-17Z"/><path d="M22 5.5A2.5 2.5 0 0 0 19.5 3H13v17h6.5a2.5 2.5 0 0 1 2.5 2.5v-17Z"/></svg></span>Öğren</a>
+    <a data-nav="review" href="#/review"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-15.4-6.4L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 15.4 6.4L21 16"/><path d="M16 16h5v5"/></svg></span>Tekrar</a>
+    <a data-nav="grammar" href="#/grammar"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"/></svg></span>Grammar</a>
+    <a data-nav="vocabulary" href="#/vocabulary"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L2 8l10 5 10-5-10-5Z"/><path d="M2 13l10 5 10-5"/><path d="M2 17.5l10 5 10-5"/></svg></span>Havuzum</a>
+    <a data-nav="exams" href="#/exams"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M9 12l2 2 4-4"/></svg></span>Sınavlar</a>
+    <a data-nav="statistics" href="#/statistics"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V5"/><path d="M16 20v-7"/><path d="M22 20V8"/></svg></span>İstatistik</a>
+    <a data-nav="settings" href="#/settings"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.2" fill="var(--card)"/><circle cx="15" cy="12" r="2.2" fill="var(--card)"/><circle cx="10" cy="18" r="2.2" fill="var(--card)"/></svg></span>Ayarlar</a>
   </nav>
 </div>
 
 <div id="modal-root"></div>
 <div id="toasts" aria-live="polite"></div>
-<noscript><p style="padding:2rem;color:#fff">EZBERULLAH çalışmak için JavaScript gerektirir.</p></noscript>
+<noscript><p style="padding:2rem;color:#17243B">VELUNO çalışmak için JavaScript gerektirir.</p></noscript>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

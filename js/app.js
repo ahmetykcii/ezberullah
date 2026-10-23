@@ -1,4 +1,4 @@
-// EZBERULLAH — uygulama giriş noktası: açılış (hayrat) ekranı, router, Ana Sayfa, Ayarlar, PWA kaydı.
+// VELUNO — uygulama giriş noktası: açılış (hayrat) ekranı, router, Ana Sayfa, Ayarlar, Tema Sistemi, PWA kaydı.
 import { initStorage, state, getSettings, setSetting, getMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
 import { seedBuiltIn, LEVELS, LEVEL_NAMES, STATUS_LABELS } from './vocabulary.js';
 import { $, $$, esc, toast, ring, fmtTime, confirmDialog, openModal } from './ui.js';
@@ -13,13 +13,28 @@ import { exportBackup, pickAndRestore } from './import-export.js';
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
 
-/* ---------- Ayarların uygulanması ---------- */
+/* ---------- Tema Çözümleme & Ayarların Uygulanması ---------- */
+export function resolveTheme(themePref = 'light', prefersDark = null) {
+  if (themePref === 'dark') return 'dark';
+  if (themePref === 'auto') {
+    const isDark = prefersDark !== null
+      ? Boolean(prefersDark)
+      : (typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    return isDark ? 'dark' : 'light';
+  }
+  return 'light';
+}
+
 export function applySettings() {
   const s = getSettings();
   const r = document.documentElement;
-  r.dataset.theme = s.theme;
+  const resolved = resolveTheme(s.theme);
+  r.dataset.theme = resolved;
+  r.dataset.themeMode = s.theme || 'light';
   r.classList.toggle('no-anim', !s.animations);
   r.classList.toggle('reduce', !!s.reducedMotion);
+  const metaTheme = document.getElementById('meta-theme-color');
+  if (metaTheme) metaTheme.setAttribute('content', resolved === 'dark' ? '#101317' : '#F7F9FC');
 }
 
 /* ---------- Açılış ekranı ---------- */
@@ -88,7 +103,7 @@ function renderDashboard(v) {
   const plan = studyPlan();
   const next = all.due ? { m: 'smart', t: `${all.due} kelime tekrar bekliyor`, b: 'Akıllı Tekrarı Başlat' } : null;
   const stat = (l, val, sub = '') => `<div class="stat"><span class="muted">${l}</span><b>${val}</b>${sub ? `<small class="muted">${sub}</small>` : ''}</div>`;
-  v.innerHTML = `<header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="EZBERULLAH kitap ve beyin logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="EZBERULLAH"><span class="ez-w">EZBER</span><span class="ez-g">ULLAH</span></h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Yeni kelimeler öğrenmeye hazır mısın? <span class="muted">· Daha akıllıca öğren, daha uzun süre hatırla.</span></p></div></div></header>
+  v.innerHTML = `<header class="hero"><div class="hero-brand"><img class="hero-logo" src="assets/icons/icon.svg" width="56" height="56" alt="VELUNO logosu"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Yeni kelimeler öğrenmeye hazır mısın? <span class="muted">· Daha akıllıca öğren, daha uzun süre hatırla.</span></p></div></div></header>
   <div class="platform-switch" role="navigation" aria-label="Bölüm seçimi">
     <a class="p-tab active" href="#/dashboard"><span>📖 VOCABULARY</span><small>Kelime Öğrenme &amp; SRS Sistemi</small></a>
     <a class="p-tab" href="#/grammar"><span>🎓 GRAMMAR ACADEMY</span><small>A2 · B1 · B2 Dil Bilgisi (${gStats.completedTopics}/${gStats.totalTopics} Konu)</small></a>
@@ -242,6 +257,7 @@ function planCard(p) {
 /* ---------- Ayarlar ---------- */
 function renderSettings(v) {
   const s = getSettings();
+  const curTheme = ['light', 'dark', 'auto'].includes(s.theme) ? s.theme : 'light';
   const sw = (id, label, on, desc = '') => `<label class="switch-row"><span>${label}${desc ? `<small class="muted">${desc}</small>` : ''}</span><input type="checkbox" id="${id}" ${on ? 'checked' : ''}></label>`;
   v.innerHTML = `<h1>Ayarlar</h1>
   <div class="row gap wrap quick-links"><a class="btn" href="#/vocabulary">📚 Kelime Havuzum</a><a class="btn" href="#/exams">📝 Sınavlar</a></div>
@@ -256,14 +272,28 @@ function renderSettings(v) {
    <label>Hedef sınav tarihi<input class="input" type="date" id="exam" value="${s.examDate}"></label></div>
    <p class="muted small">Sınav tarihi girildiğinde Ana Sayfada kalan gün ve önerilen günlük çalışma hedefi gösterilir.</p></div>
   <div class="card"><h3>Görünüm, Ses ve Kontroller</h3>
-   <label class="switch-row"><span>Tema</span><select class="input sm" id="theme"><option value="dark" ${s.theme === 'dark' ? 'selected' : ''}>Koyu (Midnight Academy)</option><option value="light" ${s.theme === 'light' ? 'selected' : ''}>Açık</option></select></label>
+   <div class="switch-row theme-row">
+     <span>Tema<small class="muted">Açık (varsayılan), Koyu veya cihazınızın sistem teması</small></span>
+     <div class="row gap wrap">
+       <div class="theme-seg" role="group" aria-label="Tema seçimi">
+         <button type="button" class="seg-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light">☀️ Açık</button>
+         <button type="button" class="seg-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark">🌙 Koyu</button>
+         <button type="button" class="seg-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto">💻 Otomatik</button>
+       </div>
+       <select class="input sm" id="theme" aria-label="Tema seçimi">
+         <option value="light" ${curTheme === 'light' ? 'selected' : ''}>Açık</option>
+         <option value="dark" ${curTheme === 'dark' ? 'selected' : ''}>Koyu</option>
+         <option value="auto" ${curTheme === 'auto' ? 'selected' : ''}>Otomatik (Cihaz Teması)</option>
+       </select>
+     </div>
+   </div>
    ${sw('snd', 'Ses efektleri', s.sound)}${sw('anim', 'Animasyonlar', s.animations)}${sw('red', 'Azaltılmış hareket', s.reducedMotion, 'Ekran geçişlerini ve hareketi en aza indirir')}${sw('keys', 'Klavye kısayolları', s.shortcuts, 'Enter: gönder · 1–4: seçenek · Boşluk: dinle · Esc: çık')}
    <label class="switch-row"><span>Telaffuz hızı <small class="muted" id="rv">${s.ttsRate}×</small></span><input type="range" min="0.5" max="1.5" step="0.1" id="rate" value="${s.ttsRate}"></label>
    <button class="btn sm" type="button" id="tts">🔊 Telaffuzu Dene</button></div>
   <div class="card"><h3>Veri Yedekleme ve Başlangıç</h3><div class="row gap wrap"><button class="btn" type="button" id="exp">⬇ Veri Yedeğini İndir (JSON)</button><button class="btn" type="button" id="imp">⬆ Veri Yedeğini Geri Yükle</button><button class="btn" type="button" id="replay-intro">🎬 Hayrat Açılışını Tekrar İzle</button></div>
    <p class="muted small">Veri depolama: ${persistent ? 'IndexedDB (kalıcı)' : '⚠ Bellek (tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın)'} · Toplam ${state.words.length} kelime</p></div>
   <div class="card danger-zone"><h3>İlerlemeyi Sıfırla</h3><p class="muted">Tüm kelime ilerlemeleri, sınav sonuçları ve istatistikler silinir. Kelimeleriniz (kendi eklediklerinizle birlikte) korunur. İki aşamalı onay gerekir.</p><button class="btn danger" type="button" id="reset">İlerlemeyi Sıfırla…</button></div>
-  <div class="card"><h3>Hakkında</h3><p class="muted">EZBERULLAH · Daha akıllıca öğren, daha uzun süre hatırla. · Tüm veriler yalnızca bu tarayıcıda saklanır ve tamamen ücretsiz çalışır.</p></div>`;
+  <div class="card"><h3>Hakkında</h3><p class="muted">VELUNO · Daha akıllıca öğren, daha uzun süre hatırla. · Tüm veriler yalnızca bu tarayıcıda saklanır ve tamamen ücretsiz çalışır.</p></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
   const num = (id, key, min, max) => on(id, (e) => { const n = Math.max(min, Math.min(max, parseInt(e.target.value, 10) || DEFAULT_SETTINGS[key])); e.target.value = n; setSetting(key, n); toast('Ayarlar kaydedildi.'); });
   num('#goal', 'dailyGoal', 1, 500); num('#batch', 'batchSize', 1, 15);
@@ -277,7 +307,19 @@ function renderSettings(v) {
     };
   });
   on('#exam', (e) => { setSetting('examDate', e.target.value); toast('Sınav tarihi kaydedildi.'); });
-  on('#theme', (e) => { setSetting('theme', e.target.value); applySettings(); });
+  const updateThemeUI = (val) => {
+    setSetting('theme', val);
+    applySettings();
+    const sel = $('#theme', v);
+    if (sel) sel.value = val;
+    $$('[data-set-theme]', v).forEach((btn) => btn.classList.toggle('active', btn.dataset.setTheme === val));
+    const names = { light: 'Açık tema', dark: 'Koyu tema', auto: 'Otomatik (Cihaz teması)' };
+    toast(`${names[val] || 'Tema'} etkinleştirildi.`);
+  };
+  on('#theme', (e) => updateThemeUI(e.target.value));
+  $$('[data-set-theme]', v).forEach((btn) => {
+    btn.onclick = () => updateThemeUI(btn.dataset.setTheme);
+  });
   [['#snd', 'sound'], ['#anim', 'animations'], ['#red', 'reducedMotion'], ['#keys', 'shortcuts']].forEach(([id, k]) => on(id, (e) => { setSetting(k, e.target.checked); applySettings(); }));
   on('#rate', (e) => { setSetting('ttsRate', +e.target.value); $('#rv', v).textContent = e.target.value + '×'; });
   $('#tts', v).onclick = async () => { const { speak } = await import('./ui.js'); speak('achieve'); };
@@ -325,6 +367,12 @@ function updateToast(worker) {
 if (typeof window !== 'undefined') {
   window.addEventListener('lexora:error', (e) => toast('Kayıt hatası: ' + e.detail, 'error', 6000));
   window.addEventListener('hashchange', () => { if (!$('#app').hidden) route(); });
+  if (typeof window.matchMedia === 'function') {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onSchemeChange = () => { if (getSettings().theme === 'auto') applySettings(); };
+    if (mq.addEventListener) mq.addEventListener('change', onSchemeChange);
+    else if (mq.addListener) mq.addListener(onSchemeChange);
+  }
   document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#/"]'); if (a && a.getAttribute('href') === location.hash && !$('#app').hidden) { e.preventDefault(); route(); } });
   // iPhone / mobil klavye açıldığında alt menüyü gizle ve cevap alanını görünür tut
   document.addEventListener('focusin', (e) => {

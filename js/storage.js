@@ -11,7 +11,7 @@ export let persistent = false;
 
 /* ---------- Ayarlar (localStorage) ---------- */
 export const DEFAULT_SETTINGS = {
-  dailyGoal: 10, theme: 'dark', sound: true, ttsRate: 0.9, animations: true,
+  dailyGoal: 10, theme: 'light', sound: true, ttsRate: 0.9, animations: true,
   reducedMotion: false, shortcuts: true, examDate: '', batchSize: 5,
 };
 const LS = 'lexora_settings';

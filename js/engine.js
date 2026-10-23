@@ -1,4 +1,4 @@
-// EZBERULLAH engine — saf (DOM'suz) mantık: SRS, hakimiyet puanı, soru üretimi, cevap kontrolü.
+// VELUNO engine — saf (DOM'suz) mantık: SRS, hakimiyet puanı, soru üretimi, cevap kontrolü.
 // Node veya macOS jsc ile test edilebilir (bkz. tests/run-tests.mjs).
 
 export const DAY = 86400000;

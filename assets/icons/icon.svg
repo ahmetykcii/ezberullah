@@ -1,57 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="EZBERULLAH">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VELUNO">
   <defs>
-    <radialGradient id="bg-glow" cx="0.5" cy="0.48" r="0.52">
-      <stop offset="0%" stop-color="#16130F"/>
-      <stop offset="100%" stop-color="#09090B"/>
-    </radialGradient>
-    <radialGradient id="star-halo" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0%" stop-color="#E2C488" stop-opacity="0.28"/>
-      <stop offset="100%" stop-color="#E2C488" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="gold-grad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#E8CD98"/>
-      <stop offset="100%" stop-color="#C6A262"/>
+    <linearGradient id="velunoBg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5B9BFF"/>
+      <stop offset="55%" stop-color="#4F8EF7"/>
+      <stop offset="100%" stop-color="#2E6CE6"/>
     </linearGradient>
+    <linearGradient id="velunoWingLeft" x1="128" y1="168" x2="256" y2="396" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E6F0FF"/>
+    </linearGradient>
+    <linearGradient id="velunoWingRight" x1="384" y1="168" x2="256" y2="396" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#DCEBFF"/>
+      <stop offset="100%" stop-color="#B9D5FF"/>
+    </linearGradient>
+    <filter id="velunoShadow" x="-12%" y="-12%" width="124%" height="128%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#143A82" flood-opacity="0.28"/>
+    </filter>
   </defs>
-  <rect x="8" y="8" width="496" height="496" rx="108" fill="url(#bg-glow)"/>
-  <rect x="32" y="32" width="448" height="448" rx="88" fill="none" stroke="#C9A86A" stroke-opacity="0.35" stroke-width="2.8"/>
-  <g transform="translate(256 258) scale(0.93) translate(-256 -256)">
-    <!-- Star Halo & 4-Point Champagne Gold Star -->
-    <circle cx="256" cy="78" r="56" fill="url(#star-halo)"/>
-    <path d="M256 48 C259 68, 264 73, 280 78 C264 83, 259 88, 256 108 C253 88, 248 83, 232 78 C248 73, 253 68, 256 48 Z" fill="#EED49E"/>
-    <!-- Champagne Gold Open Book Wings & Inner Neural Folds -->
-    <g fill="none" stroke="url(#gold-grad)" stroke-linecap="round" stroke-linejoin="round">
-      <!-- Inner S-gyrus & rising neural fold (Left & Right) -->
-      <path d="M218 206 C194 206, 182 224, 194 240 C208 256, 204 278, 182 282" stroke-width="12"/>
-      <path d="M294 206 C318 206, 330 224, 318 240 C304 256, 308 278, 330 282" stroke-width="12"/>
-      <path d="M220 320 C218 298, 204 286, 182 282" stroke-width="12"/>
-      <path d="M292 320 C294 298, 308 286, 330 282" stroke-width="12"/>
-      <!-- Upper Gold Book Wing -->
-      <path d="M256 366 C212 338, 152 328, 94 344" stroke-width="13.6"/>
-      <path d="M256 366 C300 338, 360 328, 418 344" stroke-width="13.6"/>
-      <!-- Lower Gold Book Cover -->
-      <path d="M256 416 C208 386, 148 376, 94 394" stroke-width="13.6"/>
-      <path d="M256 416 C304 386, 364 376, 418 394" stroke-width="13.6"/>
-      <!-- Bottom Gold Book Base -->
-      <path d="M256 436 C216 410, 168 402, 124 414" stroke-width="10.8"/>
-      <path d="M256 436 C296 410, 344 402, 388 414" stroke-width="10.8"/>
-    </g>
-    <!-- Off-White (Kırık Beyaz) Unified Brain Hemispheres & Open Book Pages -->
-    <g fill="none" stroke="#F5F2EB" stroke-linecap="round" stroke-linejoin="round">
-      <!-- Left Hemisphere + Rising Page -->
-      <path d="M256 366 C246 344, 243 320, 243 290 C243 240, 243 195, 243 158 C243 122, 192 116, 172 148 C134 146, 112 180, 128 214 C100 228, 100 272, 130 294 C136 322, 168 332, 204 342 C228 348, 244 356, 256 366" stroke-width="13.6"/>
-      <!-- Right Hemisphere + Rising Page -->
-      <path d="M256 366 C266 344, 269 320, 269 290 C269 240, 269 195, 269 158 C269 122, 320 116, 340 148 C378 146, 400 180, 384 214 C412 228, 412 272, 382 294 C376 322, 344 332, 308 342 C284 348, 268 356, 256 366" stroke-width="13.6"/>
-      <!-- Outer Cortical Sulci (Left & Right) -->
-      <path d="M172 148 C182 174, 206 182, 218 172" stroke-width="12"/>
-      <path d="M340 148 C330 174, 306 182, 294 172" stroke-width="12"/>
-      <path d="M128 214 C154 216, 170 204, 178 192" stroke-width="12"/>
-      <path d="M384 214 C358 216, 342 204, 334 192" stroke-width="12"/>
-      <path d="M130 294 C156 290, 168 272, 160 252" stroke-width="12"/>
-      <path d="M382 294 C356 290, 344 272, 352 252" stroke-width="12"/>
-      <!-- Main Open Book Page & Outer Edge (Left & Right) -->
-      <path d="M256 392 C208 362, 146 352, 86 370 C89 357, 91 350, 94 344" stroke-width="13.6"/>
-      <path d="M256 392 C304 362, 366 352, 426 370 C423 357, 421 350, 418 344" stroke-width="13.6"/>
-    </g>
+
+  <!-- Soft Rounded Squircle Background -->
+  <rect width="512" height="512" rx="116" fill="url(#velunoBg)"/>
+  <rect x="4" y="4" width="504" height="504" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="4"/>
+
+  <!-- Geometric Ascending V-Book / Wing Symbol -->
+  <g filter="url(#velunoShadow)">
+    <!-- Left Page / Ascending Wing -->
+    <path d="M132 184C132 170.745 144.688 161.213 157.456 164.792L244 189.058C251.102 191.049 256 197.523 256 204.897V384C256 393.389 246.307 399.698 237.764 395.821L145.764 354.069C137.391 350.269 132 341.925 132 332.731V184Z" fill="url(#velunoWingLeft)"/>
+    <!-- Right Page / Ascending Wing -->
+    <path d="M380 184C380 170.745 367.312 161.213 354.544 164.792L268 189.058C260.898 191.049 256 197.523 256 204.897V384C256 393.389 265.693 399.698 274.236 395.821L366.236 354.069C374.609 350.269 380 341.925 380 332.731V184Z" fill="url(#velunoWingRight)"/>
+    <!-- Inner V Cutout / Page Fold Accent -->
+    <path d="M174 202L256 334L338 202L256 226L174 202Z" fill="#3B7BF2" fill-opacity="0.26"/>
+    <!-- Focus / Clarity Apex Dot -->
+    <circle cx="256" cy="134" r="24" fill="#FFFFFF"/>
   </g>
 </svg>

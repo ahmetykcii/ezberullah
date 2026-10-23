@@ -1,4 +1,4 @@
-// EZBERULLAH v2.2 — Grammar Academy Resmi Müfredatı (38 Konu) ve İlk Aşama Ders + Soru Havuzu (3 Ders, 60 Özgün Soru)
+// VELUNO — Grammar Academy Resmi Müfredatı (38 Konu) ve İlk Aşama Ders + Soru Havuzu (3 Ders, 60 Özgün Soru)
 
 export const GRAMMAR_LEVELS = [
   {

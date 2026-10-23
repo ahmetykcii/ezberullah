@@ -1,4 +1,4 @@
-// EZBERULLAH v2.2 — Grammar Academy: konu yönetimi, ders ekranı, 5 soruluk akıllı mini sınav ve bağımsız ilerleme sistemi.
+// VELUNO — Grammar Academy: konu yönetimi, ders ekranı, 5 soruluk akıllı mini sınav ve bağımsız ilerleme sistemi.
 import { GRAMMAR_LEVELS, GRAMMAR_TOPICS, GRAMMAR_QUESTIONS } from './grammar-data.js';
 import { getGrammarProgress, saveGrammarProgress } from './storage.js';
 import { shuffle } from './engine.js';
@@ -260,7 +260,7 @@ function renderGrammarHome(v) {
     <header class="g-hero card">
       <div class="g-hero-top">
         <div>
-          <div class="g-eyebrow">EZBERULLAH EĞİTİM PLATFORMU</div>
+          <div class="g-eyebrow">VELUNO EĞİTİM PLATFORMU</div>
           <h1 class="g-title">🎓 GRAMMAR ACADEMY</h1>
           <p class="g-subtitle">İngilizce Dil Bilgisini Adım Adım Öğren <span class="muted">· Detaylı Türkçe konu anlatımları, formüller, sınav taktikleri ve akıllı mini sınavlar.</span></p>
         </div>

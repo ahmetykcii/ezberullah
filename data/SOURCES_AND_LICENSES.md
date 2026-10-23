@@ -1,13 +1,13 @@
-# EZBERULLAH — Kelime Veri Tabanı Kaynakları ve Lisans Belgesi
+# VELUNO — Kelime Veri Tabanı Kaynakları ve Lisans Belgesi
 
-Bu belge, EZBERULLAH kelime veri tabanının oluşturulmasında ve genişletilmesinde başvurulan kaynakları, lisans doğrulama durumlarını ve telif ilkelerini şeffaf biçimde belgeler.
+Bu belge, VELUNO kelime veri tabanının oluşturulmasında ve genişletilmesinde başvurulan kaynakları, lisans doğrulama durumlarını ve telif ilkelerini şeffaf biçimde belgeler.
 
 ---
 
 ## 1. Telif ve Özgünlük İlkeleri
 
 * **Telifli sözlük tanımları ve örnekleri kopyalanmaz:** Oxford 3000/5000, Cambridge English Vocabulary Profile (EVP), Longman Communication 3000 veya Macmillan gibi ticari ve telif koruması altındaki sözlüklerin İngilizce tanımları, ses kayıtları ve telifli örnek cümleleri **kopyalanmamıştır**.
-* **Özgün içerik üretimi:** Veri tabanındaki aktif kelimelerin **İngilizce örnek cümleleri**, **örnek cümlelerin Türkçe çevirileri**, **eşdizimler (collocations)** ve **kelime ailesi** verileri EZBERULLAH projesi için özgün olarak hazırlanmıştır.
+* **Özgün içerik üretimi:** Veri tabanındaki aktif kelimelerin **İngilizce örnek cümleleri**, **örnek cümlelerin Türkçe çevirileri**, **eşdizimler (collocations)** ve **kelime ailesi** verileri VELUNO projesi için özgün olarak hazırlanmıştır.
 * **Doğrulanmamış veri uydurulmaz:** IPA fonetik telaffuzları harici bir telifli sözlükten kopyalamamak ve hatalı fonetik üretmemek adına `pronunciation` alanı boş (`""`) bırakılmıştır; seslendirme tarayıcının yerleşik `Web Speech API` sentezleyicisi ile yapılır.
 
 ---
@@ -20,7 +20,7 @@ Aşağıda referans alınan açık kelime listelerinin lisans durumları, **doğ
 * **Yazarlar:** Dr. Charles Browne, Brent Culligan, Joseph Phillips (2013)
 * **Kaynak URL:** https://www.newgeneralservicelist.com
 * **Lisans Durumu (Doğrulandı — CC BY-SA 4.0):** Resmi NGSL ve NAWL sayfalarında listelerin **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)** lisansı altında sunulduğu doğrulanmıştır. Bu lisans, yazarlara atıf yapılması ve türetilen kelime listelerinin aynı lisansla paylaşılması koşuluyla ticari ve eğitsel kullanıma izin verir.
-* **Sınırlılık / Doğrulama Notu:** Bu geliştirme ortamında resmi NGSL 1.2 CSV/XLSX dosyası yerel olarak indirilip kelime-kelime otomatik çapraz eşleştirme yapılmamıştır. NGSL genel sıklık çerçevesi referans alınmış olmakla birlikte, A2 seviyesindeki somut günlük yaşam kelimeleri (ör. *astronaut, camel, helmet, toothbrush/brush*) genel CEFR A2 müfredatına uygun olarak EZBERULLAH için derlenmiştir.
+* **Sınırlılık / Doğrulama Notu:** Bu geliştirme ortamında resmi NGSL 1.2 CSV/XLSX dosyası yerel olarak indirilip kelime-kelime otomatik çapraz eşleştirme yapılmamıştır. NGSL genel sıklık çerçevesi referans alınmış olmakla birlikte, A2 seviyesindeki somut günlük yaşam kelimeleri (ör. *astronaut, camel, helmet, toothbrush/brush*) genel CEFR A2 müfredatına uygun olarak VELUNO için derlenmiştir.
 * **Atıf (Citation):**
   > Browne, C., Culligan, B., & Phillips, J. (2013). *The New General Service List*. Retrieved from https://www.newgeneralservicelist.com
 
@@ -37,6 +37,6 @@ Aşağıda referans alınan açık kelime listelerinin lisans durumları, **doğ
 
 ---
 
-## 3. EZBERULLAH Veri Kaynağı Etiketlemesi
+## 3. VELUNO Veri Kaynağı Etiketlemesi
 
 * CEFR seviye sınırında (A2–B1) bulunan, örnek cümlesi henüz tamamlanmamış veya inceleme gerektiren 389 kayıt (`A2: 18`, `B1: 371`) `isDraft: true`, `reviewRequired: true` ve `reviewNote` alanlarıyla işaretlenerek aktif öğrenme/sınav döngüsünden ayrı tutulmuştur.

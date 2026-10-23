@@ -1,14 +1,14 @@
 {
-  "name": "EZBERULLAH — İngilizce Kelime Öğrenme Platformu",
-  "short_name": "EZBERULLAH",
+  "name": "VELUNO — İngilizce Öğrenme Platformu",
+  "short_name": "VELUNO",
   "description": "Daha akıllıca öğren, daha uzun süre hatırla.",
   "id": "./",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#09090B",
-  "theme_color": "#09090B",
+  "background_color": "#F7F9FC",
+  "theme_color": "#F7F9FC",
   "lang": "tr",
   "categories": ["education"],
   "icons": [
