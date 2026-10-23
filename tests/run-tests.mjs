@@ -373,9 +373,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.3.3) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.3.4) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.3';"), 'SW sürümü veluno-v4.3.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'SW sürümü veluno-v4.3.4 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1282,7 +1282,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.3';"), 'SW sürümü veluno-v4.3.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'SW sürümü veluno-v4.3.4 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1706,8 +1706,8 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.3.3)
-  ok(sw.includes("const VERSION = 'veluno-v4.3.3';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi (v4.3.4)
+  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -1752,8 +1752,20 @@ await test('Sude [12] Minimalist Müzik Sistemi, Gizli Şarkı/Sanatçı Bilgisi
   // 4) Beni Sevmeye Devam Et butonuna basıldığında ses durdurulmalı
   ok(surpriseSrc.includes('audioEl.pause()'), 'Çıkış butonuna basıldığında müzik durdurulmalı');
 
-  // 5) Telifli ses dosyası gitignore ile korunmalı
-  ok(gitignore.includes('assets/audio/') && gitignore.includes('*.mp3'), '.gitignore içinde telifli ses dosyaları dışlanmış olmalı');
+  // 5) Telifli ses dosyaları gitignore ile korunmalı (Yalnızca Ahmet'in orijinal şarkısına istisna)
+  ok(gitignore.includes('*.mp3') && gitignore.includes('!assets/audio/ask.mp3'), '.gitignore içinde genel ses koruması ve yalnızca ask.mp3 istisnası bulunmalı');
+});
+
+await test('Sude [13] Ahmet’in Özgün Şarkısı (ask.mp3) Entegrasyonu & Git Yayınına Hazırlık', async () => {
+  const gitignore = await readText('.gitignore');
+  const surpriseSrc = await readText('js/surprise.js');
+
+  // 1) ask.mp3 ses kaynağının surprise.js içinde göreli yol ile tanımlı olması (/ezberullah/ uyumu)
+  ok(surpriseSrc.includes('assets/audio/ask.mp3'), 'Ses kaynağı assets/audio/ask.mp3 göreli yoluyla bağlı olmalı');
+
+  // 2) .gitignore ask.mp3 dosyasını takip edilebilir kılar, diğer tüm mp3/m4a/wav dosyalarını korur
+  ok(gitignore.includes('!assets/audio/ask.mp3'), 'ask.mp3 için gitignore istisnası tanımlı olmalı');
+  ok(gitignore.includes('*.mp3') && gitignore.includes('*.m4a') && gitignore.includes('*.wav'), 'Diğer ses dosyaları koruma altında olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
