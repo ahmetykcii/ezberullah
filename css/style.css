@@ -583,16 +583,14 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .jfy-msg-p{margin:0 0 16px;letter-spacing:.01em}
 .jfy-msg-waiting{text-align:center;font-style:italic;color:#D8B4E2}
 
-/* Minimalist Müzik Oynatıcı */
-.jfy-music-card{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;max-width:440px;background:#2A163B;border:1px solid #5C326E;border-radius:16px;padding:12px 18px;text-align:left;box-shadow:0 4px 14px rgba(15,8,22,.4)}
-.jfy-music-info{display:flex;align-items:center;gap:12px;min-width:0}
-.jfy-music-ic{font-size:1.35rem;flex-shrink:0}
-.jfy-music-texts{display:flex;flex-direction:column;min-width:0}
-.jfy-music-title{font-size:.92rem;font-weight:700;color:#FFF5F8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.jfy-music-sub{font-size:.78rem;color:#D8B4E2}
-.jfy-music-btn{width:40px;height:40px;border-radius:50%;background:#DB2777;color:#FFF;border:0;display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:transform 140ms,background var(--dur);font-size:.92rem;box-shadow:0 2px 10px rgba(219,39,119,.35)}
-.jfy-music-btn:active{transform:scale(.92)}
-.jfy-music-card.playing .jfy-music-btn{background:#BE185D}
+/* Minimalist Zarif Müzik Kontrolü (Pudra Pembe / Lavanta) */
+.jfy-audio-wrap{width:100%;max-width:440px;display:flex;justify-content:center;margin:4px auto 0}
+.jfy-audio-btn{display:inline-flex;align-items:center;gap:10px;background:#261334;color:#E8B4D8;border:1px solid rgba(232,180,216,.35);border-radius:999px;padding:9px 20px;font:600 .86rem Inter,-apple-system,sans-serif;letter-spacing:.02em;cursor:pointer;box-shadow:0 4px 14px rgba(15,8,22,.35);transition:all 160ms cubic-bezier(.2,.8,.4,1);user-select:none;-webkit-tap-highlight-color:transparent}
+.jfy-audio-btn:hover{background:#341A46;border-color:rgba(232,180,216,.55);color:#FFF5F8;transform:translateY(-1px);box-shadow:0 6px 18px rgba(232,180,216,.2)}
+.jfy-audio-btn:active{transform:scale(.97)}
+.jfy-audio-btn.playing{background:#381E48;border-color:#E8B4D8;color:#FFF5F8;box-shadow:0 4px 16px rgba(232,180,216,.25)}
+.jfy-audio-btn .jfy-audio-ic{font-size:.92rem}
+.jfy-audio-btn .jfy-audio-sym{font-size:.82rem;font-weight:700}
 
 /* Sayfadan Çıkış & VELUNO'ya Devam — "Beni Sevmeye Devam Et ❤️" */
 .jfy-exit-wrap{width:100%;max-width:440px;margin-top:10px}

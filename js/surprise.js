@@ -175,19 +175,14 @@ export function renderSurprise(container) {
               </div>
             </div>
 
-            <!-- 3. Minimalist Müzik Oynatıcı (Gökhan Türkmen — Derdim / Nakarat) -->
-            <div class="jfy-music-card">
-              <div class="jfy-music-info">
-                <div class="jfy-music-ic" aria-hidden="true">🎵</div>
-                <div class="jfy-music-texts">
-                  <span class="jfy-music-title">Gökhan Türkmen — Derdim</span>
-                  <span class="jfy-music-sub" id="jfy-music-sub">Bizim şarkımız · Nakarat</span>
-                </div>
-              </div>
-              <button type="button" class="jfy-music-btn" id="btn-toggle-music" aria-label="Müziği oynat / duraklat">
-                <span id="jfy-play-icon">▶</span>
+            <!-- 3. Minimalist Zarif Müzik Kontrol Butonu (İsim/Sanatçı gizli, pudra pembe & lavanta) -->
+            <div class="jfy-audio-wrap">
+              <button type="button" class="jfy-audio-btn" id="btn-toggle-music" aria-label="Müziği oynat / duraklat">
+                <span class="jfy-audio-ic" aria-hidden="true">🎵</span>
+                <span class="jfy-audio-label" id="jfy-audio-label">Müziği Başlat</span>
+                <span class="jfy-audio-sym" id="jfy-play-icon" aria-hidden="true">▶</span>
               </button>
-              <audio id="jfy-audio" preload="none"></audio>
+              <audio id="jfy-audio" preload="auto" src="assets/audio/ask.mp3"></audio>
             </div>
 
             <!-- 4. Sayfadan Çıkış & VELUNO'ya Devam -->
@@ -223,8 +218,11 @@ function wireSurpriseEvents(container) {
       isSurpriseOpening = true;
       openBtn.disabled = true;
       // 1) iPhone Safari uyumlu müzik başlatma (Doğrudan kullanıcı dokunma anında)
-      if (audioEl && audioEl.src) {
+      if (audioEl) {
         try {
+          if (!audioEl.src || audioEl.src.endsWith('/')) {
+            audioEl.src = 'assets/audio/ask.mp3';
+          }
           const playPromise = audioEl.play();
           if (playPromise !== undefined) {
             playPromise.then(() => {
@@ -241,7 +239,7 @@ function wireSurpriseEvents(container) {
         }
       }
 
-      // 2) Muhteşem Kalp Patlaması Efekti (36 radyal kalp parçacığı)
+      // 2) Kalp Patlaması Efekti (~100 radyal kalp parçacığı)
       triggerHeartBurst(container, openBtn);
 
       // 3) Karşılama ekranını yumuşak biçimde gizle ve sürpriz kartını aç
@@ -267,11 +265,8 @@ function wireSurpriseEvents(container) {
 
   if (musicBtn && audioEl) {
     musicBtn.onclick = () => {
-      const sub = container.querySelector('#jfy-music-sub');
-      if (!audioEl.src) {
-        // Telif hakkı nedeniyle gerçek müzik dosyası henüz hazır değilse
-        if (sub) sub.textContent = 'Müzik dosyası yakında eklenecek ❤️';
-        return;
+      if (!audioEl.src || audioEl.src.endsWith('/')) {
+        audioEl.src = 'assets/audio/ask.mp3';
       }
       if (isAudioPlaying) {
         audioEl.pause();
@@ -282,7 +277,8 @@ function wireSurpriseEvents(container) {
           isAudioPlaying = true;
           updateMusicUI(true, container);
         }).catch(() => {
-          if (sub) sub.textContent = 'Ses oynatılamadı. Lütfen tekrar deneyin.';
+          isAudioPlaying = false;
+          updateMusicUI(false, container);
         });
       }
     };
@@ -291,8 +287,9 @@ function wireSurpriseEvents(container) {
   if (continueBtn) {
     continueBtn.onclick = () => {
       markSurpriseSeen();
-      if (audioEl && isAudioPlaying) {
+      if (audioEl) {
         try { audioEl.pause(); } catch {}
+        isAudioPlaying = false;
       }
       if (typeof location !== 'undefined') {
         location.hash = '#/dashboard';
@@ -419,9 +416,11 @@ function triggerHeartBurst(container, sourceBtn) {
 
 function updateMusicUI(playing, container) {
   const icon = container.querySelector('#jfy-play-icon');
-  const musicCard = container.querySelector('.jfy-music-card');
+  const label = container.querySelector('#jfy-audio-label');
+  const btn = container.querySelector('#btn-toggle-music');
   if (icon) icon.textContent = playing ? '❚❚' : '▶';
-  if (musicCard) musicCard.classList.toggle('playing', playing);
+  if (label) label.textContent = playing ? 'Müziği Duraklat' : 'Müziği Oynat';
+  if (btn) btn.classList.toggle('playing', playing);
 }
 
 async function loadSecurePrivateData(container) {

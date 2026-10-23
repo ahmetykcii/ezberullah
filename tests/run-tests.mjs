@@ -373,9 +373,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.3.2) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.3.3) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.2';"), 'SW sürümü veluno-v4.3.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.3';"), 'SW sürümü veluno-v4.3.3 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1282,7 +1282,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.2';"), 'SW sürümü veluno-v4.3.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.3.3';"), 'SW sürümü veluno-v4.3.3 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1579,7 +1579,8 @@ await test('Sude [5] Sürpriz Ekranı Arayüzü: Just For You tasarımı, Apple 
   ok(surpriseSrc.includes('JUST FOR YOU') && surpriseSrc.includes('Senin için küçük bir şey hazırladım'), 'Sürpriz başlığı ve selamlama metni bulunmalı');
   ok(surpriseSrc.includes('id="btn-open-surprise"'), 'Sürprizini Aç butonu bulunmalı');
   ok(surpriseSrc.includes('id="jfy-revealed"') && surpriseSrc.includes('id="jfy-placeholder"'), 'Açılış aşaması ve güvenli fotoğraf yer tutucusu bulunmalı');
-  ok(surpriseSrc.includes('Gökhan Türkmen — Derdim'), 'Özel müzik çalar bilgisi bulunmalı');
+  ok(surpriseSrc.includes('id="btn-toggle-music"') && surpriseSrc.includes('id="jfy-audio"'), 'Minimalist müzik kontrol butonu ve ses öğesi bulunmalı');
+  ok(!surpriseSrc.includes('Gökhan Türkmen') && !surpriseSrc.includes('jfy-music-card'), 'Şarkı ve sanatçı adı arayüzde görünmemeli, büyük kart kaldırılmış olmalı');
   ok(surpriseSrc.includes('Beni Sevmeye Devam Et') || surpriseSrc.includes('VELUNO’ya Devam Et') || surpriseSrc.includes('VELUNO&#39;ya Devam Et'), "Romantik çıkış butonu bulunmalı");
 
   // CSS sınıfları (jfy-* isim alanı)
@@ -1705,8 +1706,8 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.3.2)
-  ok(sw.includes("const VERSION = 'veluno-v4.3.2';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi (v4.3.3)
+  ok(sw.includes("const VERSION = 'veluno-v4.3.3';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -1730,6 +1731,29 @@ await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~8
   const heartMatches = (surpriseSrc.match(/class="jfy-heart h\d+"/g) || []);
   eq(heartMatches.length, 80, 'Masaüstünde tam 80 arka plan kalbi tanımlı olmalı');
   ok(css.includes('.jfy-heart:nth-child(n+41){display:none!important}'), 'Mobilde (max-width:768px) 40 kalbe dinamik performans azaltması yapılmalı');
+});
+
+await test('Sude [12] Minimalist Müzik Sistemi, Gizli Şarkı/Sanatçı Bilgisi ve Telif Koruması', async () => {
+  const surpriseSrc = await readText('js/surprise.js');
+  const css = await readText('css/style.css');
+  const gitignore = await readText('.gitignore');
+
+  // 1) Şarkı adı ve sanatçı adı kullanıcı arayüzünde görünmemeli, büyük kart kaldırılmış olmalı
+  ok(!surpriseSrc.includes('Gökhan Türkmen') && !surpriseSrc.includes('Derdim'), 'Şarkıcı veya şarkı adı arayüzde görünmemeli');
+  ok(!surpriseSrc.includes('class="jfy-music-card"') && !css.includes('.jfy-music-card{'), 'Büyük müzik kartı DOM ve CSS içerisinden kaldırılmış olmalı');
+
+  // 2) Zarif, küçük oynat/duraklat butonu (pudra pembe ve lavanta tonlarında)
+  ok(surpriseSrc.includes('class="jfy-audio-btn"') && surpriseSrc.includes('id="btn-toggle-music"'), 'Zarif müzik butonu bulunmalı');
+  ok(css.includes('.jfy-audio-btn{') && css.includes('color:#E8B4D8'), 'Müzik butonu pudra pembe / lavanta (#E8B4D8) renk paletine sahip olmalı');
+
+  // 3) Safari kullanıcı etkileşimi uyumu ve eş zamanlı başlatma
+  ok(surpriseSrc.includes('audioEl.play()') && surpriseSrc.includes('triggerHeartBurst'), 'Sürpriz açıldığında ses oynatma ve kalp patlaması eş zamanlı tetiklenmeli');
+
+  // 4) Beni Sevmeye Devam Et butonuna basıldığında ses durdurulmalı
+  ok(surpriseSrc.includes('audioEl.pause()'), 'Çıkış butonuna basıldığında müzik durdurulmalı');
+
+  // 5) Telifli ses dosyası gitignore ile korunmalı
+  ok(gitignore.includes('assets/audio/') && gitignore.includes('*.mp3'), '.gitignore içinde telifli ses dosyaları dışlanmış olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
