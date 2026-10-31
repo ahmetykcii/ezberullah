@@ -12,6 +12,7 @@ import { exportBackup, pickAndRestore } from './import-export.js';
 import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser, hasSeenSurpriseThisSession, markSurpriseSeen, login, logout, testFirebaseAccess } from './auth.js';
 import { renderSurprise } from './surprise.js';
 import { renderNotebook, getUserNotebookSummary } from './notebook.js';
+import { renderIrregularVerbs, resetIrregularView, computeVerbSetStats, BUILTIN_IRREGULAR_VERBS } from './irregular-verbs.js';
 
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
@@ -84,8 +85,8 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, notebook: renderNotebook, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
-const MORE_GROUP = ['more', 'notebook', 'vocabulary', 'exams', 'statistics', 'settings'];
+const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, notebook: renderNotebook, irregular: renderIrregularVerbs, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
+const MORE_GROUP = ['more', 'notebook', 'irregular', 'vocabulary', 'exams', 'statistics', 'settings'];
 let keepGrammarView = false;
 function gotoGrammarLesson(id) {
   if (openGrammarLesson(id, null)) { keepGrammarView = true; location.hash = '#/grammar'; }
@@ -95,6 +96,7 @@ function route() {
   const fn = routes[name] || renderDashboard;
   abortSession();
   if (name === 'grammar') { if (!keepGrammarView) resetGrammarView(); keepGrammarView = false; }
+  if (name === 'irregular') { resetIrregularView(); }
   $$('[data-nav]').forEach((a) => {
     const on = a.dataset.nav === name || (a.dataset.nav === 'more' && MORE_GROUP.includes(name));
     a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
@@ -203,6 +205,7 @@ function renderDashboard(v) {
     </div>` : '';
 
   const nbSummary = getUserNotebookSummary();
+  const irvStats = computeVerbSetStats(BUILTIN_IRREGULAR_VERBS);
 
   v.innerHTML = `<div class="page home">
   <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
@@ -217,6 +220,7 @@ function renderDashboard(v) {
   </div>
   <ul class="list quiet">
     ${row({ href: '#/notebook' }, 'Kelime Defterim', nbSummary.totalWords ? `${nbSummary.totalWords} kişisel kelime · ${nbSummary.listCount} liste` : 'Kendi çalışma listeni oluştur')}
+    ${row({ href: '#/irregular' }, 'Fiillerin 3 Hali', irvStats.learned ? `${irvStats.learned}/${irvStats.total} hazır fiil öğrenildi` : `${irvStats.total} düzensiz fiil · V1, V2, V3 çalış`)}
     ${due ? row({ href: '#/review' }, `${due} kelime tekrar bekliyor`, 'Kısa bir tekrar turu') : ''}
     ${gNext ? row({ id: 'go-grammar' }, 'Grammar', `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}`) : ''}
     ${plan && !plan.past ? row({ href: '#/statistics' }, `Sınava ${plan.days} gün kaldı`, `Önerilen günlük hedef: ${plan.suggested}`) : ''}
@@ -268,6 +272,7 @@ function renderMore(v) {
   v.innerHTML = `<div class="page"><h1>Diğer</h1>
   <ul class="list">
     ${item('#/notebook', 'book', 'Kelime Defterim', 'Kişisel kelime listelerin ve çalışmaların')}
+    ${item('#/irregular', 'repeat', 'Fiillerin 3 Hali', 'Düzensiz fiiller (V1, V2, V3) ve kişisel listelerin')}
     ${item('#/vocabulary', 'stack', 'Kelime Havuzum', 'Kelimeleri ara, incele ve düzenle')}
     ${item('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları ve geçmiş sonuçlar')}
     ${item('#/statistics', 'chart', 'İstatistikler', 'İlerlemeni takip et')}

@@ -142,7 +142,9 @@ export function openImportWizard(onDone) {
 /* ---------- Yedekleme ---------- */
 export function buildBackup() {
   const meta = [];
-  if (getMeta('deletedIds')) meta.push({ key: 'deletedIds', value: getMeta('deletedIds') });
+  for (const k of ['deletedIds', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'irregularProgress']) {
+    if (getMeta(k)) meta.push({ key: k, value: getMeta(k) });
+  }
   if (state.grammarProgress && Object.keys(state.grammarProgress).length) {
     meta.push({ key: 'grammarProgress', value: { ...state.grammarProgress } });
   }
