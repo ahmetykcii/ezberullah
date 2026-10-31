@@ -14,7 +14,7 @@ self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(VERSION).then((c) =>
       c.addAll(FILES.map((u) => new Request(u, { cache: 'reload' }))).catch(() => c.addAll(FILES))
-    )
+    ).then(() => self.skipWaiting())
   );
 });
 self.addEventListener('activate', (e) => {
