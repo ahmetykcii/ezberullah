@@ -30,6 +30,20 @@ import {
   startStudyList, startStudyAll, startStudyUnknown, startStudyDue,
   getUserNotebookWords, getAllNotebookWords, saveAllNotebookWords,
 } from '../js/notebook.js';
+import {
+  BUILTIN_IRREGULAR_VERBS, getBuiltInIrregularVerbs,
+  parseAcceptedForms, checkVerbFormAnswer,
+  validateIrregularVerb,
+  createIrregularList, updateIrregularList, deleteIrregularList,
+  getUserIrregularLists, getUserCustomIrregularVerbs,
+  addVerbToIrregularList, removeVerbFromIrregularList,
+  parseBulkIrregularVerbs, bulkAddVerbsToIrregularList,
+  newVerbProgress, getVerbProgress, saveVerbProgress,
+  applyVerbAnswer, isVerbDue, selectWeightedFormForVerb,
+  computeVerbSetStats, getIrregularListStats,
+  buildIrregularQuestion, checkIrregularQuestionAnswer,
+  startIrregularStudySession, renderIrregularVerbs, resetIrregularView,
+} from '../js/irregular-verbs.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
@@ -381,10 +395,10 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.4.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.5.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.4.0';"), 'SW sürümü veluno-v4.4.0 olmalı');
-  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
+  ok(sw.includes("const VERSION = 'veluno-v4.5.0';"), 'SW sürümü veluno-v4.5.0 olmalı');
+  for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
 });
@@ -1290,7 +1304,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.4.0';"), 'SW sürümü veluno-v4.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.5.0';"), 'SW sürümü veluno-v4.5.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1714,8 +1728,8 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.4.0)
-  ok(sw.includes("const VERSION = 'veluno-v4.4.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi (v4.5.0)
+  ok(sw.includes("const VERSION = 'veluno-v4.5.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2050,6 +2064,242 @@ await test('Defter [10] A2, B1, B2 Kelime Havuzları, Grammar & İmza Bütünlü
   for (const th of themes) {
     ok(resolveTheme(th) !== undefined, `${th} teması desteklenmeli`);
   }
+});
+
+/* ============================================================================
+ * 15) FİİLLERİN 3 HALİ (IRREGULAR VERBS) TESTLERİ
+ * ========================================================================== */
+out('\n--- 15) Fiillerin 3 Hali (Irregular Verbs) Testleri ---');
+
+await test('Irregular [1] Ana Ekran Tasarımı & 2 Ana Seçenek Kartı (Manuel Ekle & Hazır Fiiller)', async () => {
+  const irvSrc = await readText('js/irregular-verbs.js');
+  const htmlSrc = await readText('index.html');
+  const appSrc = await readText('js/app.js');
+
+  ok(htmlSrc.includes('href="#/irregular"') && htmlSrc.includes('Fiillerin 3 Hali'), 'Menüde Fiillerin 3 Hali bağlantısı bulunmalı');
+  ok(appSrc.includes('irregular: renderIrregularVerbs'), 'Router içinde #/irregular rotası tanımlı olmalı');
+  ok(irvSrc.includes('Manuel Ekle') && irvSrc.includes('Kendi fiillerini ekle ve çalış.'), 'Ana ekranda Seçenek 1: Manuel Ekle kartı bulunmalı');
+  ok(irvSrc.includes('Hazır Fiiller') && irvSrc.includes('Hazır düzensiz fiilleri öğren ve tekrar et.'), 'Ana ekranda Seçenek 2: Hazır Fiiller kartı bulunmalı');
+  ok(irvSrc.includes('irv-choose-manual') && irvSrc.includes('irv-choose-builtin'), 'Her iki ana seçim kartının etkileşim kimlikleri bulunmalı');
+});
+
+await test('Irregular [2] Hazır Fiiller Kütüphanesi (data/irregular-verbs.json & 190 Doğrulanmış Fiil)', async () => {
+  const jsonVerbs = await readJSON('data/irregular-verbs.json');
+  ok(Array.isArray(jsonVerbs), 'data/irregular-verbs.json bir dizi olmalı');
+  ok(jsonVerbs.length >= 150 && jsonVerbs.length <= 200, `Hazır fiil sayısı 150-200 aralığında olmalı (mevcut: ${jsonVerbs.length})`);
+  eq(jsonVerbs.length, BUILTIN_IRREGULAR_VERBS.length, 'JSON dosyası ve yerleşik dizi aynı sayıda fiil içermeli');
+
+  // Seviye dağılımı (~A2, ~B1, ~B2)
+  const a2 = getBuiltInIrregularVerbs('A2');
+  const b1 = getBuiltInIrregularVerbs('B1');
+  const b2 = getBuiltInIrregularVerbs('B2');
+  ok(a2.length >= 40 && b1.length >= 40 && b2.length >= 40, 'A2, B1 ve B2 seviyelerinin her birinde yeterli fiil bulunmalı');
+  eq(a2.length + b1.length + b2.length, BUILTIN_IRREGULAR_VERBS.length);
+
+  // Tüm hazır fiillerin V1, V2, V3 ve Türkçe anlam doğrulaması
+  for (const v of BUILTIN_IRREGULAR_VERBS) {
+    const errs = validateIrregularVerb(v);
+    eq(errs.length, 0, `Hazır fiil hatasız olmalı (${v.v1}): ${errs.join(', ')}`);
+  }
+});
+
+await test('Irregular [3] Çift / Alternatif Form Desteği (learned/learnt, was/were, got/gotten)', () => {
+  // learn - learned/learnt - learned/learnt
+  const learnVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'learn');
+  ok(learnVerb, 'learn fiili hazır listede bulunmalı');
+  ok(checkVerbFormAnswer(learnVerb.v2, 'learned'), 'learned kabul edilmeli');
+  ok(checkVerbFormAnswer(learnVerb.v2, 'learnt'), 'learnt kabul edilmeli');
+  ok(checkVerbFormAnswer(learnVerb.v3, 'learned'), 'V3 learned kabul edilmeli');
+  ok(checkVerbFormAnswer(learnVerb.v3, 'learnt'), 'V3 learnt kabul edilmeli');
+  ok(checkVerbFormAnswer(learnVerb.v2, 'learned/learnt'), 'Tam birleşik yazım da kabul edilmeli');
+  ok(!checkVerbFormAnswer(learnVerb.v2, 'learning'), 'Yanlış çekim reddedilmeli');
+
+  // be - was/were - been
+  const beVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'be');
+  ok(beVerb, 'be fiili hazır listede bulunmalı');
+  ok(checkVerbFormAnswer(beVerb.v2, 'was'), 'was kabul edilmeli');
+  ok(checkVerbFormAnswer(beVerb.v2, 'were'), 'were kabul edilmeli');
+  ok(checkVerbFormAnswer(beVerb.v3, 'been'), 'been kabul edilmeli');
+
+  // get - got - got/gotten
+  const getVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'get');
+  ok(getVerb, 'get fiili hazır listede bulunmalı');
+  ok(checkVerbFormAnswer(getVerb.v3, 'got'), 'got kabul edilmeli');
+  ok(checkVerbFormAnswer(getVerb.v3, 'gotten'), 'gotten kabul edilmeli');
+});
+
+await test('Irregular [4] Manuel Liste Oluşturma, Düzenleme, Silme & Tek Tek Fiil Ekleme', async () => {
+  const uid = 'irv_user_1';
+  const r1 = await createIrregularList('Unit 4 - Irregular Verbs', uid);
+  const r2 = await createIrregularList('Sınav Fiillerim', uid);
+  const r3 = await createIrregularList('En Çok Karıştırdıklarım', uid);
+  ok(r1.ok && r2.ok && r3.ok, 'Üç örnek liste başarıyla oluşturulmalı');
+
+  // Aynı isimle tekrar oluşturma engellenmeli
+  const dupList = await createIrregularList('Sınav Fiillerim', uid);
+  ok(!dupList.ok, 'Aynı isimle mükerrer liste oluşturulmamalı');
+
+  // Tek tek fiil ekleme (go - went - gone - gitmek)
+  const addGo = await addVerbToIrregularList({
+    v1: 'go', v2: 'went', v3: 'gone', meaning: 'gitmek',
+    listId: r1.list.id, userId: uid,
+  });
+  ok(addGo.ok && addGo.verb.v1 === 'go' && addGo.verb.v2 === 'went' && addGo.verb.v3 === 'gone', 'Tekil fiil başarıyla eklenmeli');
+
+  // Eksik alanla ekleme reddedilmeli
+  const addBad = await addVerbToIrregularList({
+    v1: 'see', v2: 'saw', v3: '', meaning: 'görmek',
+    listId: r1.list.id, userId: uid,
+  });
+  ok(!addBad.ok, 'V3 eksik olduğunda ekleme reddedilmeli');
+
+  // Liste adını güncelleme ve silme
+  const ren = await updateIrregularList(r3.list.id, { name: 'En Çok Yanıldıklarım' });
+  ok(ren.ok && ren.list.name === 'En Çok Yanıldıklarım', 'Liste adı güncellenebilmeli');
+
+  const del = await deleteIrregularList(r3.list.id);
+  ok(del.ok, 'Liste silinebilmeli');
+  eq(getUserIrregularLists(uid).length, 2, 'Silme sonrası 2 liste kalmalı');
+});
+
+await test('Irregular [5] Toplu Fiil Ekleme, Metin/CSV Ayrıştırma & Hatalı Satırların Engellememesi', async () => {
+  const uid = 'irv_user_2';
+  const list = (await createIrregularList('Toplu Fiil Listesi', uid)).list;
+
+  const rawPaste = `
+    go - went - gone - gitmek
+    see - saw - seen - görmek
+    take - took - taken - almak
+    write – wrote – written – yazmak
+    speak ; spoke ; spoken ; konuşmak
+    eksik_satir - saw - görmek
+    bos_alan - - - anlam
+    go - went - gone - gitmek
+  `;
+
+  const parsed = parseBulkIrregularVerbs(rawPaste, [], []);
+  const okRows = parsed.filter((r) => r.status === 'ok');
+  const dupRows = parsed.filter((r) => r.status === 'dup');
+  const errRows = parsed.filter((r) => r.status === 'error');
+
+  eq(okRows.length, 5, '5 geçerli fiil (go, see, take, write, speak) ayrıştırılmalı');
+  eq(dupRows.length, 1, 'İkinci kez yazılan go satırı tekrar (dup) olarak işaretlenmeli');
+  eq(errRows.length, 2, 'Eksik kolonlu 2 satır hatalı (error) olarak işaretlenmeli');
+
+  // Hatalı satırlar tüm işlemi iptal etmemeli; geçerli olan 5 satır kaydedilebilmeli
+  const saveRes = await bulkAddVerbsToIrregularList({
+    items: parsed,
+    listId: list.id,
+    userId: uid,
+  });
+  ok(saveRes.ok && saveRes.addedCount === 5, 'Hatalı satırlara rağmen geçerli 5 fiil başarıyla kaydedilmeli');
+
+  const st = getIrregularListStats(list.id, uid);
+  eq(st.total, 5, 'Listede toplam 5 fiil bulunmalı');
+});
+
+await test('Irregular [6] Beş Çalışma Modu (Kartlar, V2 Testi, V3 Testi, Karışık Test [MC & Yazma], Yanlışlarım)', async () => {
+  const pool = BUILTIN_IRREGULAR_VERBS.slice(0, 20);
+  const goVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'go');
+  const seeVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'see');
+
+  // Mod B: V2 Testi (go -> ? -> went)
+  const qV2Typ = buildIrregularQuestion(goVerb, 'v2', pool);
+  eq(qV2Typ.form, 'v2');
+  eq(qV2Typ.format, 'typing');
+  ok(qV2Typ.prompt.includes('go → ?'), 'V2 soru kökü go → ? olmalı');
+  ok(checkIrregularQuestionAnswer(qV2Typ, 'went'), 'V2 yazılı soruda went doğru kabul edilmeli');
+  ok(!checkIrregularQuestionAnswer(qV2Typ, 'gone'), 'V2 sorusunda gone yanlış kabul edilmeli');
+
+  // Mod C: V3 Testi (go -> went -> ? -> gone)
+  const qV3Typ = buildIrregularQuestion(goVerb, 'v3', pool);
+  eq(qV3Typ.form, 'v3');
+  eq(qV3Typ.format, 'typing');
+  ok(qV3Typ.prompt.includes('go → went → ?'), 'V3 soru kökü go → went → ? olmalı');
+  ok(checkIrregularQuestionAnswer(qV3Typ, 'gone'), 'V3 yazılı soruda gone doğru kabul edilmeli');
+
+  // Mod D: Karışık Test içinde çoktan seçmeli (MC) ve Türkçe anlam sorusu
+  const qMeaningMc = buildIrregularQuestion(seeVerb, 'meaning', pool);
+  eq(qMeaningMc.form, 'meaning');
+  eq(qMeaningMc.format, 'mc');
+  ok(qMeaningMc.options.length === 4, 'Çoktan seçmeli soruda 4 seçenek bulunmalı');
+  ok(checkIrregularQuestionAnswer(qMeaningMc, qMeaningMc.answerIndex), 'Doğru şık indeksi kabul edilmeli');
+});
+
+await test('Irregular [7] SRS Entegrasyonu (1 -> 3 -> 7 -> 14 -> 30 Gün) & V2/V3 Hata Ağırlıklandırması', async () => {
+  const uid = 'irv_srs_user';
+  const writeVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'write');
+
+  // 1) Kullanıcı V2'yi biliyor ama V3'ü karıştırıyor simülasyonu
+  await applyVerbAnswer(writeVerb, true, { form: 'v2' }, Date.now(), uid);
+  await applyVerbAnswer(writeVerb, true, { form: 'v2' }, Date.now(), uid);
+  await applyVerbAnswer(writeVerb, false, { form: 'v3', input: 'wrote' }, Date.now(), uid);
+  const p = await applyVerbAnswer(writeVerb, false, { form: 'v3', input: 'writed' }, Date.now(), uid);
+
+  eq(p.v2Correct, 2);
+  eq(p.v3Wrong, 2);
+  eq(p.status, 'REVIEW', 'Hata yapılan fiil REVIEW statüsünde olmalı');
+
+  // Sistem bu fiil için V3 sorularına öncelik vermeli
+  eq(selectWeightedFormForVerb(writeVerb, uid), 'v3', 'V3 hatası yüksek olan fiilde V3 sorusuna öncelik verilmeli');
+
+  // 2) Ardışık doğru cevaplarla öğrenme tamamlanmalı ve SRS 1 -> 3 -> 7 -> 14 -> 30 gün ilerlemeli
+  const speakVerb = BUILTIN_IRREGULAR_VERBS.find((v) => v.v1 === 'speak');
+  const expectedSequence = [1, 3, 7, 14, 30];
+  let ps;
+  for (const expDays of expectedSequence) {
+    ps = await applyVerbAnswer(speakVerb, true, { form: 'v2' }, Date.now(), uid);
+    eq(ps.reviewInterval, expDays, `SRS aralığı ${expDays} gün olmalı`);
+  }
+  ok(ps.learned, 'Fiil öğrenilmiş olarak işaretlenmeli');
+  eq(ps.status, 'MASTERED', '5 adım sonunda fiil MASTERED statüsüne ulaşmalı');
+
+  // SRS sırasında hata yapıldığında aralık 1 güne düşmeli ve REVIEW olmalı
+  ps = await applyVerbAnswer(speakVerb, false, { form: 'v3', input: 'spoke' }, Date.now(), uid);
+  eq(ps.reviewInterval, 1, 'Hata sonrası SRS aralığı 1 güne düşmeli');
+  eq(ps.status, 'REVIEW', 'Hata sonrası durum REVIEW olmalı');
+});
+
+await test('Irregular [8] Çoklu Liste İlerleme Paylaşımı & Kullanıcı İzolasyonu', async () => {
+  const uidA = 'irv_ahmet';
+  const uidB = 'irv_sude';
+
+  // Ahmet aynı fiili ("begin") iki farklı manuel listeye ekler
+  const l1 = (await createIrregularList('Liste 1', uidA)).list;
+  const l2 = (await createIrregularList('Liste 2', uidA)).list;
+
+  await addVerbToIrregularList({ v1: 'begin', v2: 'began', v3: 'begun', meaning: 'başlamak', listId: l1.id, userId: uidA });
+  await addVerbToIrregularList({ v1: 'begin', v2: 'began', v3: 'begun', meaning: 'başlamak', listId: l2.id, userId: uidA });
+
+  // Ahmet "begin" fiilini öğrenir
+  await applyVerbAnswer('begin', true, { form: 'v2' }, Date.now(), uidA);
+  await applyVerbAnswer('begin', true, { form: 'v3' }, Date.now(), uidA);
+
+  // Her iki listede ve hazır fiillerde "begin" öğrenilmiş görünmeli, ilerleme sıfırlanmamalı
+  const st1 = getIrregularListStats(l1.id, uidA);
+  const st2 = getIrregularListStats(l2.id, uidA);
+  eq(st1.learned, 1, 'Liste 1 içinde öğrenilmiş görünmeli');
+  eq(st2.learned, 1, 'Liste 2 içinde de ilerleme korunmalı ve öğrenilmiş görünmeli');
+
+  // Sude'nin hesabında ise Ahmet'in listeleri görünmemeli ve "begin" henüz öğrenilmemiş olmalı
+  eq(getUserIrregularLists(uidB).length, 0, 'Sude Ahmet’in manuel listelerini görmemeli');
+  const pB = getVerbProgress('begin', uidB);
+  eq(pB.learned, false, 'Ahmet’in fiil ilerlemesi Sude’nin ilerlemesini etkilememeli');
+});
+
+await test('Irregular [9] Mevcut Tüm Verilerin (2.010 Kelime, 38 Grammar, Kelime Defterim, 4 Tema, İmza) Korunması', async () => {
+  const allCurriculum = [...data.A2, ...data.B1, ...data.B2];
+  eq(allCurriculum.length, 2024, 'Toplam 2.024 yerleşik kelime korunmalı');
+  eq(allCurriculum.filter((w) => !w.isDraft).length, 2010, '2.010 aktif müfredat kelimesi korunmalı');
+  eq((G.GRAMMAR_TOPICS || []).length, 38, '38 Grammar konusu korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 760, '760 Grammar sorusu korunmalı');
+  eq(BUILTIN_IRREGULAR_VERBS.length, 190, '190 hazır düzensiz fiil korunmalı');
+
+  // Yedekleme (buildBackup) hem Kelime Defterim hem Fiillerin 3 Hali verilerini içermeli
+  const backup = buildBackup();
+  eq(validateBackup(backup), [], 'Yeni meta alanlarıyla oluşturulan yedek geçerli olmalı');
+  ok(backup.meta.some((m) => m.key === 'irregularLists'), 'Yedekte irregularLists bulunmalı');
+  ok(backup.meta.some((m) => m.key === 'irregularProgress'), 'Yedekte irregularProgress bulunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

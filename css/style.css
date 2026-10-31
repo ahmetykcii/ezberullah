@@ -626,4 +626,73 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
   .notebook-card .row.between{flex-direction:column;align-items:flex-start}
 }
 
+/* ---------- Fiillerin 3 Hali (Irregular Verbs) Tasarım Sistemi ---------- */
+.irregular-page{padding-bottom:36px}
+.irv-home-header{margin-bottom:28px}
+.irv-home-header h1{margin:0 0 8px}
+
+/* Ana Ekran: Yalnızca 2 Büyük Seçenek Kartı (Apple-inspired Premium Cards) */
+.irv-choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;margin-top:8px}
+.irv-choice-card{background:var(--card);border:1.5px solid var(--bd);border-radius:20px;padding:28px 24px;text-align:left;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:20px;transition:transform 180ms cubic-bezier(.2,.8,.4,1),box-shadow 180ms ease,border-color 180ms ease;box-shadow:0 4px 16px rgba(23,36,59,.04);color:var(--tx)}
+.irv-choice-card:hover{transform:translateY(-3px);border-color:var(--ac);box-shadow:0 6px 18px rgba(23,36,59,.09)}
+.irv-choice-card:active{transform:scale(.99)}
+.irv-choice-ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center}
+.irv-ic-manual{background:var(--ac-bg);color:var(--ac)}
+.irv-ic-builtin{background:rgba(47,158,102,.12);color:var(--ok)}
+.irv-choice-body h2{margin:0 0 6px;font-size:1.35rem;font-weight:700;letter-spacing:-.015em;color:var(--tx)}
+.irv-choice-desc{margin:0;font-size:.96rem;color:var(--mut);line-height:1.5}
+.irv-choice-meta{display:flex;flex-wrap:wrap;gap:8px}
+.irv-meta-pill{font-size:.78rem;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--bg2);color:var(--mut);border:1px solid var(--bd)}
+.irv-meta-pill.ok{background:rgba(47,158,102,.12);color:var(--ok);border-color:transparent}
+.irv-meta-pill.warn{background:rgba(216,155,43,.14);color:var(--warn);border-color:transparent}
+.irv-choice-cta{font-size:.92rem;font-weight:700;color:var(--ac);display:inline-flex;align-items:center;gap:4px}
+
+/* İlerleme Özeti Şeridi */
+.irv-stats-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;margin-bottom:20px}
+.irv-stat-pill{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.irv-stat-pill b{font-size:1.25rem;font-weight:700;color:var(--tx)}
+.irv-stat-pill span{font-size:.76rem;color:var(--mut);font-weight:500}
+.irv-stat-pill.ok b{color:var(--ok)}
+.irv-stat-pill.bad b{color:var(--bad)}
+.irv-stat-pill.ac b{color:var(--ac)}
+
+/* Çalışma Modları (A, B, C, D, E + SRS) */
+.irv-study-panel{padding:20px;margin-bottom:20px}
+.irv-modes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.irv-mode-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:13px 14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform 150ms ease,border-color 150ms ease,background 150ms ease;color:var(--tx)}
+.irv-mode-btn b{font-size:.92rem;font-weight:700;color:var(--tx)}
+.irv-mode-btn span{font-size:.76rem;color:var(--mut)}
+.irv-mode-btn:hover:not(:disabled){border-color:var(--ac);background:var(--card);transform:translateY(-1px)}
+.irv-mode-btn:disabled{opacity:.48;cursor:not-allowed}
+.irv-mode-btn.accent{background:var(--ac-bg);border-color:var(--ac)}
+.irv-mode-btn.warn{border-color:rgba(217,107,107,.45)}
+.irv-mode-btn.srs{border-color:rgba(47,158,102,.45)}
+
+/* Öğrenme Kartı & V1-V2-V3 Görünümü */
+.irv-flashcard{padding:28px 22px}
+.irv-forms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.irv-form-box{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.irv-form-tag{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+.irv-form-val{font-size:clamp(1.1rem,3.5vw,1.38rem);font-weight:800;color:var(--tx);word-break:break-word}
+.irv-meaning-box{background:var(--ac-bg);border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;gap:4px;align-items:center}
+.irv-meaning-val{font-size:1.2rem;font-weight:700;color:var(--tx)}
+
+/* Fiil Tablosu */
+.irv-verb-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.irv-verb-table th{text-align:left;padding:10px 8px;border-bottom:1.5px solid var(--bd);color:var(--mut);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em}
+.irv-verb-table td{padding:10px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.irv-verb-table tr:last-child td{border-bottom:0}
+.irv-list-card{transition:border-color 160ms ease,box-shadow 160ms ease}
+.irv-list-card:hover{border-color:var(--ac)}
+
+@media(max-width:640px){
+  .irv-forms-grid{grid-template-columns:1fr}
+  .irv-choice-grid{grid-template-columns:1fr}
+  .irv-modes-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:420px){
+  .irv-modes-grid{grid-template-columns:1fr}
+}
+
+
 
