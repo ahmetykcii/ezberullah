@@ -68,6 +68,11 @@ export async function loadData() {
   state.daily = Object.fromEntries(d.map((x) => [x.date, x]));
   state.meta = Object.fromEntries(m.map((x) => [x.key, x.value]));
   state.grammarProgress = state.meta.grammarProgress && typeof state.meta.grammarProgress === 'object' ? { ...state.meta.grammarProgress } : {};
+  if (Array.isArray(state.meta.notebookWords)) {
+    for (const nw of state.meta.notebookWords) {
+      if (nw && nw.id) state.wordMap.set(nw.id, nw);
+    }
+  }
 }
 
 function applyToState(store, obj) {
@@ -83,6 +88,11 @@ function applyToState(store, obj) {
   else if (store === 'meta') {
     state.meta[obj.key] = obj.value;
     if (obj.key === 'grammarProgress') state.grammarProgress = obj.value && typeof obj.value === 'object' ? { ...obj.value } : {};
+    if (obj.key === 'notebookWords' && Array.isArray(obj.value)) {
+      for (const nw of obj.value) {
+        if (nw && nw.id) state.wordMap.set(nw.id, nw);
+      }
+    }
   }
 }
 function removeFromState(store, key) {
