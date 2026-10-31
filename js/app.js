@@ -11,6 +11,7 @@ import { renderGrammar, nextGrammarTopic, openGrammarLesson, resetGrammarView } 
 import { exportBackup, pickAndRestore } from './import-export.js';
 import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser, hasSeenSurpriseThisSession, markSurpriseSeen, login, logout, testFirebaseAccess } from './auth.js';
 import { renderSurprise } from './surprise.js';
+import { renderNotebook, getUserNotebookSummary } from './notebook.js';
 
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
@@ -83,8 +84,8 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
-const MORE_GROUP = ['more', 'vocabulary', 'exams', 'statistics', 'settings'];
+const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, notebook: renderNotebook, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
+const MORE_GROUP = ['more', 'notebook', 'vocabulary', 'exams', 'statistics', 'settings'];
 let keepGrammarView = false;
 function gotoGrammarLesson(id) {
   if (openGrammarLesson(id, null)) { keepGrammarView = true; location.hash = '#/grammar'; }
@@ -201,6 +202,8 @@ function renderDashboard(v) {
       <a href="#/surprise?preview=1">Sürprizi Önizle ❤️</a>
     </div>` : '';
 
+  const nbSummary = getUserNotebookSummary();
+
   v.innerHTML = `<div class="page home">
   <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
   ${ahmetBanner}
@@ -213,6 +216,7 @@ function renderDashboard(v) {
     ${ctaHtml}
   </div>
   <ul class="list quiet">
+    ${row({ href: '#/notebook' }, 'Kelime Defterim', nbSummary.totalWords ? `${nbSummary.totalWords} kişisel kelime · ${nbSummary.listCount} liste` : 'Kendi çalışma listeni oluştur')}
     ${due ? row({ href: '#/review' }, `${due} kelime tekrar bekliyor`, 'Kısa bir tekrar turu') : ''}
     ${gNext ? row({ id: 'go-grammar' }, 'Grammar', `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}`) : ''}
     ${plan && !plan.past ? row({ href: '#/statistics' }, `Sınava ${plan.days} gün kaldı`, `Önerilen günlük hedef: ${plan.suggested}`) : ''}
@@ -263,6 +267,7 @@ function renderMore(v) {
   const item = (href, ic, title, sub) => `<li><a class="list-row linkrow" href="${href}"><span class="row-ic">${ICONS[ic]}</span><div class="row-main"><b>${title}</b><span class="muted small">${sub}</span></div>${ICONS.chev}</a></li>`;
   v.innerHTML = `<div class="page"><h1>Diğer</h1>
   <ul class="list">
+    ${item('#/notebook', 'book', 'Kelime Defterim', 'Kişisel kelime listelerin ve çalışmaların')}
     ${item('#/vocabulary', 'stack', 'Kelime Havuzum', 'Kelimeleri ara, incele ve düzenle')}
     ${item('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları ve geçmiş sonuçlar')}
     ${item('#/statistics', 'chart', 'İstatistikler', 'İlerlemeni takip et')}

@@ -22,6 +22,14 @@ import { resolveTheme } from '../js/app.js';
 import * as Auth from '../js/auth.js';
 import * as FbCfg from '../js/firebase-config.js';
 import { renderSurprise } from '../js/surprise.js';
+import {
+  createNotebookList, updateNotebookList, deleteNotebookList,
+  getUserNotebookLists, getAllNotebookLists, saveAllNotebookLists,
+  buildPersonalWord, addWordToNotebook, parseBulkWords, bulkAddWordsToNotebook,
+  removeWordFromNotebookList, getListStats, getUserNotebookSummary,
+  startStudyList, startStudyAll, startStudyUnknown, startStudyDue,
+  getUserNotebookWords, getAllNotebookWords, saveAllNotebookWords,
+} from '../js/notebook.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
@@ -373,9 +381,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.3.4) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.4.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'SW sürümü veluno-v4.3.4 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.4.0';"), 'SW sürümü veluno-v4.4.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1282,7 +1290,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'SW sürümü veluno-v4.3.4 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.4.0';"), 'SW sürümü veluno-v4.4.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1706,8 +1714,8 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.3.4)
-  ok(sw.includes("const VERSION = 'veluno-v4.3.4';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi (v4.4.0)
+  ok(sw.includes("const VERSION = 'veluno-v4.4.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -1766,6 +1774,282 @@ await test('Sude [13] Ahmet’in Özgün Şarkısı (ask.mp3) Entegrasyonu & Git
   // 2) .gitignore ask.mp3 dosyasını takip edilebilir kılar, diğer tüm mp3/m4a/wav dosyalarını korur
   ok(gitignore.includes('!assets/audio/ask.mp3'), 'ask.mp3 için gitignore istisnası tanımlı olmalı');
   ok(gitignore.includes('*.mp3') && gitignore.includes('*.m4a') && gitignore.includes('*.wav'), 'Diğer ses dosyaları koruma altında olmalı');
+});
+
+out('\n14) VELUNO v4.4 — Kelime Defterim (Notebook / Personal Word Lists)');
+
+await test('Defter [1] Liste Oluşturma, Düzenleme ve Silme', async () => {
+  // Temiz başla
+  await saveAllNotebookLists([]);
+  await saveAllNotebookWords([]);
+
+  // 1) Yeni liste oluşturma
+  const r1 = await createNotebookList('Unit 5 - Education', 'user_test_1');
+  ok(r1.ok && r1.list.id && r1.list.name === 'Unit 5 - Education', 'Liste başarıyla oluşturulmalı');
+  eq(r1.list.userId, 'user_test_1');
+  eq(r1.list.wordIds, []);
+
+  // 2) Boş isim engeli
+  const rEmpty = await createNotebookList('   ', 'user_test_1');
+  ok(!rEmpty.ok && rEmpty.error.includes('boş olamaz'), 'Boş liste adı reddedilmeli');
+
+  // 3) Aynı kullanıcı için mükerrer liste adı engeli
+  const rDup = await createNotebookList('unit 5 - education', 'user_test_1');
+  ok(!rDup.ok && rDup.error.includes('zaten mevcut'), 'Aynı kullanıcı için aynı isimde liste oluşturulmamalı');
+
+  // 4) Liste adını düzenleme
+  const rEdit = await updateNotebookList(r1.list.id, { name: 'Unit 5 - Modern Education' });
+  ok(rEdit.ok && rEdit.list.name === 'Unit 5 - Modern Education', 'Liste adı güncellenebilmeli');
+
+  // 5) Liste silme
+  const rDel = await deleteNotebookList(r1.list.id);
+  ok(rDel.ok, 'Liste silinebilmeli');
+  eq(getUserNotebookLists('user_test_1').length, 0, 'Silinen liste artık kullanıcı listelerinde bulunmamalı');
+});
+
+await test('Defter [2] Tek Tek Kelime Ekleme & Otomatik Zenginleştirme', async () => {
+  const l = await createNotebookList('Test Listesi', 'user_test_2');
+  const listId = l.list.id;
+
+  // 1) Sözlükte bulunan kelime (örn: achieve) - doğrulanmış bilgilerle zenginleşir
+  const rAchieve = await addWordToNotebook({
+    word: 'achieve',
+    meanings: 'başarmak; elde etmek',
+    listId,
+    userId: 'user_test_2',
+  });
+  ok(rAchieve.ok, 'Sözlükte olan kelime eklenebilmeli');
+  const wAchieve = rAchieve.word;
+  eq(wAchieve.word, 'achieve');
+  ok(wAchieve.meanings.includes('başarmak'));
+  ok(wAchieve.exampleSentence.includes('achieve'), 'Örnek cümle otomatik doldurulmalı');
+  ok(isWordReady(wAchieve), 'isWordReady=true olmalı');
+  ok(E.blankSentence(wAchieve), 'blankSentence boşluk üretebilmeli');
+
+  // 2) Sözlükte olmayan özgün kelime (örn: serendipity) - otomatik geçerli cümle üretir, kullanıcıyı yormaz
+  const rUnknown = await addWordToNotebook({
+    word: 'serendipity',
+    meanings: 'mutlu tesadüf',
+    listId,
+    userId: 'user_test_2',
+  });
+  ok(rUnknown.ok, 'Sözlükte olmayan kelime de sorunsuz eklenebilmeli');
+  const wUnknown = rUnknown.word;
+  ok(wUnknown.exampleSentence.includes('serendipity'), 'Otomatik şablon cümle kelimeyi içermeli');
+  ok(isWordReady(wUnknown), 'Otomatik cümle sayesinde isWordReady=true olmalı');
+  ok(E.blankSentence(wUnknown), 'Otomatik cümle boşluk doldurma (5. aşama) için hazır olmalı');
+
+  // 3) Geçersiz kelime engeli
+  const rInvalid = await addWordToNotebook({
+    word: '123bad',
+    meanings: 'hatalı',
+    listId,
+    userId: 'user_test_2',
+  });
+  ok(!rInvalid.ok && rInvalid.error.includes('Latin harfleri'), 'Geçersiz karakter içeren kelime reddedilmeli');
+});
+
+await test('Defter [3] Toplu Kelime Ayrıştırma & Önizleme (Bulk Add Parser)', async () => {
+  const l = await createNotebookList('Toplu Ekleme Listesi', 'user_test_3');
+  const listId = l.list.id;
+
+  // Çeşitli ayraçlarla (- , – , — , : , = , \t) yapıştırılan metin
+  const rawText = `
+    achieve - başarmak
+    improve – geliştirmek
+    require — gerektirmek
+    crucial : hayati, çok önemli
+    candidate = aday
+    diligent\tçalışkan
+
+    hatali satir ayracsiz
+    achieve - başarmak
+  `;
+
+  const parsed = parseBulkWords(rawText, [], []);
+  ok(parsed.length >= 7, 'Satırlar doğru ayrıştırılmalı');
+
+  // Başarılı satırlar
+  const okRows = parsed.filter((r) => r.status === 'ok');
+  ok(okRows.some((r) => r.word === 'achieve' && r.meanings === 'başarmak'));
+  ok(okRows.some((r) => r.word === 'improve' && r.meanings === 'geliştirmek'));
+  ok(okRows.some((r) => r.word === 'require' && r.meanings === 'gerektirmek'));
+  ok(okRows.some((r) => r.word === 'crucial' && r.meanings.includes('hayati')));
+  ok(okRows.some((r) => r.word === 'candidate' && r.meanings === 'aday'));
+  ok(okRows.some((r) => r.word === 'diligent' && r.meanings === 'çalışkan'));
+
+  // Hatalı satır
+  const errRow = parsed.find((r) => r.rawLine.includes('hatali satir ayracsiz'));
+  ok(errRow && errRow.status === 'error', 'Ayraçsız satır hata olarak işaretlenmeli');
+
+  // Tekrar eden satır (achieve ikinci kez)
+  const dupRow = parsed.filter((r) => r.word === 'achieve');
+  ok(dupRow.length === 2 && dupRow[1].status === 'dup', 'Metin içi tekrar dup olarak işaretlenmeli');
+
+  // Toplu kaydetme
+  const bulkRes = await bulkAddWordsToNotebook({
+    items: parsed,
+    listId,
+    userId: 'user_test_3',
+  });
+  ok(bulkRes.ok && bulkRes.addedCount === 6, 'Yalnızca geçerli 6 kelime kaydedilmeli');
+
+  const stats = getListStats(listId);
+  eq(stats.total, 6, 'Listedeki toplam kelime sayısı 6 olmalı');
+});
+
+await test('Defter [4] Çoklu Liste & Tekil Kelime Modeli (Unified Word Progress)', async () => {
+  // Kullanıcı aynı kelimeyi ("improve") iki farklı listeye ekler
+  const listA = (await createNotebookList('Ders Notları', 'user_test_4')).list;
+  const listB = (await createNotebookList('Sınav Hazırlık', 'user_test_4')).list;
+
+  const rA = await addWordToNotebook({ word: 'improve', meanings: 'geliştirmek', listId: listA.id, userId: 'user_test_4' });
+  const rB = await addWordToNotebook({ word: 'improve', meanings: 'geliştirmek', listId: listB.id, userId: 'user_test_4' });
+
+  ok(rA.ok && rB.ok, 'Aynı kelime iki farklı listeye eklenebilmeli');
+  eq(rA.word.id, rB.word.id, 'Her iki listede de tekil kelime kimliği (ID) paylaşılmalı');
+
+  // Kelime üzerinde öğrenme aşaması tamamlandığında her iki listenin ilerlemesine yansımalı
+  const wordId = rA.word.id;
+  const p = getProgress(wordId);
+  p.currentStage = 6;
+  p.learningComplete = true;
+  p.completedAt = Date.now();
+  await saveProgress(p);
+
+  const statsA = getListStats(listA.id);
+  const statsB = getListStats(listB.id);
+
+  eq(statsA.completed, 1, 'Liste A ilerlemesi 1 tamamlandı göstermeli');
+  eq(statsB.completed, 1, 'Liste B ilerlemesi de aynı kelimenin tamamlandığını göstermeli');
+  eq(statsA.completion, 100);
+  eq(statsB.completion, 100);
+});
+
+await test('Defter [5] Kullanıcı İzolasyonu & Güvenlik', async () => {
+  await createNotebookList('Ahmet Listesi', 'user_ahmet');
+  await createNotebookList('Sude Listesi', 'user_sude');
+  await createNotebookList('Misafir Listesi', 'guest');
+
+  const ahmetLists = getUserNotebookLists('user_ahmet');
+  const sudeLists = getUserNotebookLists('user_sude');
+  const guestLists = getUserNotebookLists('guest');
+
+  ok(ahmetLists.every((l) => l.userId === 'user_ahmet'), 'Ahmet yalnızca kendi listelerini görmeli');
+  ok(sudeLists.every((l) => l.userId === 'user_sude'), 'Sude yalnızca kendi listelerini görmeli');
+  ok(guestLists.every((l) => l.userId === 'guest'), 'Misafir yalnızca kendi listelerini görmeli');
+  ok(!ahmetLists.some((l) => l.name === 'Sude Listesi'), 'Ahmet Sude’nin listesini göremez');
+  ok(!sudeLists.some((l) => l.name === 'Ahmet Listesi'), 'Sude Ahmet’in listesini göremez');
+});
+
+await test('Defter [6] Mevcut 6 Aşamalı Öğrenme Motoru Entegrasyonu', async () => {
+  const l = (await createNotebookList('6 Aşama Testi', 'user_test_6')).list;
+  await addWordToNotebook({ word: 'require', meanings: 'gerektirmek', listId: l.id, userId: 'user_test_6' });
+  await addWordToNotebook({ word: 'expand', meanings: 'genişletmek', listId: l.id, userId: 'user_test_6' });
+
+  const stats = getListStats(l.id);
+  const batch = E.learnBatch(stats.words, state.progress, 5);
+  eq(batch.length, 2, 'Kişisel kelimeler learnBatch içine girmeli');
+
+  const items = E.learnItems(batch, state.progress);
+  eq(items.length, 12, '2 kelime x 6 aşama = 12 oturum öğesi üretilmeli');
+
+  // Her aşama için soru üretimi kontrolü
+  const w = stats.words[0];
+  const qCard = { type: 'card', wordId: w.id };
+  const qMc = E.buildQuestion(w, 'mc', state.words);
+  const qTyping = E.buildQuestion(w, 'typing', state.words);
+  const qMissing = E.buildQuestion(w, 'missing', state.words);
+  const qSentence = E.buildQuestion(w, 'sentence', state.words);
+  const qProd = E.buildQuestion(w, 'production', state.words);
+
+  ok(qMc.options && qMc.options.length === 4, 'Çoktan seçmeli soru 4 seçenek üretmeli');
+  ok(qTyping.answers.includes(w.word), 'Yazma sorusu hedef kelimeyi içermeli');
+  ok(qMissing.prompt.includes('_'), 'Eksik harf sorusu maskelenmiş olmalı');
+  ok(qSentence.prompt.includes('_____'), 'Cümle boşluk doldurma prompt içermeli');
+  ok(E.checkProduction(w, 'This task will require a lot of energy and time.'), 'Cümle üretimi değerlendirmesi başarılı olmalı');
+});
+
+await test('Defter [7] Hata Takibi ve REVIEW Önceliği', async () => {
+  const l = (await createNotebookList('Hata Testi', 'user_test_7')).list;
+  const w = (await addWordToNotebook({ word: 'persevere', meanings: 'azimle devam etmek', listId: l.id, userId: 'user_test_7' })).word;
+
+  const p = getProgress(w.id);
+  // Yanlış cevap simülasyonu
+  E.applyAnswer(p, false, { mode: 'learn', stage: 3, qtype: 'typing' });
+  await saveProgress(p);
+
+  eq(p.currentStatus, 'REVIEW', 'Yanlış yapılan kişisel kelime REVIEW havuzuna geçmeli');
+  eq(p.incorrectCount, 1, 'Hata sayısı artmalı');
+  ok(p.mistakeHistory.length >= 1, 'Hata geçmişe kaydedilmeli');
+
+  // Sonraki oturumda failing kelime en öne alınmalı
+  const batch = E.learnBatch([w], state.progress, 5);
+  eq(batch[0].id, w.id, 'Hatalı kelime öncelikli sırada yer almalı');
+});
+
+await test('Defter [8] SRS Aralıklı Tekrar Entegrasyonu (1-3-7-14-30 gün)', async () => {
+  const l = (await createNotebookList('SRS Testi', 'user_test_8')).list;
+  const w = (await addWordToNotebook({ word: 'flourish', meanings: 'gelişmek, serpilmek', listId: l.id, userId: 'user_test_8' })).word;
+
+  const p = getProgress(w.id);
+  // 6 aşama tamamlandı simülasyonu
+  E.applyAnswer(p, true, { mode: 'learn', stage: 6, qtype: 'production' });
+  await saveProgress(p);
+
+  ok(p.learningComplete, '6 aşama tamamlanınca learningComplete olmalı');
+  eq(p.srsStep, 0, 'İlk SRS adımı 0 olmalı');
+  eq(p.reviewInterval, 1, 'İlk tekrar aralığı 1 gün olmalı');
+
+  // Başarılı SRS tekrarları aralığı sırasıyla uzatmalı: 1 -> 3 -> 7 -> 14 -> 30 gün
+  const intervals = [3, 7, 14, 30];
+  for (const expInterval of intervals) {
+    E.applyAnswer(p, true, { mode: 'review', qtype: 'typing' });
+    eq(p.reviewInterval, expInterval, `SRS aralığı ${expInterval} gün olmalı`);
+  }
+
+  // Hata durumunda aralık 1 güne düşmeli
+  E.applyAnswer(p, false, { mode: 'review', qtype: 'typing' });
+  eq(p.reviewInterval, 1, 'Hata durumunda tekrar aralığı 1 güne çekilmeli');
+  eq(p.currentStatus, 'REVIEW', 'Hata durumunda durum REVIEW olmalı');
+});
+
+await test('Defter [9] Dört Çalışma Seçeneği Fonksiyonları', async () => {
+  const l = (await createNotebookList('Çalışma Seçenekleri Testi', 'user_test_9')).list;
+  await addWordToNotebook({ word: 'collaborate', meanings: 'iş birliği yapmak', listId: l.id, userId: 'user_test_9' });
+
+  const summary = getUserNotebookSummary('user_test_9');
+  eq(summary.totalWords, 1, 'Toplam 1 kelime olmalı');
+  eq(summary.completedWords, 0, 'Henüz tamamlanan kelime olmamalı');
+
+  // Mod fonksiyonlarının çağrılabilirliği ve oturum hazırlığı
+  ok(typeof startStudyList === 'function', 'startStudyList fonksiyonu tanımlı olmalı');
+  ok(typeof startStudyAll === 'function', 'startStudyAll fonksiyonu tanımlı olmalı');
+  ok(typeof startStudyUnknown === 'function', 'startStudyUnknown fonksiyonu tanımlı olmalı');
+  ok(typeof startStudyDue === 'function', 'startStudyDue fonksiyonu tanımlı olmalı');
+});
+
+await test('Defter [10] A2, B1, B2 Kelime Havuzları, Grammar & İmza Bütünlüğü', async () => {
+  // 1) 2.010 aktif kelime ve 14 taslak kelime (toplam 2.024 kayıt) bozulmamalı
+  const allCurriculum = [...data.A2, ...data.B1, ...data.B2];
+  eq(allCurriculum.length, 2024, 'Toplam 2.024 yerleşik kelime korunmalı');
+  const activeCurriculum = allCurriculum.filter((w) => !w.isDraft);
+  eq(activeCurriculum.length, 2010, '2.010 aktif müfredat kelimesi kesinlikle korunmalı');
+
+  // 2) 38 Grammar Academy konusu ve 760 soru havuzu korunmalı
+  const topics = G.GRAMMAR_TOPICS || [];
+  eq(topics.length, 38, '38 Grammar konusu korunmalı');
+  eq(G.GRAMMAR_QUESTIONS.length, 760, '760 Grammar sorusu korunmalı');
+
+  // 3) "ahmet ❤️ sude" imzası korunmalı
+  const appSrc = await readText('js/app.js');
+  ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
+
+  // 4) Dört tema seçeneği korunmalı
+  const themes = ['light', 'dark', 'auto', 'studio'];
+  for (const th of themes) {
+    ok(resolveTheme(th) !== undefined, `${th} teması desteklenmeli`);
+  }
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

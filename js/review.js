@@ -51,8 +51,10 @@ handlers.review = {
     await bumpDaily({ sessionsCompleted: 1 });
     const ok = results.filter((r) => r.correct).length;
     const bad = [...new Set(results.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
+    const returnUrl = sess?.params?.isNotebook ? '#/notebook' : '#/review';
+    const returnLabel = sess?.params?.isNotebook ? 'Defterime Dön' : 'Tekrara Dön';
     return { html: summaryHtml({ title: `${sess.title} Tamamlandı`, big: `${ok}/${results.length}`, sub: 'doğru cevap',
-      verdict: bad.length ? '' : 'Hiç hata yok', extra: bad.length ? `<p>Tekrar edilmesi gerekenler: <b>${esc(bad.join(', '))}</b></p>` : '', actions: '<a class="btn primary" href="#/review">Tekrara Dön</a>' }) };
+      verdict: bad.length ? '' : 'Hiç hata yok', extra: bad.length ? `<p>Tekrar edilmesi gerekenler: <b>${esc(bad.join(', '))}</b></p>` : '', actions: `<a class="btn primary" href="${returnUrl}">${returnLabel}</a>` }) };
   },
 };
 

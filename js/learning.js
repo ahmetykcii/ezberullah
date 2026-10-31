@@ -125,10 +125,16 @@ function renderItem() {
   if (bar) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = pct + '%'; }));
   lastPct = pct;
   $('#q-exit').onclick = () => {
+    const isNotebook = cur?.params?.isNotebook;
     abortSession();
-    if (location.hash === '#/dashboard') window.dispatchEvent(new HashChangeEvent('hashchange'));
-    else location.hash = '#/dashboard';
-    toast('Oturum kaydedildi; Ana Sayfadan kaldığınız yerden devam edebilirsiniz.');
+    if (isNotebook) {
+      location.hash = '#/notebook';
+      toast('Oturum kaydedildi; Kelime Defterinizden devam edebilirsiniz.');
+    } else {
+      if (location.hash === '#/dashboard') window.dispatchEvent(new HashChangeEvent('hashchange'));
+      else location.hash = '#/dashboard';
+      toast('Oturum kaydedildi; Ana Sayfadan kaldığınız yerden devam edebilirsiniz.');
+    }
   };
   wire(item, word);
 }
@@ -334,14 +340,16 @@ handlers.learn = {
     await bumpDaily(d);
     return { drop: !ok };
   },
-  async onDone(results) {
+  async onDone(results, sess) {
     await bumpDaily({ sessionsCompleted: 1 });
     const q = results.filter((r) => !r.card);
     const ok = q.filter((r) => r.correct).length;
     const done = new Set(q.filter((r) => r.stage === 6 && r.correct).map((r) => r.wordId)).size;
     const failed = [...new Set(q.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
+    const returnUrl = sess?.params?.isNotebook ? '#/notebook' : '#/learn';
+    const returnLabel = sess?.params?.isNotebook ? 'Defterime Dön' : 'Yeni Grup Başlat';
     return { html: summaryHtml({ title: 'Oturum Tamamlandı', big: `${done} kelime`, sub: `6 aşamayı tamamladın · ${ok}/${q.length} doğru cevap`,
-      extra: failed.length ? `<p>Tekrar Edilecek havuzuna alınanlar: <b>${esc(failed.join(', '))}</b></p>` : '', actions: '<a class="btn primary" href="#/learn">Yeni Grup Başlat</a>' }) };
+      extra: failed.length ? `<p>Tekrar Edilecek havuzuna alınanlar: <b>${esc(failed.join(', '))}</b></p>` : '', actions: `<a class="btn primary" href="${returnUrl}">${returnLabel}</a>` }) };
   },
 };
 
