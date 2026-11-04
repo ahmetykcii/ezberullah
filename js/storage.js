@@ -1,5 +1,5 @@
 // Kalıcı veri katmanı: IndexedDB (büyük veri) + localStorage (ayarlar). IndexedDB yoksa bellek içi yedek (uyarı ile).
-import { newProgress } from './engine.js';
+import { newProgress, adaptLegacyProgress } from './engine.js';
 
 export const SCHEMA_VERSION = 1;
 const DB_NAME = 'lexora-db';
@@ -129,7 +129,13 @@ export async function deleteData(store, key) {
 }
 export const getMeta = (k, d = null) => (k in state.meta ? state.meta[k] : d);
 export const setMeta = (key, value) => saveData('meta', { key, value });
-export function getProgress(id) { return state.progress[id] || newProgress(id); }
+export function getProgress(id) {
+  if (state.progress[id]) {
+    adaptLegacyProgress(state.progress[id]);
+    return state.progress[id];
+  }
+  return newProgress(id);
+}
 export const saveProgress = (p) => saveData('progress', p);
 
 /* ---------- Grammar İlerleme Kaydı (IndexedDB meta.grammarProgress içinde kalıcı) ---------- */
@@ -193,6 +199,16 @@ export async function replaceAll(data) {
 /* ---------- Şema sürümleme / taşıma ---------- */
 // MIGRATIONS[i]: i → i+1 sürümüne taşır. Gelecekte buraya eklenir; eski veriler korunur.
 const MIGRATIONS = [];
+function sanitizeSavedSession(sess) {
+  if (!sess || !Array.isArray(sess.items)) return false;
+  const beforeLen = sess.items.length;
+  sess.items = sess.items.filter((it) => it && it.type !== 'production' && (!it.stage || it.stage <= 5));
+  if (sess.items.length !== beforeLen) {
+    if (typeof sess.idx === 'number' && sess.idx > sess.items.length) sess.idx = sess.items.length;
+    return true;
+  }
+  return false;
+}
 export async function migrate() {
   const v = state.meta.schemaVersion || 0;
   if (v > SCHEMA_VERSION) console.warn('Veri şeması uygulamadan yeni; salt okunur davranılabilir.');
@@ -200,8 +216,22 @@ export async function migrate() {
   const changed = [];
   for (const p of Object.values(state.progress)) {
     const n = { ...newProgress(p.id), ...p };
-    if (Object.keys(n).length !== Object.keys(p).length) { state.progress[p.id] = n; changed.push(n); }
+    const { changed: adapted } = adaptLegacyProgress(n);
+    if (adapted || Object.keys(n).length !== Object.keys(p).length) {
+      state.progress[p.id] = n;
+      changed.push(n);
+    }
   }
   if (changed.length) await saveMany('progress', changed);
+  if (state.meta.activeSession && sanitizeSavedSession(state.meta.activeSession)) {
+    await setMeta('activeSession', state.meta.activeSession);
+  }
+  if (state.meta.activeSessionsByLevel && typeof state.meta.activeSessionsByLevel === 'object') {
+    let byLvChanged = false;
+    for (const lv of Object.keys(state.meta.activeSessionsByLevel)) {
+      if (sanitizeSavedSession(state.meta.activeSessionsByLevel[lv])) byLvChanged = true;
+    }
+    if (byLvChanged) await setMeta('activeSessionsByLevel', state.meta.activeSessionsByLevel);
+  }
   if (v < SCHEMA_VERSION) await setMeta('schemaVersion', SCHEMA_VERSION);
 }

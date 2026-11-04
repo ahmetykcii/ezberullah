@@ -184,10 +184,10 @@ await test('hakimiyet puanı aralıkları ve etiketler', () => {
   eq(E.masteryLabel(10), 'Bilmiyor'); eq(E.masteryLabel(30), 'Öğreniyor'); eq(E.masteryLabel(50), 'Gelişiyor'); eq(E.masteryLabel(70), 'İyi'); eq(E.masteryLabel(95), 'Çok iyi');
   eq(E.masteryScore(E.newProgress('x')), 0);
 });
-await test('6 aşama tamamlanınca learningComplete olur ama MASTERED olmaz', () => {
+await test('5 aşama tamamlanınca learningComplete olur ama MASTERED olmaz', () => {
   const p = E.newProgress('t1'); const t0 = 1e12;
-  for (let s = 2; s <= 6; s++) E.applyAnswer(p, true, { mode: 'learn', stage: s }, t0);
-  ok(p.learningComplete); eq(p.currentStage, 6); ok(p.currentStatus === 'LEARNING'); eq(p.nextReviewAt, t0 + E.DAY);
+  for (let s = 2; s <= 5; s++) E.applyAnswer(p, true, { mode: 'learn', stage: s }, t0);
+  ok(p.learningComplete); eq(p.currentStage, 5); ok(p.currentStatus === 'LEARNING'); eq(p.nextReviewAt, t0 + E.DAY);
 });
 await test('3. aşamada hata → REVIEW, hata kaydı, aşama ilerlemez, geçmiş silinmez', () => {
   const p = E.newProgress('t2'); E.markSeen(p); E.applyAnswer(p, true, { mode: 'learn', stage: 2 });
@@ -197,7 +197,7 @@ await test('3. aşamada hata → REVIEW, hata kaydı, aşama ilerlemez, geçmiş
 });
 await test('SRS: başarılı tekrar aralığı uzatır (1→3→7→14→30), hata kısaltır', () => {
   const p = E.newProgress('t3'); let now = 1e12;
-  for (let s = 2; s <= 6; s++) E.applyAnswer(p, true, { mode: 'learn', stage: s }, now);
+  for (let s = 2; s <= 5; s++) E.applyAnswer(p, true, { mode: 'learn', stage: s }, now);
   const seen = [];
   for (let i = 0; i < 5; i++) { now = p.nextReviewAt; E.applyAnswer(p, true, { mode: 'review' }, now); seen.push(p.reviewInterval); }
   eq(seen, [3, 7, 14, 30, 30]);
@@ -213,7 +213,7 @@ await test('learnBatch: en çok 2 hatalı kelime, oturum kilitlenmez', () => {
   const ws = data.A2.slice(0, 12); const prog = {};
   ws.slice(0, 6).forEach((w) => { const p = E.newProgress(w.id); p.currentStatus = 'REVIEW'; p.incorrectCount = 5; p.currentStage = 2; prog[w.id] = p; });
   const b = E.learnBatch(ws, prog, 5); eq(b.length, 5); ok(b.filter((w) => prog[w.id]).length <= 2, 'çok fazla hatalı');
-  const items = E.learnItems(b, prog); ok(items.some((i) => i.stage === 6));
+  const items = E.learnItems(b, prog); ok(items.some((i) => i.stage === 5) && !items.some((i) => i.stage === 6));
 });
 
 out('3) Depolama, Basit Kelime Ekleme, Taslak ve Otomatik Bilgi Hazırlama');
@@ -268,7 +268,7 @@ await test('ücretsiz otomatik bilgi hazırlama: bilinen kelimeyi doldurur, bili
 });
 
 out('4) Oturum, Tekrar, Sınav ve İstatistik Akışı');
-await test('Learn handler: 6 aşama, yanlış → REVIEW + drop, günlük istatistik kaydı', async () => {
+await test('Learn handler: 5 aşama, yanlış → REVIEW + drop, günlük istatistik kaydı', async () => {
   const w = data.A2[0];
   const item = (stage, type) => ({ wordId: w.id, stage, type });
   await handlers.learn.onAnswer(item(1, 'card'), true, { elapsed: 1 });
@@ -277,9 +277,9 @@ await test('Learn handler: 6 aşama, yanlış → REVIEW + drop, günlük istati
   ok(r.drop === true);
   let p = getProgress(w.id); eq(p.currentStatus, 'REVIEW'); eq(p.currentStage, 2); eq(p.incorrectCount, 1);
   await handlers.learn.onAnswer(item(3, 'typing'), true, { elapsed: 2 }); await handlers.learn.onAnswer(item(4, 'missing'), true, { elapsed: 2 });
-  await handlers.learn.onAnswer(item(5, 'sentence'), true, { elapsed: 2 }); await handlers.learn.onAnswer(item(6, 'production'), true, { elapsed: 2 });
-  p = getProgress(w.id); ok(p.learningComplete); eq(p.currentStatus, 'LEARNING'); eq(p.incorrectCount, 1, 'geçmiş korunmalı'); eq(p.mistakeHistory.length, 1);
-  const day = Object.values(state.daily)[0]; ok(day.correct >= 5 && day.wrong === 1 && day.newWords === 1 && day.seconds > 0);
+  await handlers.learn.onAnswer(item(5, 'sentence'), true, { elapsed: 2 });
+  p = getProgress(w.id); ok(p.learningComplete); eq(p.currentStage, 5); eq(p.currentStatus, 'LEARNING'); eq(p.incorrectCount, 1, 'geçmiş korunmalı'); eq(p.mistakeHistory.length, 1);
+  const day = Object.values(state.daily)[0]; ok(day.correct >= 4 && day.wrong === 1 && day.newWords === 1 && day.seconds > 0);
   eq(streak(), 1);
 });
 await test('Review handler + candidates: due kelime Akıllı Tekrar listesinde', async () => {
@@ -395,9 +395,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.5.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.5.1) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.5.0';"), 'SW sürümü veluno-v4.5.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.5.1';"), 'SW sürümü veluno-v4.5.1 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -511,26 +511,25 @@ await test('alternativeAnswers kuralı: eş anlamlılar (fall/bookstore) ve kıs
   ok(E.checkAnswer(qCm, 'centimeter'), 'centimeter UK/US yazım varyantı kabul edilmeli');
   ok(!E.checkAnswer(qCm, 'cm'), 'cm kısaltması kabul edilmemeli');
 });
-await test('yeni A2 pilot kelimeleri öğrenme oturumlarında (learnBatch + 6 aşama: mc, typing, missing, sentence, production) tam uyumlu çalışır', async () => {
+await test('yeni A2 pilot kelimeleri öğrenme oturumlarında (learnBatch + 5 aşama: card, mc, typing, missing, sentence) tam uyumlu çalışır', async () => {
   // İlk 46 kelimeyi tamamlanmış varsayalım ki learnBatch doğrudan yeni pilot kelimeleri seçsin
   const customProg = {};
   for (let i = 0; i < 46; i++) {
-    customProg[data.A2[i].id] = { ...E.newProgress(data.A2[i].id), learningComplete: true, currentStatus: 'LEARNING', currentStage: 6 };
+    customProg[data.A2[i].id] = { ...E.newProgress(data.A2[i].id), learningComplete: true, currentStatus: 'LEARNING', currentStage: 5 };
   }
   const batch = E.learnBatch(data.A2, customProg, 5);
   eq(batch.length, 5);
   ok(batch.every((w) => !customProg[w.id]?.learningComplete), 'Tamamlanmış ilk 46 kelime dışındaki yeni kelimeler seçilmeli');
   const items = E.learnItems(batch, customProg);
-  eq(items.length, 30); // 5 kelime x 6 aşama
+  eq(items.length, 25); // 5 kelime x 5 aşama
 
-  // Yeni pilot kelimelerden biriyle (a2-abroad-047) gerçek 6 aşamalı oturum ve soru doğrulaması
+  // Yeni pilot kelimelerden biriyle (a2-abroad-047) gerçek 5 aşamalı oturum ve soru doğrulaması
   const pw = data.A2[46]; // a2-abroad-047
   eq(pw.id, 'a2-abroad-047');
-  for (const t of ['mc', 'typing', 'missing', 'sentence', 'production']) {
+  for (const t of ['mc', 'typing', 'missing', 'sentence']) {
     const q = E.buildQuestion(pw, t, data.A2);
     eq(q.type, t);
     if (t === 'mc') ok(E.checkAnswer(q, q.answerIndex));
-    else if (t === 'production') ok(E.checkAnswer(q, `They want to live ${pw.word} next year.`));
     else ok(E.checkAnswer(q, pw.word));
   }
 
@@ -541,9 +540,8 @@ await test('yeni A2 pilot kelimeleri öğrenme oturumlarında (learnBatch + 6 a�
   await handlers.learn.onAnswer(item(3, 'typing'), true, { elapsed: 2 });
   await handlers.learn.onAnswer(item(4, 'missing'), true, { elapsed: 2 });
   await handlers.learn.onAnswer(item(5, 'sentence'), true, { elapsed: 2 });
-  await handlers.learn.onAnswer(item(6, 'production'), true, { elapsed: 2 });
   const p = getProgress(pw.id);
-  ok(p.learningComplete && p.currentStage === 6 && p.correctCount === 5, 'Pilot kelime 6 aşamayı tamamlamalı');
+  ok(p.learningComplete && p.currentStage === 5 && p.correctCount === 4, 'Pilot kelime 5 aşamayı tamamlamalı');
 });
 await test('sayfa yenilendiğinde / seedBuiltIn tekrar çalıştığında mevcut ve yeni kelimelerin öğrenme ilerlemesi korunur', async () => {
   const beforeProgOld = JSON.stringify(getProgress('a2-apartment-001'));
@@ -587,11 +585,11 @@ await test('kelime öğrenme, tekrar ve sınav oturumlarında kelimeler/sorular 
   eq(pb[2].id, learnW.id, 'Devam eden LEARNING kelimesi NEW kelimelerden önce gelmeli');
   ok(pb.every((w) => w.level === 'B1' && !w.isDraft), 'Seviye ayrımı (yalnızca B1 aktif) korunmalı');
 
-  // 3) learnItems: 2..6 aşamalarında grup içindeki kelime sırası da karıştırılır
+  // 3) learnItems: 2..5 aşamalarında grup içindeki kelime sırası da karıştırılır
   const sampleBatch = E.learnBatch(data.A2, {}, 5);
   const lItems = E.learnItems(sampleBatch, {});
-  eq(lItems.length, 30);
-  const stageOrders = [1, 2, 3, 4, 5, 6].map((s) => lItems.filter((i) => i.stage === s).map((i) => i.wordId).join(','));
+  eq(lItems.length, 25);
+  const stageOrders = [1, 2, 3, 4, 5].map((s) => lItems.filter((i) => i.stage === s).map((i) => i.wordId).join(','));
   ok(new Set(stageOrders).size > 1, 'Aşamalar arasında kelime sırası tekdüze olmamalı');
 
   // 4) Sınavlarda (Mini ve Seviye Bitirme) her başlatmada farklı soru sırası ve seviye ayrımı
@@ -1304,7 +1302,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.5.0';"), 'SW sürümü veluno-v4.5.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.5.1';"), 'SW sürümü veluno-v4.5.1 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1728,8 +1726,8 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.5.0)
-  ok(sw.includes("const VERSION = 'veluno-v4.5.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi (v4.5.1)
+  ok(sw.includes("const VERSION = 'veluno-v4.5.1';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -1956,8 +1954,8 @@ await test('Defter [5] Kullanıcı İzolasyonu & Güvenlik', async () => {
   ok(!sudeLists.some((l) => l.name === 'Ahmet Listesi'), 'Sude Ahmet’in listesini göremez');
 });
 
-await test('Defter [6] Mevcut 6 Aşamalı Öğrenme Motoru Entegrasyonu', async () => {
-  const l = (await createNotebookList('6 Aşama Testi', 'user_test_6')).list;
+await test('Defter [6] Mevcut 5 Aşamalı Öğrenme Motoru Entegrasyonu', async () => {
+  const l = (await createNotebookList('5 Aşama Testi', 'user_test_6')).list;
   await addWordToNotebook({ word: 'require', meanings: 'gerektirmek', listId: l.id, userId: 'user_test_6' });
   await addWordToNotebook({ word: 'expand', meanings: 'genişletmek', listId: l.id, userId: 'user_test_6' });
 
@@ -1966,7 +1964,8 @@ await test('Defter [6] Mevcut 6 Aşamalı Öğrenme Motoru Entegrasyonu', async 
   eq(batch.length, 2, 'Kişisel kelimeler learnBatch içine girmeli');
 
   const items = E.learnItems(batch, state.progress);
-  eq(items.length, 12, '2 kelime x 6 aşama = 12 oturum öğesi üretilmeli');
+  eq(items.length, 10, '2 kelime x 5 aşama = 10 oturum öğesi üretilmeli');
+  ok(!items.some((i) => i.type === 'production' || i.stage === 6), 'Serbest cümle yazma (6. aşama) üretilmemeli');
 
   // Her aşama için soru üretimi kontrolü
   const w = stats.words[0];
@@ -1975,13 +1974,11 @@ await test('Defter [6] Mevcut 6 Aşamalı Öğrenme Motoru Entegrasyonu', async 
   const qTyping = E.buildQuestion(w, 'typing', state.words);
   const qMissing = E.buildQuestion(w, 'missing', state.words);
   const qSentence = E.buildQuestion(w, 'sentence', state.words);
-  const qProd = E.buildQuestion(w, 'production', state.words);
 
   ok(qMc.options && qMc.options.length === 4, 'Çoktan seçmeli soru 4 seçenek üretmeli');
   ok(qTyping.answers.includes(w.word), 'Yazma sorusu hedef kelimeyi içermeli');
   ok(qMissing.prompt.includes('_'), 'Eksik harf sorusu maskelenmiş olmalı');
   ok(qSentence.prompt.includes('_____'), 'Cümle boşluk doldurma prompt içermeli');
-  ok(E.checkProduction(w, 'This task will require a lot of energy and time.'), 'Cümle üretimi değerlendirmesi başarılı olmalı');
 });
 
 await test('Defter [7] Hata Takibi ve REVIEW Önceliği', async () => {
@@ -2007,11 +2004,11 @@ await test('Defter [8] SRS Aralıklı Tekrar Entegrasyonu (1-3-7-14-30 gün)', a
   const w = (await addWordToNotebook({ word: 'flourish', meanings: 'gelişmek, serpilmek', listId: l.id, userId: 'user_test_8' })).word;
 
   const p = getProgress(w.id);
-  // 6 aşama tamamlandı simülasyonu
-  E.applyAnswer(p, true, { mode: 'learn', stage: 6, qtype: 'production' });
+  // 5 aşama tamamlandı simülasyonu
+  E.applyAnswer(p, true, { mode: 'learn', stage: 5, qtype: 'sentence' });
   await saveProgress(p);
 
-  ok(p.learningComplete, '6 aşama tamamlanınca learningComplete olmalı');
+  ok(p.learningComplete, '5 aşama tamamlanınca learningComplete olmalı');
   eq(p.srsStep, 0, 'İlk SRS adımı 0 olmalı');
   eq(p.reviewInterval, 1, 'İlk tekrar aralığı 1 gün olmalı');
 
@@ -2300,6 +2297,86 @@ await test('Irregular [9] Mevcut Tüm Verilerin (2.010 Kelime, 38 Grammar, Kelim
   eq(validateBackup(backup), [], 'Yeni meta alanlarıyla oluşturulan yedek geçerli olmalı');
   ok(backup.meta.some((m) => m.key === 'irregularLists'), 'Yedekte irregularLists bulunmalı');
   ok(backup.meta.some((m) => m.key === 'irregularProgress'), 'Yedekte irregularProgress bulunmalı');
+});
+
+/* ============================================================================
+ * 16) KELİME GELİŞTİRME SİSTEMİ GÜNCELLEMESİ (5 AŞAMALI ÖĞRENME SİSTEMİ)
+ * ========================================================================== */
+out('\n--- 16) 5 Aşamalı Kelime Öğrenme Sistemi Güncellemesi Testleri ---');
+
+await test('5-Aşama [1] Öğrenme Oturumunda Tam 5 Aşama Bulunması ve 6. Aşamanın (Serbest Cümle) Kaldırılması', async () => {
+  eq(E.STAGES.length, 5, 'STAGES dizisi tam 5 aşamadan oluşmalı');
+  eq(E.STAGES, [
+    'Kelimeyi Öğren',
+    'Çoktan Seçmeli Soru',
+    'İngilizce Kelimeyi Yaz',
+    'Eksik Harfleri Tamamla',
+    'Örnek Cümlede Boşluk Doldur',
+  ]);
+  eq(E.STAGE_TYPES, [null, 'card', 'mc', 'typing', 'missing', 'sentence'], 'STAGE_TYPES içinde production bulunmamalı');
+
+  const learnSrc = await readText('js/learning.js');
+  ok(!learnSrc.includes("item.type === 'production'"), 'learning.js içinde serbest cümle yazma ekranı bulunmamalı');
+  ok(learnSrc.includes('aria-label="Aşama ${item.stage}/5"') && learnSrc.includes('[1, 2, 3, 4, 5]'), 'Aşama göstergesi 5 noktalı olmalı');
+  ok(learnSrc.includes('5 aşamalı öğrenme nasıl işler?'), 'Kelime Öğren sayfasında 5 aşamalı açıklama bulunmalı');
+});
+
+await test('5-Aşama [2] Cümlede Boşluk Doldurma (5. Aşama) Sonrasında Kelimenin Başarıyla Tamamlanması', async () => {
+  const sampleWord = data.B1.find((w) => !w.isDraft && isWordReady(w));
+  const p = E.newProgress(sampleWord.id);
+  const now = 1730000000000;
+
+  // 1..4 aşamaları tamamlandığında henüz learningComplete olmamalı
+  E.markSeen(p, now);
+  for (let s = 2; s <= 4; s++) {
+    E.applyAnswer(p, true, { mode: 'learn', stage: s, qtype: E.STAGE_TYPES[s] }, now);
+    eq(p.learningComplete, false, `${s}. aşamada henüz tamamlanmış sayılmamalı`);
+  }
+
+  // 5. aşama (Örnek Cümlede Boşluk Doldur) tamamlandığında learningComplete = true olmalı ve SRS başlamalı
+  const qSent = E.buildQuestion(sampleWord, 'sentence', data.B1);
+  eq(qSent.type, 'sentence');
+  ok(qSent.prompt.includes('_____'), '5. aşama cümlede boşluk doldurma sorusu üretmeli');
+
+  E.applyAnswer(p, true, { mode: 'learn', stage: 5, qtype: 'sentence' }, now);
+  eq(p.learningComplete, true, '5. aşama sonunda kelime öğrenme süreci tamamlanmalı');
+  eq(p.currentStage, 5, 'currentStage 5 olmalı');
+  eq(p.reviewInterval, 1, 'İlk SRS tekrar aralığı 1 gün olmalı');
+  eq(p.nextReviewAt, now + E.DAY, 'İlk SRS tekrar tarihi 1 gün sonrası olmalı');
+});
+
+await test('5-Aşama [3] Eski 6 Aşamalı İlerleme Kayıtlarının 5 Aşamalı Sisteme Güvenli Uyarlanması', () => {
+  // Senaryo A: Eski sistemde 6 aşamayı bitirmiş (learningComplete: true, currentStage: 6, MASTERED) kelime
+  const legacyDone = {
+    ...E.newProgress('legacy-w1'),
+    currentStage: 6,
+    learningComplete: true,
+    currentStatus: 'MASTERED',
+    srsStep: 4,
+    reviewInterval: 14,
+    completedAt: 1700000000000,
+    nextReviewAt: 1701200000000,
+  };
+  const resA = E.adaptLegacyProgress(legacyDone);
+  ok(resA.changed, 'currentStage: 6 kaydı 5 olarak güncellenmeli');
+  eq(legacyDone.currentStage, 5, 'currentStage 5 olmalı');
+  eq(legacyDone.learningComplete, true, 'Tamamlanmış kelime yeniden öğrenilmemiş durumuna düşmemeli');
+  eq(legacyDone.currentStatus, 'MASTERED', 'MASTERED durumu korunmalı');
+  eq(legacyDone.srsStep, 4, 'SRS adımı korunmalı');
+  eq(legacyDone.reviewInterval, 14, 'SRS tekrar aralığı korunmalı');
+
+  // Senaryo B: Eski sistemde 5. aşamayı geçmiş ama 6. aşamayı bekleyen (currentStage: 5, learningComplete: false) kelime
+  const legacyStage5 = {
+    ...E.newProgress('legacy-w2'),
+    currentStage: 5,
+    learningComplete: false,
+    currentStatus: 'LEARNING',
+    lastReviewedAt: 1700000000000,
+  };
+  const resB = E.adaptLegacyProgress(legacyStage5, 1700050000000);
+  ok(resB.changed, '5. aşamayı geçmiş eski kayıt tamamlanmışa yükseltilmeli');
+  eq(legacyStage5.learningComplete, true, '5. aşamayı geçmiş eski kelime yeni sistemde tamamlanmış sayılmalı');
+  eq(legacyStage5.reviewInterval, 1, 'SRS tekrar aralığı başlatılmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

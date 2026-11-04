@@ -1,4 +1,4 @@
-// Öğrenme motoru arayüzü: ortak "oturum çalıştırıcı" (runner) + 6 aşamalı Kelime Öğren akışı.
+// Öğrenme motoru arayüzü: ortak "oturum çalıştırıcı" (runner) + 5 aşamalı Kelime Öğren akışı.
 // Tüm modlar (learn, review, exam) bu çalıştırıcıyı kullanır; oturum her cevapta kaydedilir ve yenilemede devam eder.
 import { state, getMeta, setMeta, getSettings, getProgress, saveProgress } from './storage.js';
 import * as E from './engine.js';
@@ -19,7 +19,11 @@ let lastPct = 0;
 export function abortSession() { cur = null; if (typeof document !== 'undefined') document.body.classList.remove('focus', 'kb-open'); }
 
 export async function startSession(s) {
-  cur = { feedback: true, params: {}, idx: 0, results: [], level: s.level || s.params?.level || getMeta('learnLevel') || 'A2', ...s };
+  const cleanItems = Array.isArray(s.items)
+    ? s.items.filter((it) => it && it.type !== 'production' && (!it.stage || it.stage <= 5))
+    : [];
+  const safeIdx = Math.min(s.idx || 0, cleanItems.length);
+  cur = { feedback: true, params: {}, idx: safeIdx, results: [], level: s.level || s.params?.level || getMeta('learnLevel') || 'A2', ...s, items: cleanItems, idx: safeIdx };
   lastPct = cur.items.length ? (cur.idx / cur.items.length) * 100 : 0;
   setFocusMode(true); // oturum boyunca tek soruya odaklanan, menüsüz ekran
   await persist();
@@ -84,7 +88,6 @@ const TYPE_LABEL = {
   typing: 'İngilizce Kelimeyi Yaz',
   missing: 'Eksik Harfleri Tamamla',
   sentence: 'Örnek Cümlede Boşluk Doldur',
-  production: 'Kelimeyi Cümlede Kullan',
   listening: 'Dinleyerek Yaz',
 };
 
@@ -97,7 +100,7 @@ function renderItem() {
   if (!word) { cur.idx++; return renderItem(); } // silinmiş kelime
   const n = cur.items.length, pct = (cur.idx / n) * 100;
   const label = item.stage ? E.STAGES[item.stage - 1] : TYPE_LABEL[item.type];
-  const dots = item.stage ? `<span class="stage-dots" role="img" aria-label="Aşama ${item.stage}/6">${[1, 2, 3, 4, 5, 6].map((i) => `<i class="${i <= item.stage ? 'on' : ''}"></i>`).join('')}</span>` : '';
+  const dots = item.stage ? `<span class="stage-dots" role="img" aria-label="Aşama ${item.stage}/5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= item.stage ? 'on' : ''}"></i>`).join('')}</span>` : '';
   if (item.type === 'card') {
     curQ = null;
   } else {
@@ -162,20 +165,6 @@ function bodyHtml(item, w) {
   if (item.type === 'missing') return `<p class="hint">Eksik harfleri tamamla · ${esc(posLabel(q.pos))}</p><h2 class="word mono">${esc(q.prompt)}</h2><div class="meaning">${esc(q.meaning)}</div>${inputForm('Kelimenin tamamını yazın…')}`;
   if (item.type === 'sentence') return `<p class="hint">Boşluğa gelecek kelimeyi yaz</p><h2 class="sent">${esc(q.prompt)}</h2><div class="muted small">${esc(q.hint || '')}</div><div class="meaning">${esc(q.meaning)}</div>${inputForm('Eksik kelimeyi yazın…')}`;
   if (item.type === 'listening') return `<p class="hint">Duyduğun İngilizce kelimeyi yaz</p>${speakBtn(q.prompt)}${inputForm('Duyduğunuz kelimeyi yazın…')}`;
-  if (item.type === 'production') {
-    return `<p class="hint">Bu kelimeyi içeren, en az 4 kelimelik kendi cümleni yaz</p>
-      <h2 class="word">${esc(q.prompt)}</h2>
-      <div class="meaning">${esc(q.meaning)}</div>
-      <div class="hint-wrap" id="hint-area">
-        <button type="button" class="btn text-btn sm hint-toggle" id="btn-show-hint">💡 İpucu Göster</button>
-        <div id="hint-content" class="hint-content" style="display:none;"></div>
-      </div>
-      <form id="ans" autocomplete="off">
-        <input id="inp" class="input lg" placeholder="İngilizce cümlenizi yazın…" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" inputmode="text" aria-label="Cevabınız">
-        <div id="prod-msg" class="prod-msg" role="status" aria-live="polite"></div>
-        <button class="btn primary xl block" type="submit" id="btn-submit">Kontrol Et</button>
-      </form>`;
-  }
   return '';
 }
 
@@ -192,79 +181,6 @@ function wire(item, word) {
     return;
   }
   if (item.type === 'mc') $$('.opt').forEach((b) => { b.onclick = () => { b.classList.add('picked'); submit(+b.dataset.i, +b.dataset.i); }; });
-  else if (item.type === 'production') {
-    let hintLevel = 0;
-    const hints = E.getWordHints(word);
-    const renderHintView = () => {
-      const c = $('#hint-content');
-      if (!c) return;
-      c.style.display = 'block';
-      let html = '';
-      if (hintLevel >= 1) {
-        html += `<div class="hint-step"><span class="hint-badge">İpucu 1 / 3 · Kullanım</span><p>${esc(hints.usage)}</p></div>`;
-      }
-      if (hintLevel >= 2) {
-        html += `<div class="hint-step"><span class="hint-badge">İpucu 2 / 3 · Cümle Kalıbı</span><p class="hint-frame"><code>${esc(hints.frame)}</code></p><small class="muted">Boşluğu kendi cümlenle tamamlayabilirsin.</small></div>`;
-      }
-      if (hintLevel >= 3) {
-        html += `<div class="hint-step"><span class="hint-badge">İpucu 3 / 3 · Örnek Cümle</span><blockquote>${esc(hints.exampleSentence)}<small>${esc(hints.exampleTranslation || '')}</small></blockquote><p class="muted small">${esc(hints.exampleNote)}</p></div>`;
-      }
-      if (hintLevel < 3) {
-        const nextLabel = hintLevel === 1 ? 'Sonraki İpucu (Cümle Kalıbı) ➔' : 'Sonraki İpucu (Örnek Cümle) ➔';
-        html += `<button type="button" class="btn text-btn sm" id="btn-next-hint">${nextLabel}</button>`;
-      }
-      c.innerHTML = html;
-      const bnh = $('#btn-next-hint');
-      if (bnh) {
-        bnh.onclick = () => {
-          hintLevel++;
-          renderHintView();
-        };
-      }
-    };
-    const bsh = $('#btn-show-hint');
-    if (bsh) {
-      bsh.onclick = () => {
-        bsh.style.display = 'none';
-        hintLevel = 1;
-        renderHintView();
-      };
-    }
-    $('#ans').onsubmit = (e) => {
-      e.preventDefault();
-      const v = $('#inp').value;
-      const res = E.evaluateSentence(word, v);
-      const msgEl = $('#prod-msg');
-      if (res.status === 'needs_fix') {
-        if (msgEl) {
-          msgEl.innerHTML = `<div class="eval-note error" role="alert">${esc(res.message)}</div>`;
-        }
-        $('#inp').focus();
-        return;
-      }
-      if (res.status === 'ambiguous') {
-        if (msgEl) {
-          msgEl.innerHTML = `<div class="eval-note warn" role="alert">
-            <p>${esc(res.message)}</p>
-            <div class="ambiguous-actions">
-              <button type="button" class="btn primary sm" id="btn-force-pass">Yine de Devam Et</button>
-              <button type="button" class="btn ghost sm" id="btn-re-edit">Cümleyi Düzenle</button>
-            </div>
-          </div>`;
-          $('#btn-force-pass').onclick = () => {
-            submit(v, v, { customOk: true, evalResult: res });
-          };
-          $('#btn-re-edit').onclick = () => {
-            msgEl.innerHTML = '';
-            $('#inp').focus();
-          };
-        }
-        return;
-      }
-      submit(v, v, { customOk: true, evalResult: res });
-    };
-    $('#inp').focus();
-  }
   else { $('#ans').onsubmit = (e) => { e.preventDefault(); const v = $('#inp').value; if (v.trim()) submit(v, v); }; $('#inp').focus(); }
   if (item.type === 'listening') speak(word.word);
 }
@@ -284,23 +200,18 @@ async function submit(input, shown, meta = {}) {
   await persist();
   if (isCard) return renderItem();
   if (!cur.feedback) return renderItem();
-  showFeedback(ok, word, item, r, meta.evalResult);
+  showFeedback(ok, word, item, r);
 }
 
-function showFeedback(ok, word, item, r, evalResult) {
+function showFeedback(ok, word, item, r) {
   const qc = $('#qcard');
   qc.classList.add(ok ? 'correct' : 'wrong');
   sfx(ok ? 'ok' : 'bad');
   if (item.type === 'mc') $$('.opt').forEach((b, i) => { b.disabled = true; if (i === curQ.answerIndex) b.classList.add('right'); else if (!ok && b.classList.contains('picked')) b.classList.add('bad'); });
   $$('#qbody input,#qbody form button').forEach((e) => (e.disabled = true));
-  let feedbackText = '';
-  if (item.type === 'production') {
-    feedbackText = `<div class="feedback ok" role="status"><b>${ok ? 'Harika' : 'Değerlendirme'}</b><span>${esc(evalResult?.message || 'Cümlen gerekli kontrolleri geçti.')}</span></div>`;
-  } else {
-    const ans = `Doğru cevap: ${curQ.display}`;
-    feedbackText = `<div class="feedback ${ok ? 'ok' : 'no'}" role="status"><b>${ok ? 'Doğru' : 'Yanlış'}</b><span>${esc(ans)}</span>
-      ${!ok && cur.kind === 'learn' ? `<small>Kelime "${statusLabel('REVIEW')}" havuzuna alındı; sonraki oturumda öncelikli gösterilecek.</small>` : ''}</div>`;
-  }
+  const ans = `Doğru cevap: ${curQ.display}`;
+  const feedbackText = `<div class="feedback ${ok ? 'ok' : 'no'}" role="status"><b>${ok ? 'Doğru' : 'Yanlış'}</b><span>${esc(ans)}</span>
+    ${!ok && cur.kind === 'learn' ? `<small>Kelime "${statusLabel('REVIEW')}" havuzuna alındı; sonraki oturumda öncelikli gösterilecek.</small>` : ''}</div>`;
   $('#fb').innerHTML = `${feedbackText}<button type="button" class="btn primary xl block" id="cont">Devam</button>`;
   $('#cont').onclick = renderItem; $('#cont').focus();
 }
@@ -320,7 +231,7 @@ export function initKeys() {
       else if (item?.type === 'card') { const t = $('#reveal') || $('#next'); if (t) { e.preventDefault(); t.click(); } }
     } else if (!typing && !answered && item?.type === 'mc' && /^[1-4]$/.test(e.key)) {
       const b = $$('.opt')[+e.key - 1]; if (b) { b.classList.add('picked'); b.click(); }
-    } else if (!typing && e.key === ' ' && item && item.type !== 'production' && document.activeElement?.tagName !== 'BUTTON') {
+    } else if (!typing && e.key === ' ' && item && document.activeElement?.tagName !== 'BUTTON') {
       e.preventDefault();
       const w = state.wordMap.get(item.wordId); if (w) speak(w.word);
     }
@@ -344,11 +255,11 @@ handlers.learn = {
     await bumpDaily({ sessionsCompleted: 1 });
     const q = results.filter((r) => !r.card);
     const ok = q.filter((r) => r.correct).length;
-    const done = new Set(q.filter((r) => r.stage === 6 && r.correct).map((r) => r.wordId)).size;
+    const done = new Set(q.filter((r) => r.stage === 5 && r.correct).map((r) => r.wordId)).size;
     const failed = [...new Set(q.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
     const returnUrl = sess?.params?.isNotebook ? '#/notebook' : '#/learn';
     const returnLabel = sess?.params?.isNotebook ? 'Defterime Dön' : 'Yeni Grup Başlat';
-    return { html: summaryHtml({ title: 'Oturum Tamamlandı', big: `${done} kelime`, sub: `6 aşamayı tamamladın · ${ok}/${q.length} doğru cevap`,
+    return { html: summaryHtml({ title: 'Oturum Tamamlandı', big: `${done} kelime`, sub: `5 aşamayı tamamladın · ${ok}/${q.length} doğru cevap`,
       extra: failed.length ? `<p>Tekrar Edilecek havuzuna alınanlar: <b>${esc(failed.join(', '))}</b></p>` : '', actions: `<a class="btn primary" href="${returnUrl}">${returnLabel}</a>` }) };
   },
 };
@@ -362,7 +273,7 @@ export async function startLearn(level, focus = false) {
   }
   const words = state.words.filter((w) => w.level === level);
   const batch = E.learnBatch(words, state.progress, +getSettings().batchSize || 5);
-  if (!batch.length) return toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 6 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
+  if (!batch.length) return toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 5 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
   await setMeta('learnLevel', level);
   await startSession({ kind: 'learn', title: `${level} Kelime Öğren`, level, params: { level }, items: E.learnItems(batch, state.progress) });
 }
@@ -382,10 +293,10 @@ export function renderLearn(v) {
       </div>
       <button class="btn primary xl block" id="go">${lv} Öğrenmeye Başla</button>
       <details class="more">
-        <summary>6 aşamalı öğrenme nasıl işler?</summary>
+        <summary>5 aşamalı öğrenme nasıl işler?</summary>
         <div class="more-body">
-          <ol class="plain"><li>Kelimeyi öğren</li><li>Çoktan seçmeli soru</li><li>İngilizce kelimeyi yaz</li><li>Eksik harfleri tamamla</li><li>Örnek cümlede boşluk doldur</li><li>Kelimeyi cümlede kullan</li></ol>
-          <p class="muted small">Altıncı aşamada hazır örnek cümleyi ezberlemek zorunda değilsin; kendi cümleni yazabilir veya 3 aşamalı ipucundan (kullanım, cümle kalıbı, örnek cümle) yararlanabilirsin.</p>
+          <ol class="plain"><li>Kelimeyi öğren</li><li>Çoktan seçmeli soru</li><li>İngilizce kelimeyi yaz</li><li>Eksik harfleri tamamla</li><li>Örnek cümlede boşluk doldur</li></ol>
+          <p class="muted small">Beşinci aşamayı başarıyla tamamladığında kelime öğrenilmiş sayılır ve aralıklı tekrar (SRS) takvimine eklenir.</p>
         </div>
       </details>
     </div>`;

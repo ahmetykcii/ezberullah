@@ -99,7 +99,7 @@ export function renderExams(v) {
       return {
         k: 'final', l, name: `${l} Bitirme Sınavı`,
         desc: '40 soru · geçme %80',
-        lock: finalReady(l) ? null : `Önce ${l} kelimelerinin 6 aşamasını tamamla (${lvDone}/${lvReady.length})`,
+        lock: finalReady(l) ? null : `Önce ${l} kelimelerinin 5 aşamasını tamamla (${lvDone}/${lvReady.length})`,
       };
     });
     const row = (e) => `<li><button class="list-row linkrow ${e.lock ? 'is-locked' : ''}" data-k="${e.k}" data-l="${e.l || ''}" ${e.lock ? 'disabled' : ''}>

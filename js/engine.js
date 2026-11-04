@@ -9,9 +9,8 @@ export const STAGES = [
   'İngilizce Kelimeyi Yaz',
   'Eksik Harfleri Tamamla',
   'Örnek Cümlede Boşluk Doldur',
-  'Kelimeyi Cümlede Kullan',
 ];
-export const STAGE_TYPES = [null, 'card', 'mc', 'typing', 'missing', 'sentence', 'production'];
+export const STAGE_TYPES = [null, 'card', 'mc', 'typing', 'missing', 'sentence'];
 
 export const norm = (s) => String(s ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
 export const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -40,7 +39,7 @@ export function blankSentence(word) {
 }
 
 /**
- * Bir kelimenin 6 aşamalı öğrenme ve sınav sistemine girmeye hazır olup olmadığını kontrol eder.
+ * Bir kelimenin 5 aşamalı öğrenme ve sınav sistemine girmeye hazır olup olmadığını kontrol eder.
  * 5. aşama (Örnek Cümlede Boşluk Doldur) için kelimenin geçtiği geçerli bir İngilizce örnek cümle şarttır.
  */
 export function isWordReady(word) {
@@ -51,7 +50,7 @@ export function isWordReady(word) {
 }
 
 /* ---------- Kelime ilerlemesi ---------- */
-// currentStage: başarıyla geçilen en yüksek aşama (0–6). Havuz (currentStatus) bundan bağımsızdır:
+// currentStage: başarıyla geçilen en yüksek aşama (0–5). Havuz (currentStatus) bundan bağımsızdır:
 // NEW | LEARNING | REVIEW | MASTERED
 export function newProgress(id) {
   return {
@@ -59,6 +58,30 @@ export function newProgress(id) {
     lastReviewedAt: null, nextReviewAt: null, reviewCount: 0, correctCount: 0, incorrectCount: 0,
     consecutiveCorrect: 0, masteryScore: 0, reviewInterval: 0, srsStep: 0, mistakeHistory: [], stageStats: {},
   };
+}
+
+/**
+ * Eski 6 aşamalı ilerleme kayıtlarını yeni 5 aşamalı sisteme veri kaybı olmadan uyarlar.
+ * - Daha önce tamamlanmış (learningComplete: true) kelimeler aynen korunur; currentStage > 5 ise 5'e sabitlenir.
+ * - Eski sistemde 5. aşamayı geçmiş ama 6. aşamayı bekleyen (currentStage >= 5 && !learningComplete) kelimeler
+ *   yeni 5 aşamalı sistemde öğrenmeyi tamamlamış kabul edilir.
+ */
+export function adaptLegacyProgress(p, now = Date.now()) {
+  if (!p || typeof p !== 'object') return { changed: false, progress: p };
+  let changed = false;
+  if ((p.currentStage || 0) >= 5 && !p.learningComplete) {
+    p.learningComplete = true;
+    p.completedAt = p.completedAt || p.lastReviewedAt || now;
+    if (!p.reviewInterval) p.reviewInterval = 1;
+    if (!p.nextReviewAt) p.nextReviewAt = now + DAY;
+    if (!p.currentStatus || p.currentStatus === 'NEW') p.currentStatus = 'LEARNING';
+    changed = true;
+  }
+  if ((p.currentStage || 0) > 5) {
+    p.currentStage = 5;
+    changed = true;
+  }
+  return { changed, progress: p };
 }
 
 export const poolOf = (p) => (!p ? 'NEW' : p.currentStatus || 'NEW');
@@ -116,9 +139,9 @@ export function applyAnswer(p, correct, { mode = 'practice', stage = 0, qtype = 
   }
   if (mode === 'learn') {
     if (correct) {
-      p.currentStage = Math.max(p.currentStage, stage);
+      p.currentStage = Math.max(p.currentStage, Math.min(stage, 5));
       if (p.currentStatus === 'NEW') p.currentStatus = 'LEARNING';
-      if (stage >= 6 && !p.learningComplete) {
+      if (stage >= 5 && !p.learningComplete) {
         p.learningComplete = true; p.completedAt = now; p.srsStep = 0; p.reviewInterval = 1;
         p.nextReviewAt = now + DAY; p.currentStatus = 'LEARNING';
       }
@@ -569,7 +592,7 @@ export function learnBatch(words, progress, size = 5, rnd = Math.random) {
 
 export function learnItems(batch, progress, rnd = Math.random) {
   const items = [];
-  for (let s = 1; s <= 6; s++) {
+  for (let s = 1; s <= 5; s++) {
     const order = s === 1 ? batch : shuffle(batch, rnd);
     for (const w of order) {
       const cs = progress[w.id]?.currentStage || 0;

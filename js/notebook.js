@@ -502,8 +502,8 @@ export async function startStudyList(listId) {
     return true;
   }
 
-  // Listedeki bütün kelimeler 6 aşamayı tamamlamışsa tekrar modu başlat
-  toast('Listedeki tüm kelimeler 6 aşamayı tamamladı! Tekrar oturumu başlatılıyor…', 'success');
+  // Listedeki bütün kelimeler 5 aşamayı tamamlamışsa tekrar modu başlat
+  toast('Listedeki tüm kelimeler 5 aşamayı tamamladı! Tekrar oturumu başlatılıyor…', 'success');
   const items = stats.words.map((w, i) => ({
     wordId: w.id,
     type: ['mc', 'typing', 'sentence', 'missing'][i % 4],
@@ -538,7 +538,7 @@ export async function startStudyAll(userId = getActiveUserId()) {
   }
 
   // Tüm kelimeler öğrenildiyse genel tekrar oturumu
-  toast('Tüm kişisel kelimeleriniz 6 aşamayı tamamladı! Genel tekrar başlatılıyor…', 'success');
+  toast('Tüm kişisel kelimeleriniz 5 aşamayı tamamladı! Genel tekrar başlatılıyor…', 'success');
   const items = words.map((w, i) => ({
     wordId: w.id,
     type: ['mc', 'typing', 'sentence', 'missing'][i % 4],
@@ -576,14 +576,14 @@ export async function startStudyUnknown(userId = getActiveUserId()) {
     const batch = E.learnBatch(candidates, state.progress, +getSettings().batchSize || 5);
     await startSession({
       kind: 'learn',
-      title: 'Zorlandığım Kelimeler — 6 Aşama',
+      title: 'Zorlandığım Kelimeler — 5 Aşama',
       items: E.learnItems(batch, state.progress),
       params: { isNotebook: true, mode: 'unknown' },
     });
     return true;
   }
 
-  // Daha önce 6 aşamayı bitirmiş ama tekrar havuzunda olanlar için odaklı tekrar
+  // Daha önce 5 aşamayı bitirmiş ama tekrar havuzunda olanlar için odaklı tekrar
   const items = candidates.map((w, i) => ({
     wordId: w.id,
     type: ['typing', 'sentence', 'missing', 'mc'][i % 4],
@@ -938,7 +938,7 @@ export function openListWordsModal(listId, onUpdated = () => {}) {
     html: `
       <div class="row between wrap gap" style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--bd)">
         <div>
-          <span class="muted small">${stats.completed}/${stats.total} kelime 6 aşamayı tamamladı (%${stats.completion})</span>
+          <span class="muted small">${stats.completed}/${stats.total} kelime 5 aşamayı tamamladı (%${stats.completion})</span>
           ${stats.due ? ` · <span class="warn-t small"><b>${stats.due} kelime tekrar bekliyor</b></span>` : ''}
         </div>
         <div class="row gap">
@@ -1109,7 +1109,7 @@ export function renderNotebook(v) {
       <div class="row between wrap gap" style="margin-bottom:16px;align-items:flex-start">
         <div>
           <h1 style="margin:0 0 4px">Kelime Defterim</h1>
-          <p class="lead" style="margin:0">Kişisel kelime listelerin, 6 aşamalı öğrenme ve akıllı tekrar.</p>
+          <p class="lead" style="margin:0">Kişisel kelime listelerin, 5 aşamalı öğrenme ve akıllı tekrar.</p>
         </div>
         <div class="row gap wrap">
           <button type="button" class="btn primary" id="btn-top-add-word">＋ Kelime Ekle</button>
