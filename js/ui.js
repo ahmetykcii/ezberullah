@@ -11,6 +11,7 @@ export const fmtTime = (sec) => {
 };
 
 export function toast(msg, type = 'info', ms = 3800) {
+  if (typeof document === 'undefined') return;
   const root = document.getElementById('toasts');
   if (!root) return;
   const el = document.createElement('div');

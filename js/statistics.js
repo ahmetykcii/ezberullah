@@ -136,7 +136,7 @@ export function levelStats(level, now = Date.now()) {
     if (p?.learningComplete) s.completed++;
     if (isDue(p, now)) s.due++;
   }
-  s.completion = s.total ? (s.completed / s.total) * 100 : 0;   // Öğrenme Tamamlanma Oranı: 5 aşamayı bitirenler
+  s.completion = s.total ? (s.completed / s.total) * 100 : 0;   // Öğrenme Tamamlanma Oranı: 4 aşamayı bitirenler
   s.mastery = s.total ? (s.MASTERED / s.total) * 100 : 0;       // Kalıcı Öğrenme Oranı: MASTERED havuzu
   return s;
 }
@@ -209,7 +209,7 @@ export function renderStats(view) {
   view.innerHTML = `<div class="page">
   <h1>İstatistikler</h1>
   <ul class="metrics">
-    ${metric('Genel İlerleme', `%${Math.round(all.completion)}`, all.completion, `${all.completed}/${all.total} kelime 5 aşamayı tamamladı`)}
+    ${metric('Genel İlerleme', `%${Math.round(all.completion)}`, all.completion, `${all.completed}/${all.total} kelime 4 aşamayı tamamladı`)}
     ${metric('Bugünkü Hedef', `${tw}/${goal}`, (tw / goal) * 100, 'Yeni öğrenilen kelime')}
     ${metric('Öğrenilen Kelimeler', all.completed, all.completion, LEVELS.map((l) => `${l}: ${levelStats(l).completed}`).join(' · '))}
     ${metric('Grammar', `${gDone}/${gTotal}`, gPct, 'Tamamlanan konu')}

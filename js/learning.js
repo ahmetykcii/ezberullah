@@ -1,4 +1,4 @@
-// Öğrenme motoru arayüzü: ortak "oturum çalıştırıcı" (runner) + 5 aşamalı Kelime Öğren akışı.
+// Öğrenme motoru arayüzü: ortak "oturum çalıştırıcı" (runner) + 4 aşamalı Kelime Öğren akışı.
 // Tüm modlar (learn, review, exam) bu çalıştırıcıyı kullanır; oturum her cevapta kaydedilir ve yenilemede devam eder.
 import { state, getMeta, setMeta, getSettings, getProgress, saveProgress } from './storage.js';
 import * as E from './engine.js';
@@ -14,13 +14,19 @@ let curQ = null;
 const view = () => document.getElementById('view');
 
 export const sessionActive = () => !!cur;
+export const getCurrentSession = () => cur;
 const setFocusMode = (on) => { if (typeof document !== 'undefined') document.body.classList.toggle('focus', on); };
 let lastPct = 0;
 export function abortSession() { cur = null; if (typeof document !== 'undefined') document.body.classList.remove('focus', 'kb-open'); }
 
 export async function startSession(s) {
+  const isLearn = s.kind === 'learn';
   const cleanItems = Array.isArray(s.items)
-    ? s.items.filter((it) => it && it.type !== 'production' && (!it.stage || it.stage <= 5))
+    ? s.items.filter((it) => {
+        if (!it || it.type === 'production') return false;
+        if (isLearn && (it.type === 'sentence' || (it.stage && it.stage > 4))) return false;
+        return true;
+      })
     : [];
   const safeIdx = Math.min(s.idx || 0, cleanItems.length);
   cur = { feedback: true, params: {}, idx: safeIdx, results: [], level: s.level || s.params?.level || getMeta('learnLevel') || 'A2', ...s, items: cleanItems, idx: safeIdx };
@@ -56,7 +62,7 @@ const persist = async () => {
     feedback: cur.feedback,
   };
   await setMeta('activeSession', sessionData);
-  if (sessionData.kind === 'learn' && sessionData.level) {
+  if (sessionData.kind === 'learn' && sessionData.level && !sessionData.params?.isNotebook) {
     const byLevel = getMeta('activeSessionsByLevel') || {};
     byLevel[sessionData.level] = sessionData;
     await setMeta('activeSessionsByLevel', byLevel);
@@ -70,14 +76,14 @@ async function finish() {
   cur = null;
   setFocusMode(false);
   await setMeta('activeSession', null);
-  if (s.kind === 'learn' && finLevel) {
+  if (s.kind === 'learn' && finLevel && !s.params?.isNotebook) {
     const byLevel = getMeta('activeSessionsByLevel') || {};
     if (byLevel[finLevel]) {
       delete byLevel[finLevel];
       await setMeta('activeSessionsByLevel', byLevel);
     }
   }
-  if (out) { view().innerHTML = out.html; if (out.mount) out.mount(view()); }
+  if (out && view()) { view().innerHTML = out.html; if (out.mount) out.mount(view()); }
 }
 export const summaryHtml = ({ title, big, sub, extra = '', actions = '', verdict = '', mark = true }) =>
   `<div class="summary">${mark ? successMark() : ''}<h2>${esc(title)}</h2><div class="big-num">${big}</div>${verdict ? `<p class="verdict">${verdict}</p>` : ''}<p class="muted">${sub}</p>${extra ? `<details class="more"><summary>Ayrıntılar</summary><div class="more-body">${extra}</div></details>` : ''}<div class="sum-actions">${actions}<a class="btn ghost" href="#/dashboard">Ana Sayfa</a></div></div>`;
@@ -100,7 +106,13 @@ function renderItem() {
   if (!word) { cur.idx++; return renderItem(); } // silinmiş kelime
   const n = cur.items.length, pct = (cur.idx / n) * 100;
   const label = item.stage ? E.STAGES[item.stage - 1] : TYPE_LABEL[item.type];
-  const dots = item.stage ? `<span class="stage-dots" role="img" aria-label="Aşama ${item.stage}/5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= item.stage ? 'on' : ''}"></i>`).join('')}</span>` : '';
+  const selectedStages = cur.params?.selectedStages;
+  const totalSteps = item.totalSteps || (Array.isArray(selectedStages) && selectedStages.length ? selectedStages.length : 4);
+  const stepIdx = item.stepIndex || (Array.isArray(selectedStages) && selectedStages.includes(item.stage) ? selectedStages.indexOf(item.stage) + 1 : item.stage) || 1;
+  const stageText = item.stage ? `Aşama ${stepIdx}/${totalSteps}` : '';
+  const dots = item.stage
+    ? `<span class="stage-dots" role="img" aria-label="Aşama ${stepIdx}/${totalSteps}">${Array.from({ length: totalSteps }, (_, i) => `<i class="${i + 1 <= stepIdx ? 'on' : ''}"></i>`).join('')}</span>`
+    : '';
   if (item.type === 'card') {
     curQ = null;
   } else {
@@ -112,6 +124,7 @@ function renderItem() {
     curQ = { ...item.q, word };
   }
   if (curQ && curQ.type !== item.type) item.type = curQ.type;
+  if (typeof document === 'undefined' || !view()) return;
   view().innerHTML = `<div class="run">
     <div class="run-top">
       <button class="icon-btn" id="q-exit" aria-label="Çık">${ICONS.close}</button>
@@ -119,7 +132,7 @@ function renderItem() {
       <span class="run-count">${cur.idx + 1}/${n}</span>
     </div>
     <div class="run-body" id="qcard">
-      <div class="run-label">${dots}<span>${esc(label)}</span></div>
+      <div class="run-label">${dots}${stageText ? `<span class="stage-step-text">${stageText}</span>` : ''}<span>${esc(label)}</span></div>
       <div id="qbody">${bodyHtml(item, word)}</div>
       <div id="fb"></div>
     </div>
@@ -240,11 +253,12 @@ export function initKeys() {
 
 /* ---------- Kelime Öğren sayfası ---------- */
 handlers.learn = {
-  async onAnswer(item, ok, { elapsed }) {
+  async onAnswer(item, ok, { elapsed, customStages = null } = {}) {
     const p = getProgress(item.wordId);
+    const activeCustomStages = customStages || cur?.params?.selectedStages || null;
     if (item.type === 'card') { E.markSeen(p); await saveProgress(p); return {}; }
     const was = p.learningComplete;
-    E.applyAnswer(p, ok, { mode: 'learn', stage: item.stage, qtype: item.type });
+    E.applyAnswer(p, ok, { mode: 'learn', stage: item.stage, qtype: item.type, customStages: activeCustomStages });
     await saveProgress(p);
     const d = { seconds: Math.round(elapsed), [ok ? 'correct' : 'wrong']: 1 };
     if (!was && p.learningComplete) { d.learnedWordId = item.wordId; d.done = 1; }
@@ -253,13 +267,24 @@ handlers.learn = {
   },
   async onDone(results, sess) {
     await bumpDaily({ sessionsCompleted: 1 });
+    const customStages = Array.isArray(sess?.params?.selectedStages) && sess.params.selectedStages.length
+      ? E.normalizeSelectedStages(sess.params.selectedStages)
+      : [1, 2, 3, 4];
+    const stageCount = customStages.length;
+    const lastStage = customStages[customStages.length - 1] || 4;
     const q = results.filter((r) => !r.card);
     const ok = q.filter((r) => r.correct).length;
-    const done = new Set(q.filter((r) => r.stage === 5 && r.correct).map((r) => r.wordId)).size;
+    const isCardOnly = stageCount === 1 && customStages[0] === 1;
+    const done = isCardOnly
+      ? new Set(results.filter((r) => r.card).map((r) => r.wordId)).size
+      : new Set(q.filter((r) => r.stage === lastStage && r.correct).map((r) => r.wordId)).size;
     const failed = [...new Set(q.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
     const returnUrl = sess?.params?.isNotebook ? '#/notebook' : '#/learn';
     const returnLabel = sess?.params?.isNotebook ? 'Defterime Dön' : 'Yeni Grup Başlat';
-    return { html: summaryHtml({ title: 'Oturum Tamamlandı', big: `${done} kelime`, sub: `5 aşamayı tamamladın · ${ok}/${q.length} doğru cevap`,
+    const subText = isCardOnly
+      ? `1 aşamayı tamamladın · Kelime kartları incelendi`
+      : `${stageCount} aşamayı tamamladın · ${ok}/${q.length} doğru cevap`;
+    return { html: summaryHtml({ title: 'Oturum Tamamlandı', big: `${done} kelime`, sub: subText,
       extra: failed.length ? `<p>Tekrar Edilecek havuzuna alınanlar: <b>${esc(failed.join(', '))}</b></p>` : '', actions: `<a class="btn primary" href="${returnUrl}">${returnLabel}</a>` }) };
   },
 };
@@ -273,7 +298,7 @@ export async function startLearn(level, focus = false) {
   }
   const words = state.words.filter((w) => w.level === level);
   const batch = E.learnBatch(words, state.progress, +getSettings().batchSize || 5);
-  if (!batch.length) return toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 5 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
+  if (!batch.length) return toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 4 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
   await setMeta('learnLevel', level);
   await startSession({ kind: 'learn', title: `${level} Kelime Öğren`, level, params: { level }, items: E.learnItems(batch, state.progress) });
 }
@@ -293,10 +318,10 @@ export function renderLearn(v) {
       </div>
       <button class="btn primary xl block" id="go">${lv} Öğrenmeye Başla</button>
       <details class="more">
-        <summary>5 aşamalı öğrenme nasıl işler?</summary>
+        <summary>4 aşamalı öğrenme nasıl işler?</summary>
         <div class="more-body">
-          <ol class="plain"><li>Kelimeyi öğren</li><li>Çoktan seçmeli soru</li><li>İngilizce kelimeyi yaz</li><li>Eksik harfleri tamamla</li><li>Örnek cümlede boşluk doldur</li></ol>
-          <p class="muted small">Beşinci aşamayı başarıyla tamamladığında kelime öğrenilmiş sayılır ve aralıklı tekrar (SRS) takvimine eklenir.</p>
+          <ol class="plain"><li>Kelimeyi öğren</li><li>Çoktan seçmeli soru</li><li>İngilizce kelimeyi yaz</li><li>Eksik harfleri tamamla</li></ol>
+          <p class="muted small">Dördüncü aşamayı başarıyla tamamladığında kelime öğrenilmiş sayılır ve aralıklı tekrar (SRS) takvimine eklenir.</p>
         </div>
       </details>
     </div>`;

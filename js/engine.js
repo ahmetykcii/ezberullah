@@ -8,9 +8,28 @@ export const STAGES = [
   'Çoktan Seçmeli Soru',
   'İngilizce Kelimeyi Yaz',
   'Eksik Harfleri Tamamla',
-  'Örnek Cümlede Boşluk Doldur',
 ];
-export const STAGE_TYPES = [null, 'card', 'mc', 'typing', 'missing', 'sentence'];
+export const STAGE_TYPES = [null, 'card', 'mc', 'typing', 'missing'];
+
+export function normalizeSelectedStages(selectedStages) {
+  if (!Array.isArray(selectedStages)) return [1, 2, 3, 4];
+  return [...new Set(
+    selectedStages
+      .map((s) => Number(s))
+      .filter((s) => Number.isInteger(s) && s >= 1 && s <= 4)
+  )].sort((a, b) => a - b);
+}
+
+export function validateStageSelection(selectedStages) {
+  if (!Array.isArray(selectedStages)) {
+    return { ok: false, stages: [], error: 'En az bir çalışma aşaması seçmelisiniz.' };
+  }
+  const stages = normalizeSelectedStages(selectedStages);
+  if (!stages.length) {
+    return { ok: false, stages: [], error: 'En az bir çalışma aşaması seçmelisiniz.' };
+  }
+  return { ok: true, stages, error: null };
+}
 
 export const norm = (s) => String(s ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
 export const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -61,15 +80,15 @@ export function newProgress(id) {
 }
 
 /**
- * Eski 6 aşamalı ilerleme kayıtlarını yeni 5 aşamalı sisteme veri kaybı olmadan uyarlar.
- * - Daha önce tamamlanmış (learningComplete: true) kelimeler aynen korunur; currentStage > 5 ise 5'e sabitlenir.
- * - Eski sistemde 5. aşamayı geçmiş ama 6. aşamayı bekleyen (currentStage >= 5 && !learningComplete) kelimeler
- *   yeni 5 aşamalı sistemde öğrenmeyi tamamlamış kabul edilir.
+ * Eski 5 ve 6 aşamalı ilerleme kayıtlarını yeni 4 aşamalı sisteme veri kaybı olmadan uyarlar.
+ * - Daha önce tamamlanmış (learningComplete: true) kelimeler aynen korunur; currentStage > 4 ise 4'e sabitlenir.
+ * - Eski sistemde 4. aşamayı geçmiş ama 5./6. aşamayı bekleyen (currentStage >= 4 && !learningComplete) kelimeler
+ *   yeni 4 aşamalı sistemde öğrenmeyi tamamlamış kabul edilir.
  */
 export function adaptLegacyProgress(p, now = Date.now()) {
   if (!p || typeof p !== 'object') return { changed: false, progress: p };
   let changed = false;
-  if ((p.currentStage || 0) >= 5 && !p.learningComplete) {
+  if ((p.currentStage || 0) >= 4 && !p.learningComplete) {
     p.learningComplete = true;
     p.completedAt = p.completedAt || p.lastReviewedAt || now;
     if (!p.reviewInterval) p.reviewInterval = 1;
@@ -77,8 +96,8 @@ export function adaptLegacyProgress(p, now = Date.now()) {
     if (!p.currentStatus || p.currentStatus === 'NEW') p.currentStatus = 'LEARNING';
     changed = true;
   }
-  if ((p.currentStage || 0) > 5) {
-    p.currentStage = 5;
+  if ((p.currentStage || 0) > 4) {
+    p.currentStage = 4;
     changed = true;
   }
   return { changed, progress: p };
@@ -123,7 +142,7 @@ export function markSeen(p, now = Date.now()) {
  * mode: 'learn' (aşama ilerletir) | 'review' (SRS adımı) | 'practice' (sadece sayaçlar; yanlışta REVIEW)
  * Önceki geçmiş asla silinmez; mistakeHistory sadece eklenir.
  */
-export function applyAnswer(p, correct, { mode = 'practice', stage = 0, qtype = '' } = {}, now = Date.now()) {
+export function applyAnswer(p, correct, { mode = 'practice', stage = 0, qtype = '', customStages = null } = {}, now = Date.now()) {
   const wasComplete = p.learningComplete;
   p.lastReviewedAt = now;
   p.reviewCount++;
@@ -139,13 +158,31 @@ export function applyAnswer(p, correct, { mode = 'practice', stage = 0, qtype = 
   }
   if (mode === 'learn') {
     if (correct) {
-      p.currentStage = Math.max(p.currentStage, Math.min(stage, 5));
-      if (p.currentStatus === 'NEW') p.currentStatus = 'LEARNING';
-      if (stage >= 5 && !p.learningComplete) {
-        p.learningComplete = true; p.completedAt = now; p.srsStep = 0; p.reviewInterval = 1;
-        p.nextReviewAt = now + DAY; p.currentStatus = 'LEARNING';
+      if (Array.isArray(customStages)) {
+        const st = p.stageStats || {};
+        const has2 = (st.mc?.c || 0) > 0 || (st['2']?.c || 0) > 0 || (p.currentStage || 0) >= 2;
+        const has3 = has2 && ((st.typing?.c || 0) > 0 || (st['3']?.c || 0) > 0 || (p.currentStage || 0) >= 3);
+        const has4 = has3 && ((st.missing?.c || 0) > 0 || (st['4']?.c || 0) > 0 || (p.currentStage || 0) >= 4);
+        const contiguousStage = has4 ? 4 : has3 ? 3 : has2 ? 2 : Math.max(p.currentStage || 0, 1);
+        p.currentStage = Math.max(p.currentStage || 0, contiguousStage);
+        if (p.currentStatus === 'NEW') p.currentStatus = 'LEARNING';
+        if (has4 && !p.learningComplete) {
+          p.learningComplete = true; p.completedAt = now; p.srsStep = 0; p.reviewInterval = 1;
+          p.nextReviewAt = now + DAY; p.currentStatus = 'LEARNING';
+        }
+      } else {
+        p.currentStage = Math.max(p.currentStage, Math.min(stage, 4));
+        if (p.currentStatus === 'NEW') p.currentStatus = 'LEARNING';
+        if (stage >= 4 && !p.learningComplete) {
+          p.learningComplete = true; p.completedAt = now; p.srsStep = 0; p.reviewInterval = 1;
+          p.nextReviewAt = now + DAY; p.currentStatus = 'LEARNING';
+        }
       }
     } else {
+      if (wasComplete) {
+        p.srsStep = Math.max(0, p.srsStep - 1);
+        p.reviewInterval = 1;
+      }
       p.nextReviewAt = now; // sonraki oturumda öncelikli
     }
   } else if (mode === 'review' && wasComplete) {
@@ -590,13 +627,26 @@ export function learnBatch(words, progress, size = 5, rnd = Math.random) {
   return [...failing, ...inprog, ...fresh].slice(0, size);
 }
 
-export function learnItems(batch, progress, rnd = Math.random) {
+export function learnItems(batch, progress, rnd = Math.random, selectedStages = null) {
+  const isCustom = Array.isArray(selectedStages);
+  const stages = isCustom ? normalizeSelectedStages(selectedStages) : [1, 2, 3, 4];
+  if (!stages.length) return [];
+  const totalSteps = stages.length;
   const items = [];
-  for (let s = 1; s <= 5; s++) {
-    const order = s === 1 ? batch : shuffle(batch, rnd);
+  for (let idx = 0; idx < totalSteps; idx++) {
+    const s = stages[idx];
+    const order = idx === 0 ? batch : shuffle(batch, rnd);
     for (const w of order) {
       const cs = progress[w.id]?.currentStage || 0;
-      if (s === 1 || cs < s) items.push({ wordId: w.id, stage: s, type: STAGE_TYPES[s] });
+      if (isCustom || s === 1 || cs < s) {
+        items.push({
+          wordId: w.id,
+          stage: s,
+          type: STAGE_TYPES[s],
+          stepIndex: idx + 1,
+          totalSteps,
+        });
+      }
     }
   }
   return items;

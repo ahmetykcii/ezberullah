@@ -27,7 +27,7 @@ function wordForm(w, expandDetails = false) {
   const posOpts = [`<option value="">— Seçiniz —</option>`, ...POS.map((p) => `<option value="${esc(p)}" ${p === (item.partOfSpeech || '') ? 'selected' : ''}>${esc(POS_LABELS[p] || p)}</option>`)].join('');
 
   return `<form id="wf" class="grid form" autocomplete="off">
-    <p class="muted small span2" style="margin:0">Başlangıçta yalnızca <b>İngilizce kelime</b>, <b>Türkçe anlam</b> ve <b>Seviye</b> girmeniz yeterlidir. Örnek cümle olmadan kaydedilen kelimeler <b>Taslak</b> olarak saklanır; bilgileri tamamlandığında 5 aşamalı öğrenme ve sınavlara dahil edilir.</p>
+    <p class="muted small span2" style="margin:0">Başlangıçta yalnızca <b>İngilizce kelime</b>, <b>Türkçe anlam</b> ve <b>Seviye</b> girmeniz yeterlidir. Örnek cümle olmadan kaydedilen kelimeler <b>Taslak</b> olarak saklanır; bilgileri tamamlandığında 4 aşamalı öğrenme ve sınavlara dahil edilir.</p>
     <label>İngilizce kelime *<input class="input" name="word" id="wf-word" required placeholder="Örn: achieve" value="${esc(item.word || '')}"></label>
     <label>Türkçe anlam * <small class="muted">(birden fazlaysa ; ile ayırın)</small><input class="input" name="meanings" id="wf-meanings" required placeholder="Örn: başarmak; elde etmek" value="${esc((item.meanings || []).join('; '))}"></label>
     <label>Seviye *<select class="input" name="level" id="wf-level">${levelOpts}</select></label>
@@ -152,7 +152,7 @@ export function openWordModal(w = null, done = () => {}, expandDetails = false) 
         if (r.isDraft) {
           toast(isEdit ? 'Kelime taslak olarak güncellendi. Eksik bilgileri tamamladığınızda öğrenmeye açılır.' : 'Kelime taslak olarak eklendi. Eksik bilgileri tamamladığınızda öğrenmeye açılır.', 'info', 4500);
         } else {
-          toast(isEdit ? 'Kelime güncellendi ve öğrenme sistemine hazır.' : 'Kelime eklendi ve 5 aşamalı öğrenmeye hazır.', 'success');
+          toast(isEdit ? 'Kelime güncellendi ve öğrenme sistemine hazır.' : 'Kelime eklendi ve 4 aşamalı öğrenmeye hazır.', 'success');
         }
         api.close();
         done();

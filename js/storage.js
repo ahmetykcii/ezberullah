@@ -202,7 +202,12 @@ const MIGRATIONS = [];
 function sanitizeSavedSession(sess) {
   if (!sess || !Array.isArray(sess.items)) return false;
   const beforeLen = sess.items.length;
-  sess.items = sess.items.filter((it) => it && it.type !== 'production' && (!it.stage || it.stage <= 5));
+  const isLearn = sess.kind === 'learn';
+  sess.items = sess.items.filter((it) => {
+    if (!it || it.type === 'production') return false;
+    if (isLearn && (it.type === 'sentence' || (it.stage && it.stage > 4))) return false;
+    return true;
+  });
   if (sess.items.length !== beforeLen) {
     if (typeof sess.idx === 'number' && sess.idx > sess.items.length) sess.idx = sess.items.length;
     return true;
