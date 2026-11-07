@@ -8,8 +8,9 @@ import { $, $$, esc, openModal, toast, confirmDialog, speak, ICONS } from './ui.
 import { prepareWordInfo } from './vocabulary.js';
 import { blankSentence, isWordReady } from './engine.js';
 import { getCurrentUser } from './auth.js';
-import { startSession } from './learning.js';
+import { startSession, sessionHooks } from './learning.js';
 import { bumpDaily } from './statistics.js';
+import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
 
 /* ---------- Kullanıcı Kimlik Kapsamı (User Scoping) ---------- */
 export function getActiveUserId() {
@@ -478,6 +479,8 @@ export function getUserNotebookSummary(userId = getActiveUserId()) {
 }
 
 /* ---------- Çalışma Aşaması Seçenekleri (Stage Selection Config) ---------- */
+// 1–4: standart öğrenme aşamaları (hazır A2/B1/B2 sistemiyle aynı motor).
+// 5: Eşini Bul — yalnızca Kelime Defterim'e özgü hafıza oyunu; varsayılan olarak SEÇİLİ DEĞİL.
 export const NOTEBOOK_STAGE_OPTIONS = [
   {
     stage: 1,
@@ -485,6 +488,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
     icon: '📖',
     title: 'Kelimeyi Öğren',
     desc: 'Kelime kartı, Türkçe anlamı ve örnek cümlesi',
+    defaultSelected: true,
   },
   {
     stage: 2,
@@ -492,6 +496,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
     icon: '🎯',
     title: 'Çoktan Seçmeli Test',
     desc: 'Doğru Türkçe anlamı seçenekler arasından bulma',
+    defaultSelected: true,
   },
   {
     stage: 3,
@@ -499,6 +504,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
     icon: '✍️',
     title: 'İngilizce Kelimeyi Yaz',
     desc: 'Türkçe anlamı verilen kelimenin İngilizcesini yazma',
+    defaultSelected: true,
   },
   {
     stage: 4,
@@ -506,18 +512,79 @@ export const NOTEBOOK_STAGE_OPTIONS = [
     icon: '🧩',
     title: 'Eksik Harfleri Tamamla',
     desc: 'İngilizce kelimedeki eksik harfleri tamamlama',
+    defaultSelected: true,
+  },
+  {
+    stage: 5,
+    type: 'match',
+    icon: '🧠',
+    title: 'Eşini Bul — Hafıza Oyunu',
+    desc: 'İngilizce kelimeleri Türkçe anlamlarıyla kapalı kartlar arasında eşleştir',
+    defaultSelected: false,
   },
 ];
 
-function resolveRequestedStages(options) {
-  if (options === undefined || options === null) {
-    return { ok: true, stages: [1, 2, 3, 4], error: null };
+export const NOTEBOOK_DEFAULT_STAGES = NOTEBOOK_STAGE_OPTIONS.filter((o) => o.defaultSelected).map((o) => o.stage);
+
+/**
+ * Kelime Defterim aşama seçimini doğrular.
+ * Dönüş: { ok, stages (yalnızca 1–4 öğrenme aşamaları), includeMatch (5. aşama seçili mi), all (tüm seçim), error }
+ */
+export function resolveNotebookStages(options) {
+  let raw;
+  if (options === undefined || options === null) raw = [1, 2, 3, 4];
+  else raw = Array.isArray(options) ? options : options.stages;
+  if (raw === undefined || raw === null) raw = [1, 2, 3, 4];
+  if (!Array.isArray(raw)) return { ok: false, stages: [], includeMatch: false, all: [], error: 'En az bir çalışma aşaması seçmelisiniz.' };
+  const includeMatch = raw.map(Number).includes(MEMORY_STAGE);
+  const learnStages = E.normalizeSelectedStages(raw);
+  if (!learnStages.length && !includeMatch) {
+    return { ok: false, stages: [], includeMatch: false, all: [], error: 'En az bir çalışma aşaması seçmelisiniz.' };
   }
-  const raw = Array.isArray(options) ? options : options.stages;
-  if (raw === undefined || raw === null) {
-    return { ok: true, stages: [1, 2, 3, 4], error: null };
-  }
-  return E.validateStageSelection(raw);
+  return { ok: true, stages: learnStages, includeMatch, all: includeMatch ? [...learnStages, MEMORY_STAGE] : learnStages, error: null };
+}
+const resolveRequestedStages = resolveNotebookStages;
+
+const isUnknownCandidate = (w) => {
+  const p = getProgress(w.id);
+  return !p.learningComplete || p.currentStatus === 'REVIEW' || (p.masteryScore || 0) < 60;
+};
+
+/** Eşini Bul için GÜNCEL kelime kaynağı (her turda yeniden okunur → ekleme/düzenleme/silme anında yansır). */
+export function memoryWordsGetter(mode, listId, userId = getActiveUserId()) {
+  if (mode === 'list') return () => getListStats(listId).words.filter((w) => w && w.userId === userId);
+  if (mode === 'unknown') return () => getUserNotebookWords(userId).filter(isUnknownCandidate);
+  return () => getUserNotebookWords(userId);
+}
+
+function memoryContext(mode, listId, userId, stageCount, fromSession) {
+  const list = mode === 'list' ? getAllNotebookLists().find((l) => l.id === listId) : null;
+  const title = list ? list.name : mode === 'unknown' ? 'Zorlandığım Kelimeler' : 'Tüm Kelimelerim';
+  return {
+    getWords: memoryWordsGetter(mode, listId, userId),
+    userId,
+    scopeKey: mode === 'list' ? `list:${listId}` : mode,
+    title,
+    stageCount,
+    fromSession,
+  };
+}
+
+/** Yalnızca 5. aşama (Eşini Bul) seçildiğinde doğrudan hafıza oyunu başlar. SRS ilerlemesi değişmez. */
+export async function startNotebookMemoryGame({ mode = 'list', listId = null, userId = getActiveUserId(), priorityIds = [], stageCount = 1, fromSession = false } = {}) {
+  const res = await startMemoryGame({ ...memoryContext(mode, listId, userId, stageCount, fromSession), priorityIds });
+  return res.ok;
+}
+
+// Diğer aşamalarla birlikte seçildiyse: öğrenme oturumu bittiğinde aynı kelimelerle (öncelikli) oyun başlar.
+sessionHooks.afterLearn = async (sess) => {
+  const m = sess.params.matchAfter || {};
+  const priorityIds = [...new Set((sess.items || []).map((it) => it.wordId))];
+  await startNotebookMemoryGame({ mode: m.mode, listId: m.listId, userId: m.userId, priorityIds, stageCount: m.stageCount, fromSession: true });
+};
+
+function matchAfterParam(stageCheck, mode, listId, userId) {
+  return stageCheck.includeMatch ? { mode, listId, userId, stageCount: stageCheck.all.length } : null;
 }
 
 /* ---------- Çalışma Seçenekleri (Study Options) ---------- */
@@ -539,6 +606,11 @@ export async function startStudyList(listId, options = null) {
     return false;
   }
 
+  const userId = list.userId;
+  if (!selectedStages.length) {
+    return startNotebookMemoryGame({ mode: 'list', listId, userId });
+  }
+
   const batchSize = +getSettings().batchSize || 5;
   const unlearned = stats.words.filter((w) => !state.progress[w.id]?.learningComplete);
   const batch = unlearned.length > 0
@@ -555,7 +627,7 @@ export async function startStudyList(listId, options = null) {
     kind: 'learn',
     title: `${list.name} — Kelime Öğren`,
     items,
-    params: { isNotebook: true, listId: list.id, mode: 'list', selectedStages },
+    params: { isNotebook: true, listId: list.id, mode: 'list', selectedStages, matchAfter: matchAfterParam(stageCheck, 'list', list.id, userId) },
   });
   return true;
 }
@@ -575,6 +647,10 @@ export async function startStudyAll(userId = getActiveUserId(), options = null) 
     return false;
   }
 
+  if (!selectedStages.length) {
+    return startNotebookMemoryGame({ mode: 'all', userId });
+  }
+
   const batchSize = +getSettings().batchSize || 5;
   const unlearned = words.filter((w) => !state.progress[w.id]?.learningComplete);
   const batch = unlearned.length > 0
@@ -585,7 +661,7 @@ export async function startStudyAll(userId = getActiveUserId(), options = null) 
     kind: 'learn',
     title: 'Tüm Kelimelerim — Kelime Öğren',
     items: E.learnItems(batch, state.progress, Math.random, selectedStages),
-    params: { isNotebook: true, mode: 'all', selectedStages },
+    params: { isNotebook: true, mode: 'all', selectedStages, matchAfter: matchAfterParam(stageCheck, 'all', null, userId) },
   });
   return true;
 }
@@ -606,14 +682,15 @@ export async function startStudyUnknown(userId = getActiveUserId(), options = nu
   }
 
   // Henüz öğrenilmemiş, hata yapılmış (REVIEW) veya hakimiyet puanı düşük olanlar
-  const candidates = words.filter((w) => {
-    const p = getProgress(w.id);
-    return !p.learningComplete || p.currentStatus === 'REVIEW' || (p.masteryScore || 0) < 60;
-  });
+  const candidates = words.filter(isUnknownCandidate);
 
   if (!candidates.length) {
     toast('Tebrikler! Şu an zorlandığınız veya bilmediğiniz kişisel bir kelime bulunmuyor. 🎉', 'success');
     return false;
+  }
+
+  if (!selectedStages.length) {
+    return startNotebookMemoryGame({ mode: 'unknown', userId });
   }
 
   const batchSize = +getSettings().batchSize || 5;
@@ -624,9 +701,9 @@ export async function startStudyUnknown(userId = getActiveUserId(), options = nu
 
   await startSession({
     kind: 'learn',
-    title: `Zorlandığım Kelimeler — ${selectedStages.length} Aşama`,
+    title: `Zorlandığım Kelimeler — ${stageCheck.all.length} Aşama`,
     items: E.learnItems(batch, state.progress, Math.random, selectedStages),
-    params: { isNotebook: true, mode: 'unknown', selectedStages },
+    params: { isNotebook: true, mode: 'unknown', selectedStages, matchAfter: matchAfterParam(stageCheck, 'unknown', null, userId) },
   });
   return true;
 }
@@ -698,12 +775,13 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
     contextLabel = `<b>Yalnızca Bilmediklerim</b> (${candidates.length} kelime)`;
   }
 
-  // Varsayılan olarak 4 aşamanın tamamı seçili başlar
-  const selected = new Set([1, 2, 3, 4]);
+  // Varsayılan: ilk 4 aşama seçili; 5. aşama (Eşini Bul) seçili DEĞİL
+  const selected = new Set(NOTEBOOK_DEFAULT_STAGES);
+  const TOTAL_OPTIONS = NOTEBOOK_STAGE_OPTIONS.length;
 
   const cardsHtml = NOTEBOOK_STAGE_OPTIONS.map((opt) => `
-    <label class="nb-stage-card active" data-stage-card="${opt.stage}">
-      <input type="checkbox" class="nb-stage-check" data-stage-input="${opt.stage}" value="${opt.stage}" checked>
+    <label class="nb-stage-card ${opt.defaultSelected ? 'active' : ''} ${opt.stage === MEMORY_STAGE ? 'nb-stage-game' : ''}" data-stage-card="${opt.stage}">
+      <input type="checkbox" class="nb-stage-check" data-stage-input="${opt.stage}" value="${opt.stage}" ${opt.defaultSelected ? 'checked' : ''}>
       <span class="nb-stage-ic" aria-hidden="true">${opt.icon}</span>
       <span class="nb-stage-info">
         <span class="nb-stage-head">
@@ -722,12 +800,13 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
       <div class="nb-stage-modal">
         <p class="muted small nb-stage-sub">${contextLabel} için bu oturumda uygulanacak çalışma aşamalarını seçin.</p>
         <div class="nb-stage-toolbar">
-          <span class="nb-stage-counter" id="nb-stage-counter" aria-live="polite">4 / 4 aşama seçili</span>
+          <span class="nb-stage-counter" id="nb-stage-counter" aria-live="polite">${selected.size} / ${TOTAL_OPTIONS} aşama seçili</span>
           <button type="button" class="text-btn" id="nb-stage-select-all">Tümünü Seç</button>
         </div>
         <div class="nb-stage-grid" role="group" aria-label="Çalışma Aşamaları">
           ${cardsHtml}
         </div>
+        <p class="muted small nb-stage-hint">🧠 Eşini Bul yalnızca Kelime Defterim'e özeldir. Tek başına seçilirse doğrudan oyun başlar; diğer aşamalarla seçilirse oturumun sonunda oynanır. Oyun SRS ilerlemeni değiştirmez.</p>
         <div class="err small" id="nb-stage-err" role="alert"></div>
         <div class="nb-stage-actions">
           <button type="button" class="btn ghost" data-x>Vazgeç</button>
@@ -745,7 +824,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
 
       const syncUI = () => {
         const count = selected.size;
-        counterEl.textContent = `${count} / 4 aşama seçili`;
+        counterEl.textContent = `${count} / ${TOTAL_OPTIONS} aşama seçili`;
         inputs.forEach((inp) => {
           const st = Number(inp.dataset.stageInput);
           const on = selected.has(st);
@@ -760,7 +839,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
           startBtn.disabled = false;
           errEl.textContent = '';
         }
-        selectAllBtn.textContent = count === 4 ? 'Tümünü Seç ✓' : 'Tümünü Seç';
+        selectAllBtn.textContent = count === TOTAL_OPTIONS ? 'Tümünü Seç ✓' : 'Tümünü Seç';
       };
 
       inputs.forEach((inp) => {
@@ -773,18 +852,18 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
       });
 
       selectAllBtn.onclick = () => {
-        [1, 2, 3, 4].forEach((s) => selected.add(s));
+        NOTEBOOK_STAGE_OPTIONS.forEach((o) => selected.add(o.stage));
         syncUI();
       };
 
       startBtn.onclick = async () => {
-        const check = E.validateStageSelection([...selected]);
+        const check = resolveNotebookStages([...selected]);
         if (!check.ok) {
           errEl.textContent = check.error;
           startBtn.disabled = true;
           return;
         }
-        const stages = check.stages;
+        const stages = check.all; // 1–4 öğrenme aşamaları + (seçildiyse) 5. aşama Eşini Bul
         api.close();
         if (typeof onStart === 'function') {
           await onStart(stages);

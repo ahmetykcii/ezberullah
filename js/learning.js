@@ -83,8 +83,14 @@ async function finish() {
       await setMeta('activeSessionsByLevel', byLevel);
     }
   }
+  // Kelime Defterim: "Eşini Bul" diğer aşamalarla birlikte seçildiyse, oturumun sonunda hafıza oyunu başlar.
+  if (s.params?.isNotebook && s.params?.matchAfter && typeof sessionHooks.afterLearn === 'function') {
+    try { await sessionHooks.afterLearn(s); return; } catch (e) { console.warn('Eşini Bul başlatılamadı:', e); }
+  }
   if (out && view()) { view().innerHTML = out.html; if (out.mount) out.mount(view()); }
 }
+/** Oturum sonrası kancalar (ör. Kelime Defterim → Eşini Bul). Döngüsel içe aktarmayı önlemek için kayıt usulü. */
+export const sessionHooks = {};
 export const summaryHtml = ({ title, big, sub, extra = '', actions = '', verdict = '', mark = true }) =>
   `<div class="summary">${mark ? successMark() : ''}<h2>${esc(title)}</h2><div class="big-num">${big}</div>${verdict ? `<p class="verdict">${verdict}</p>` : ''}<p class="muted">${sub}</p>${extra ? `<details class="more"><summary>Ayrıntılar</summary><div class="more-body">${extra}</div></details>` : ''}<div class="sum-actions">${actions}<a class="btn ghost" href="#/dashboard">Ana Sayfa</a></div></div>`;
 

@@ -728,3 +728,57 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 
 
 
+
+/* ---------- v4.6.0 — Eşini Bul (Hafıza Oyunu) · yalnızca Kelime Defterim ---------- */
+.nb-stage-card.nb-stage-game{border-style:dashed}
+.nb-stage-card.nb-stage-game.active{border-style:solid}
+.nb-stage-hint{margin:0;line-height:1.45}
+.mg{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:12px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.mg-top{flex-wrap:wrap}
+.mg-title{margin:0;font-size:1.15rem;font-weight:800;letter-spacing:-.01em}
+.mg-scope{margin-left:auto;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mg-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.mg-stat{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.mg-stat span{font-size:.72rem;color:var(--tx2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mg-stat b{font-size:1.05rem;font-variant-numeric:tabular-nums;color:var(--tx)}
+.mg-note{margin:0;padding:8px 12px;background:var(--warn-bg);border-radius:10px;color:var(--tx-sec)}
+.mg-grid{display:grid;grid-template-columns:repeat(var(--mg-cols,8),minmax(0,1fr));gap:10px;width:100%}
+.mg-card{position:relative;aspect-ratio:4/3;min-height:64px;padding:0;border:0;background:none;cursor:pointer;perspective:800px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:var(--tx);font:inherit}
+.mg-card:focus-visible{outline:2px solid var(--ac);outline-offset:2px;border-radius:12px}
+.mg-inner{position:absolute;inset:0;transition:transform 380ms cubic-bezier(.2,.7,.3,1);transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.mg-card.open .mg-inner,.mg-card.matched .mg-inner{transform:rotateY(180deg)}
+.mg-face{position:absolute;inset:0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1.5px solid var(--bd);overflow:hidden}
+.mg-back{background:var(--ac-soft);color:var(--ac);font-size:1.6rem;font-weight:800;border-color:transparent}
+.mg-card:hover .mg-back{filter:brightness(.97)}
+.mg-front{background:var(--card);transform:rotateY(180deg);text-align:center;gap:2px}
+.mg-card[data-side=tr] .mg-front{background:var(--surf)}
+.mg-lang{font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--tx2)}
+.mg-text{font-size:clamp(.72rem,1.6vw,.95rem);font-weight:700;line-height:1.2;overflow-wrap:anywhere;word-break:break-word;hyphens:auto;-webkit-hyphens:auto;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mg-card.matched{cursor:default}
+.mg-card.matched .mg-front{background:var(--ok-bg);border-color:var(--ok)}
+.mg-card.matched .mg-lang{color:var(--ok)}
+.mg-card.wrong .mg-front{background:var(--no-bg);border-color:var(--no);animation:mg-shake 360ms ease}
+.mg-card.pop .mg-front{animation:mg-pop 420ms ease}
+.mg-grid.locked .mg-card{cursor:wait}
+:root[data-theme=studio] .mg-back{background:var(--studio-accent-soft);color:#CD82FF}
+@keyframes mg-shake{0%,100%{translate:0}25%{translate:-4px}75%{translate:4px}}
+@keyframes mg-pop{0%{scale:1}45%{scale:1.07}100%{scale:1}}
+@media (prefers-reduced-motion:reduce){.mg-inner{transition:none}.mg-card.wrong .mg-front,.mg-card.pop .mg-front{animation:none}}
+.mg-result .mg-trophy{font-size:3rem;line-height:1;margin-bottom:6px}
+.mg-result h2{font-size:1.35rem;line-height:1.3}
+.mg-result-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.mg-result-stats div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 8px;display:flex;flex-direction:column;gap:4px}
+.mg-result-stats span{font-size:.78rem;color:var(--tx2);font-weight:600}
+.mg-result-stats b{font-size:1.3rem;font-variant-numeric:tabular-nums}
+.mg-result .sum-actions{flex-wrap:wrap}
+@media (max-width:900px){.mg-grid[data-cols="8"]{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:640px){
+  .mg-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+  .mg-card{aspect-ratio:1/1;min-height:58px}
+  .mg-text{font-size:.74rem}
+  .mg-stats{gap:6px}
+  .mg-stat{padding:6px 8px}
+  .mg-stat b{font-size:.95rem}
+  .mg-scope{max-width:100%;margin-left:0;flex-basis:100%}
+}
+@media (max-width:360px){.mg-grid{gap:5px}.mg-text{font-size:.68rem}.mg-face{padding:4px}}

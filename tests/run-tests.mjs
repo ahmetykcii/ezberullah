@@ -23,6 +23,7 @@ import * as FbCfg from '../js/firebase-config.js';
 import { renderSurprise } from '../js/surprise.js';
 import {
   NOTEBOOK_STAGE_OPTIONS, openStageSelectionModal,
+  NOTEBOOK_DEFAULT_STAGES, resolveNotebookStages, memoryWordsGetter, startNotebookMemoryGame,
   createNotebookList, updateNotebookList, deleteNotebookList,
   getUserNotebookLists, getAllNotebookLists, saveAllNotebookLists,
   buildPersonalWord, addWordToNotebook, parseBulkWords, bulkAddWordsToNotebook,
@@ -30,6 +31,8 @@ import {
   startStudyList, startStudyAll, startStudyUnknown, startStudyDue,
   getUserNotebookWords, getAllNotebookWords, saveAllNotebookWords,
 } from '../js/notebook.js';
+import * as MG from '../js/memory-game.js';
+import { sessionHooks } from '../js/learning.js';
 import {
   BUILTIN_IRREGULAR_VERBS, getBuiltInIrregularVerbs,
   parseAcceptedForms, checkVerbFormAnswer,
@@ -394,9 +397,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.5.2) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v4.6.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.5.2';"), 'SW sürümü veluno-v4.5.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.6.0';"), 'SW sürümü veluno-v4.6.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1300,7 +1303,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.5.2';"), 'SW sürümü veluno-v4.5.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.6.0';"), 'SW sürümü veluno-v4.6.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1725,7 +1728,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi (v4.5.2)
-  ok(sw.includes("const VERSION = 'veluno-v4.5.2';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v4.6.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2348,21 +2351,23 @@ await test('v4.5.2 [2] 4. Aşama (Eksik Harfleri Tamamla) Tamamlandığında Ö�
 });
 
 await test('v4.5.2 [3] Kelime Defterim Aşama Seçimi Yapılandırması ve Arayüz Bileşenleri', async () => {
-  eq(NOTEBOOK_STAGE_OPTIONS.length, 4, 'Kelime Defterim aşama seçiminde 4 seçenek bulunmalı');
+  // v4.6.0: Kelime Defterim'e 5. seçenek (Eşini Bul — Hafıza Oyunu) eklendi; ilk 4 aşama aynı kaldı
+  eq(NOTEBOOK_STAGE_OPTIONS.length, 5, 'Kelime Defterim aşama seçiminde 5 seçenek bulunmalı');
   eq(NOTEBOOK_STAGE_OPTIONS.map((o) => o.title), [
     'Kelimeyi Öğren',
     'Çoktan Seçmeli Test',
     'İngilizce Kelimeyi Yaz',
     'Eksik Harfleri Tamamla',
+    'Eşini Bul — Hafıza Oyunu',
   ]);
-  eq(NOTEBOOK_STAGE_OPTIONS.map((o) => o.type), ['card', 'mc', 'typing', 'missing']);
+  eq(NOTEBOOK_STAGE_OPTIONS.map((o) => o.type), ['card', 'mc', 'typing', 'missing', 'match']);
   ok(NOTEBOOK_STAGE_OPTIONS.every((o) => o.icon && o.desc), 'Her aşama kartında ikon ve açıklama bulunmalı');
   ok(typeof openStageSelectionModal === 'function', 'openStageSelectionModal fonksiyonu tanımlı olmalı');
 
   const nbSrc = await readText('js/notebook.js');
   const cssSrc = await readText('css/style.css');
   ok(nbSrc.includes("title: 'Çalışma Aşamalarını Seç'"), 'Modal başlığı Çalışma Aşamalarını Seç olmalı');
-  ok(nbSrc.includes('id="nb-stage-counter"') && nbSrc.includes('4 / 4 aşama seçili'), 'Seçili aşama sayacı bulunmalı');
+  ok(nbSrc.includes('id="nb-stage-counter"') && nbSrc.includes('aşama seçili') && nbSrc.includes('TOTAL_OPTIONS'), 'Seçili aşama sayacı bulunmalı');
   ok(nbSrc.includes('id="nb-stage-select-all"') && nbSrc.includes('Tümünü Seç'), 'Tümünü Seç seçeneği bulunmalı');
   ok(nbSrc.includes('id="nb-stage-start"') && nbSrc.includes('Çalışmaya Başla'), 'Çalışmaya Başla butonu bulunmalı');
   ok(cssSrc.includes('.nb-stage-card') && cssSrc.includes(':root[data-theme=studio] .nb-stage-card.active'), 'Dört tema ile uyumlu CSS kuralları bulunmalı');
@@ -2505,6 +2510,319 @@ await test('v4.5.2 [7] Eski 5 ve 6 Aşamalı İlerleme Kayıtlarının Yeni 4 A�
   E.applyAnswer(legacy6, true, { mode: 'learn', stage: 2, qtype: 'mc', customStages: [2] }, 1700100000000);
   eq(legacy6.learningComplete, true, 'Tekrar çalışılan öğrenilmiş kelime learningComplete=true kalmalı');
   eq(legacy6.currentStatus, 'MASTERED', 'Doğru cevapta MASTERED durumu korunmalı');
+});
+
+out('\n--- 17) v4.6.0 — Eşini Bul (Hafıza Oyunu) · Yalnızca Kelime Defterim ---');
+
+const mgSeeded = (seed) => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+const MG_WORDS_20 = [
+  ['achieve', 'başarmak'], ['improve', 'geliştirmek'], ['reliable', 'güvenilir'], ['opportunity', 'fırsat'],
+  ['require', 'gerektirmek'], ['benefit', 'fayda'], ['decline', 'azalmak'], ['evidence', 'kanıt'],
+  ['purpose', 'amaç'], ['measure', 'ölçmek'], ['predict', 'tahmin etmek'], ['respond', 'yanıt vermek'],
+  ['survive', 'hayatta kalmak'], ['attempt', 'girişim'], ['consider', 'düşünmek'], ['obtain', 'elde etmek'],
+  ['prefer', 'tercih etmek'], ['remain', 'kalmak'], ['select', 'seçmek'], ['suggest', 'önermek'],
+];
+async function mgMakeList(uid, name, count) {
+  const list = (await createNotebookList(name, uid)).list;
+  const items = MG_WORDS_20.slice(0, count).map(([w, m]) => ({ word: w, meanings: m, status: 'ok' }));
+  await bulkAddWordsToNotebook({ items, listId: list.id, userId: uid });
+  return list;
+}
+const mgPlayAll = (game) => {
+  let last = null;
+  for (const p of game.pairs) {
+    MG.flipMemoryCard(game, `${p.id}::en`, game.startedAt + 1000);
+    last = MG.flipMemoryCard(game, `${p.id}::tr`, game.startedAt + 95000);
+  }
+  return last;
+};
+
+await test('Eşini Bul [1] 16 kelimelik listeden 32 kart oluşturulur (her kelime: 1 EN + 1 TR kartı)', async () => {
+  const uid = 'mg_user_16';
+  const list = await mgMakeList(uid, 'MG 16', 16);
+  const round = await MG.prepareMemoryRound({ getWords: memoryWordsGetter('list', list.id, uid), userId: uid, scopeKey: `list:${list.id}` });
+  ok(round.ok, 'tur hazırlanmalı');
+  eq(round.selected.length, 16, '16 kelimenin tamamı kullanılmalı');
+  const game = MG.createMemoryGame(round.selected);
+  eq(game.cards.length, 32, '32 kart oluşmalı');
+  eq(game.total, 16);
+  eq(game.cards.filter((c) => c.side === 'en').length, 16);
+  eq(game.cards.filter((c) => c.side === 'tr').length, 16);
+  eq(new Set(game.cards.map((c) => c.uid)).size, 32, 'kart kimlikleri benzersiz olmalı');
+  ok(game.cards.every((c) => c.state === 'hidden'), 'tüm kartlar kapalı başlamalı');
+  eq(round.hasNextRound, false, '16 kelimede Sonraki 16 Kelime seçeneği gösterilmemeli');
+  const ach = round.selected.find((p) => p.en === 'achieve');
+  eq(ach.tr, 'başarmak', 'Türkçe karşılık doğrudan Kelime Defterim kaydından alınmalı');
+});
+
+await test('Eşini Bul [2] Kartlar her yeni oyunda rastgele karıştırılır', () => {
+  const pairs = MG.prepareMemoryPairs(MG_WORDS_20.slice(0, 16).map(([w, m], i) => ({ id: `s${i}`, word: w, meanings: [m] }))).pairs;
+  const g1 = MG.createMemoryGame(pairs, { rnd: mgSeeded(1) });
+  const g2 = MG.createMemoryGame(pairs, { rnd: mgSeeded(99) });
+  const o1 = g1.cards.map((c) => c.uid).join('|');
+  const o2 = g2.cards.map((c) => c.uid).join('|');
+  ok(o1 !== o2, 'iki oyunun kart sırası farklı olmalı');
+  eq([...g1.cards.map((c) => c.uid)].sort(), [...g2.cards.map((c) => c.uid)].sort(), 'aynı kart kümesi korunmalı');
+  const naive = pairs.flatMap((p) => [`${p.id}::en`, `${p.id}::tr`]).join('|');
+  ok(o1 !== naive, 'kartlar sıralı (karıştırılmamış) olmamalı');
+});
+
+await test('Eşini Bul [3] Doğru eşleşme kabul edilir ve kartlar açık kalır', () => {
+  const pairs = MG.prepareMemoryPairs([{ id: 'a', word: 'achieve', meanings: ['başarmak'] }, { id: 'b', word: 'improve', meanings: ['geliştirmek'] }]).pairs;
+  const g = MG.createMemoryGame(pairs, { now: 0 });
+  eq(MG.flipMemoryCard(g, 'a::en').result, 'opened');
+  const r = MG.flipMemoryCard(g, 'a::tr');
+  eq(r.result, 'match');
+  eq(g.matches, 1); eq(g.attempts, 1);
+  ok(g.cards.filter((c) => c.pairId === 'a').every((c) => c.state === 'matched'), 'eşleşen kartlar açık kalmalı');
+  eq(MG.flipMemoryCard(g, 'a::en').result, 'ignored', 'eşleşmiş kart tekrar açılamamalı');
+});
+
+await test('Eşini Bul [4] Yanlış eşleşme kilitlenir ve 1–1,5 sn sonra otomatik kapanır; aynı dildeki iki kart eşleşmez', () => {
+  ok(MG.MISMATCH_DELAY_MS >= 1000 && MG.MISMATCH_DELAY_MS <= 1500, 'otomatik kapanma süresi 1–1,5 sn olmalı');
+  const pairs = MG.prepareMemoryPairs([{ id: 'a', word: 'achieve', meanings: ['başarmak'] }, { id: 'b', word: 'improve', meanings: ['geliştirmek'] }]).pairs;
+  const g = MG.createMemoryGame(pairs);
+  MG.flipMemoryCard(g, 'a::en');
+  eq(MG.flipMemoryCard(g, 'b::tr').result, 'mismatch');
+  ok(g.locked, 'bekleme süresinde oyun kilitli olmalı');
+  MG.resolveMemoryMismatch(g);
+  ok(!g.locked && g.open.length === 0, 'kilit kalkmalı');
+  ok(g.cards.every((c) => c.state === 'hidden'), 'yanlış kartlar kullanıcı müdahalesi olmadan kapanmalı');
+  MG.flipMemoryCard(g, 'a::en');
+  eq(MG.flipMemoryCard(g, 'b::en').result, 'mismatch', 'iki İngilizce kart eşleşmemeli');
+  MG.resolveMemoryMismatch(g);
+  MG.flipMemoryCard(g, 'a::tr');
+  eq(MG.flipMemoryCard(g, 'b::tr').result, 'mismatch', 'iki Türkçe kart eşleşmemeli');
+  const src = MG.flipMemoryCard.toString();
+  ok(src.includes('a.side !== b.side') && src.includes('a.pairId === b.pairId'), 'eşleşme kimlik + taraf kontrolüyle yapılmalı');
+});
+
+await test('Eşini Bul [5] Yanlış eşleşme bekleme süresinde üçüncü kart açılamaz', () => {
+  const pairs = MG.prepareMemoryPairs([{ id: 'a', word: 'achieve', meanings: ['başarmak'] }, { id: 'b', word: 'improve', meanings: ['geliştirmek'] }, { id: 'c', word: 'require', meanings: ['gerektirmek'] }]).pairs;
+  const g = MG.createMemoryGame(pairs);
+  MG.flipMemoryCard(g, 'a::en');
+  MG.flipMemoryCard(g, 'b::tr');
+  eq(MG.flipMemoryCard(g, 'c::en').result, 'ignored', 'üçüncü kart açılmamalı');
+  eq(g.cards.find((c) => c.uid === 'c::en').state, 'hidden');
+  eq(g.open.length, 2, 'aynı anda en fazla iki kart açık olmalı');
+  eq(g.attempts, 1, 'reddedilen tıklama deneme sayılmamalı');
+  MG.resolveMemoryMismatch(g);
+  eq(MG.flipMemoryCard(g, 'c::en').result, 'opened', 'kilit kalkınca kart açılabilmeli');
+});
+
+await test('Eşini Bul [6] Aynı Türkçe anlama sahip farklı İngilizce kelimeler kimlik üzerinden doğru eşleştirilir', () => {
+  const words = [{ id: 'w-beautiful', word: 'Beautiful', meanings: ['Güzel'] }, { id: 'w-pretty', word: 'Pretty', meanings: ['Güzel'] }, { id: 'w-fast', word: 'Fast', meanings: ['Hızlı'] }];
+  const { pairs } = MG.prepareMemoryPairs(words);
+  eq(pairs.length, 3, 'farklı kelimeler ayrı çift olarak korunmalı');
+  // Motor seviyesi: metinler aynı olsa bile yalnızca kimliği aynı olan kart eşleşir
+  const g = MG.createMemoryGame(pairs);
+  MG.flipMemoryCard(g, 'w-beautiful::en');
+  eq(MG.flipMemoryCard(g, 'w-pretty::tr').result, 'mismatch', 'Beautiful, Pretty kaydına ait Güzel kartıyla eşleşmemeli');
+  MG.resolveMemoryMismatch(g);
+  MG.flipMemoryCard(g, 'w-beautiful::en');
+  eq(MG.flipMemoryCard(g, 'w-beautiful::tr').result, 'match', 'kendi kimliğine ait Güzel kartıyla eşleşmeli');
+  // Tur seviyesi: oyuncunun ayırt edemeyeceği aynı görünen kartlar aynı tura konmaz, sonraki tura bırakılır
+  const r = MG.selectRoundPairs(pairs, { rnd: mgSeeded(3) });
+  eq(r.selected.filter((p) => p.trKey === 'güzel').length, 1, 'aynı turda yalnızca bir Güzel kartı olmalı');
+  eq(r.deferred.length, 1, 'çakışan kayıt sonraki tura bırakılmalı');
+  const r2 = MG.selectRoundPairs(pairs, { played: r.nextPlayed, rnd: mgSeeded(4) });
+  ok(r2.selected.some((p) => p.id === r.deferred[0].id), 'bırakılan kelime sonraki turda oynanmalı');
+  // Eksik veri ve tekrar eden çiftler oyunu bozmaz
+  const v = MG.prepareMemoryPairs([...words, { id: 'x1', word: '', meanings: ['boş'] }, { id: 'x2', word: 'empty', meanings: [] }, { id: 'x3', word: 'fast', meanings: ['hızlı'] }, words[0]]);
+  eq(v.pairs.length, 3);
+  eq(v.skipped.filter((s) => s.reason === 'missing').length, 2);
+  eq(v.skipped.filter((s) => s.reason === 'duplicate').length, 1);
+  // Mevcut kelime kayıtları değiştirilmez
+  eq(words[0].meanings, ['Güzel']); ok(!('pairId' in words[0]));
+});
+
+await test('Eşini Bul [7] 16\'dan az kelime: mevcut kelimelerle oyun kurulur (8 kelime → 16 kart); yetersizse bilgi verilir', async () => {
+  const uid = 'mg_user_8';
+  const list = await mgMakeList(uid, 'MG 8', 8);
+  const round = await MG.prepareMemoryRound({ getWords: memoryWordsGetter('list', list.id, uid), userId: uid, scopeKey: `list:${list.id}` });
+  ok(round.ok);
+  eq(MG.createMemoryGame(round.selected).cards.length, 16, '8 kelime → 16 kart');
+  eq(round.hasNextRound, false);
+  const tiny = await MG.prepareMemoryRound({ getWords: () => [{ id: 'one', word: 'one', meanings: ['bir'] }], userId: uid, scopeKey: 'tiny' });
+  eq(tiny.ok, false, 'tek kelimeyle oyun başlatılmamalı');
+  ok(/en az 2/.test(tiny.error), 'anlaşılır bilgilendirme verilmeli');
+  const empty = await MG.prepareMemoryRound({ getWords: () => [], userId: uid, scopeKey: 'empty' });
+  eq(empty.ok, false, 'boş listede oyun kilitlenmeden reddedilmeli');
+});
+
+await test('Eşini Bul [8] 16\'dan fazla kelime: her turda 16 farklı kelime, oynanmamışlara öncelik, havuz bitince sıfırlanır', async () => {
+  const uid = 'mg_user_20';
+  const list = await mgMakeList(uid, 'MG 20', 20);
+  const opts = { getWords: memoryWordsGetter('list', list.id, uid), userId: uid, scopeKey: `list:${list.id}` };
+  const r1 = await MG.prepareMemoryRound(opts);
+  eq(r1.selected.length, 16); eq(new Set(r1.selected.map((p) => p.id)).size, 16, 'tur içinde kelime tekrarı olmamalı');
+  ok(r1.hasNextRound, 'Sonraki 16 Kelime seçeneği gösterilmeli');
+  const r1Ids = new Set(r1.selected.map((p) => p.id));
+  const r2 = await MG.prepareMemoryRound(opts);
+  const unplayed = r1.pairs.filter((p) => !r1Ids.has(p.id)).map((p) => p.id);
+  eq(unplayed.length, 4);
+  ok(unplayed.every((id) => r2.selected.some((p) => p.id === id)), 'oynanmamış 4 kelime ikinci turda öncelikli olmalı');
+  eq(r2.selected.length, 16);
+  eq(r2.resetPool, false);
+  const r3 = await MG.prepareMemoryRound(opts);
+  eq(r3.resetPool, true, 'bütün kelimeler kullanıldığında havuz yeniden başlamalı');
+  eq(r3.selected.length, 16);
+});
+
+await test('Eşini Bul [9] Kelime ekleme, düzenleme ve silme sonrası güncel veri kullanılır', async () => {
+  const uid = 'mg_user_edit';
+  const list = await mgMakeList(uid, 'MG Edit', 3);
+  const getWords = memoryWordsGetter('list', list.id, uid);
+  let pairs = MG.prepareMemoryPairs(getWords()).pairs;
+  eq(pairs.length, 3);
+  // Ekleme
+  await addWordToNotebook({ word: 'reliable', meanings: 'güvenilir', listId: list.id, userId: uid });
+  pairs = MG.prepareMemoryPairs(getWords()).pairs;
+  ok(pairs.some((p) => p.en === 'reliable' && p.tr === 'güvenilir'), 'yeni kelime sonraki oyunda kullanılmalı');
+  // Düzenleme
+  const all = getAllNotebookWords();
+  const target = all.find((w) => w.userId === uid && w.word === 'improve');
+  target.meanings = ['iyileştirmek'];
+  await saveAllNotebookWords(all);
+  pairs = MG.prepareMemoryPairs(getWords()).pairs;
+  eq(pairs.find((p) => p.id === target.id).tr, 'iyileştirmek', 'düzenlenen anlam kullanılmalı');
+  // Silme
+  await removeWordFromNotebookList(list.id, target.id, uid);
+  pairs = MG.prepareMemoryPairs(getWords()).pairs;
+  ok(!pairs.some((p) => p.id === target.id), 'silinen kelime gösterilmemeli');
+  // Yeniden Oyna: silinen kelime tekrar listesinden de düşer
+  const rep = await MG.prepareMemoryRound({ getWords, userId: uid, scopeKey: 'edit', repeatIds: [target.id, ...pairs.map((p) => p.id)] });
+  ok(rep.ok && !rep.selected.some((p) => p.id === target.id));
+});
+
+await test('Eşini Bul [10] Yalnızca Eşini Bul seçildiğinde doğrudan oyun başlar; öğrenme oturumu açılmaz, SRS değişmez', async () => {
+  const uid = 'mg_user_only';
+  const list = await mgMakeList(uid, 'MG Only', 6);
+  const v = resolveNotebookStages([5]);
+  ok(v.ok && v.includeMatch && v.stages.length === 0, '[5] tek başına geçerli seçim olmalı');
+  eq(resolveNotebookStages([]).ok, false, 'boş seçim hâlâ engellenmeli');
+  const ids = list.wordIds;
+  const before = JSON.stringify(ids.map((id) => getProgress(id)));
+  const statsBefore = MG.getMemoryStats(uid).gamesStarted;
+  const started = await startStudyList(list.id, { stages: [5] });
+  eq(started, true, 'oyun başlamalı');
+  eq(getCurrentSession(), null, 'öğrenme oturumu açılmamalı');
+  eq(MG.getMemoryStats(uid).gamesStarted, statsBefore + 1, 'oyun ayrı istatistikte kaydedilmeli');
+  eq(MG.getMemoryRotation(uid, `list:${list.id}`).length, 6, 'tur havuzu kaydedilmeli');
+  eq(JSON.stringify(ids.map((id) => getProgress(id))), before, 'SRS ilerlemesi değişmemeli');
+  // Seçilmezse hiçbir şekilde başlamaz
+  const s2 = await startStudyList(list.id, { stages: [1, 2] });
+  ok(s2 && getCurrentSession().params.matchAfter === null, '5. aşama seçilmediyse oyun planlanmamalı');
+  abortSession();
+});
+
+await test('Eşini Bul [11] Diğer aşamalarla birlikte seçildiğinde oyun oturumun sonunda, aynı kelimeler öncelikli çalışır', async () => {
+  const uid = 'mg_user_combo';
+  const list = await mgMakeList(uid, 'MG Combo', 20);
+  ok(await startStudyList(list.id, { stages: [5, 3, 2] }));
+  const sess = getCurrentSession();
+  eq(sess.params.selectedStages, [2, 3], 'öğrenme aşamaları standart sırada olmalı');
+  ok(sess.items.every((it) => it.stage === 2 || it.stage === 3), 'oturum öğelerinde 5. aşama bulunmamalı');
+  ok(sess.items.every((it) => it.totalSteps === 2), 'ilerleme göstergesi yalnızca öğrenme aşamalarını saymalı');
+  eq(sess.params.matchAfter.stageCount, 3);
+  eq(sess.params.matchAfter.mode, 'list');
+  ok(typeof sessionHooks.afterLearn === 'function', 'oturum sonu kancası kayıtlı olmalı');
+  const sessIds = [...new Set(sess.items.map((it) => it.wordId))];
+  abortSession();
+  await sessionHooks.afterLearn(sess);
+  const rot = MG.getMemoryRotation(uid, `list:${list.id}`);
+  eq(rot.length, 16, 'oyun 16 kelimeyle başlamalı');
+  ok(sessIds.every((id) => rot.includes(id)), 'oturumda çalışılan kelimeler oyunda öncelikli olmalı');
+  eq(new Set(rot).size, rot.length, 'aynı kelime tekrarlanmamalı');
+  const learnSrc = await readText('js/learning.js');
+  ok(learnSrc.includes('s.params?.matchAfter') && learnSrc.includes('sessionHooks.afterLearn'), 'finish() oturum sonunda oyunu başlatmalı');
+});
+
+await test('Eşini Bul [12] Hazır A2/B1/B2 sistemi 4 aşamalı kalır ve oyunu içermez', async () => {
+  eq(E.STAGES.length, 4);
+  eq(E.STAGE_TYPES, [null, 'card', 'mc', 'typing', 'missing']);
+  eq(E.normalizeSelectedStages([1, 2, 3, 4, 5]), [1, 2, 3, 4], 'motor 5. aşamayı tanımamalı');
+  const a2 = state.words.filter((w) => w.level === 'A2' && E.isWordReady(w)).slice(0, 5);
+  const items = E.learnItems(a2, {}, Math.random);
+  eq(items.length, 20);
+  ok(!items.some((it) => it.type === 'match' || it.stage > 4));
+  const learnSrc = await readText('js/learning.js');
+  ok(!learnSrc.includes("import { startMemoryGame"), 'learning.js hafıza oyununu doğrudan içe aktarmamalı');
+  ok(learnSrc.includes('s.params?.isNotebook && s.params?.matchAfter'), 'kanca yalnızca Kelime Defterim oturumlarında çalışmalı');
+});
+
+await test('Eşini Bul [13] SRS, kişisel listeler ve kullanıcı izolasyonu korunur; istatistikler ayrı tutulur', async () => {
+  const uA = 'mg_iso_A', uB = 'mg_iso_B';
+  const lA = await mgMakeList(uA, 'Iso A', 4);
+  const lB = await mgMakeList(uB, 'Iso B', 4);
+  const wA = getUserNotebookWords(uA)[0];
+  const pA = getProgress(wA.id);
+  E.applyAnswer(pA, true, { mode: 'learn', stage: 2, qtype: 'mc', customStages: [2] });
+  await saveProgress(pA);
+  const snap = JSON.stringify(getProgress(wA.id));
+  const r = await MG.prepareMemoryRound({ getWords: memoryWordsGetter('list', lA.id, uA), userId: uA, scopeKey: `list:${lA.id}` });
+  const g = MG.createMemoryGame(r.selected);
+  eq(mgPlayAll(g).result, 'complete');
+  await MG.recordMemoryGame(uA, { completed: true, matches: g.matches, attempts: g.attempts, seconds: 42 });
+  eq(JSON.stringify(getProgress(wA.id)), snap, 'oyun SRS kaydını değiştirmemeli');
+  ok(!E.isMastered(getProgress(wA.id)), 'doğru eşleşme kelimeyi Mastered yapmamalı');
+  eq(MG.getMemoryStats(uA).gamesCompleted, 1);
+  eq(MG.getMemoryStats(uB).gamesCompleted, 0, 'kullanıcı istatistikleri bağımsız olmalı');
+  eq(MG.getMemoryRotation(uB, `list:${lA.id}`).length, 0, 'tur havuzu kullanıcıya özel olmalı');
+  ok(memoryWordsGetter('list', lA.id, uB)().length === 0, 'başka kullanıcının listesi okunmamalı');
+  eq(getUserNotebookLists(uA).length, 1); eq(getUserNotebookLists(uB).length, 1);
+  const appSrc = await readText('js/app.js');
+  const ieSrc = await readText('js/import-export.js');
+  ok(appSrc.includes("'memoryGameStats', 'memoryGameRotation'"), 'ilerleme sıfırlamada oyun verileri korunmalı');
+  ok(ieSrc.includes("'memoryGameStats', 'memoryGameRotation'"), 'yedeklemeye oyun verileri dahil edilmeli');
+  eq(lB.wordIds.length, 4);
+});
+
+await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (4×8 masaüstü, uyarlanabilir mobil ızgara, 4 tema)', async () => {
+  const css = await readText('css/style.css');
+  const js = await readText('js/memory-game.js');
+  const sw = await readText('service-worker.js');
+  ok(js.includes('n >= 32 ? 8'), '32 kart masaüstünde 8 sütun (4 satır × 8 sütun) olmalı');
+  ok(css.includes('.mg-grid{display:grid;grid-template-columns:repeat(var(--mg-cols,8)'), 'masaüstü ızgarası tanımlı olmalı');
+  ok(/@media \(max-width:640px\)\{[^]*?\.mg-grid\{grid-template-columns:repeat\(4/.test(css), 'mobilde 4 sütuna uyarlanmalı');
+  ok(css.includes('overflow-wrap:anywhere') && css.includes('-webkit-line-clamp:3'), 'uzun kelimeler kart içinde düzgün gösterilmeli');
+  ok(css.includes('touch-action:manipulation') && css.includes('min-height:58px'), 'dokunmatik kullanıma uygun olmalı');
+  ok(css.includes('backface-visibility:hidden') && css.includes('-webkit-backface-visibility:hidden'), 'Safari uyumlu çevirme animasyonu');
+  ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
+  ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
+  ok(css.includes('env(safe-area-inset-bottom)'));
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v4.6.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
+  eq(MG.fmtClock(155), '02:35');
+});
+
+await test('Eşini Bul [15] Oyunun tamamlanması, yeniden başlatılması ve sonraki kelime grubuna geçiş', async () => {
+  const uid = 'mg_user_flow';
+  const list = await mgMakeList(uid, 'MG Flow', 20);
+  const opts = { getWords: memoryWordsGetter('list', list.id, uid), userId: uid, scopeKey: `list:${list.id}` };
+  const r1 = await MG.prepareMemoryRound(opts);
+  const g = MG.createMemoryGame(r1.selected, { now: 1000 });
+  MG.flipMemoryCard(g, g.cards.find((c) => c.side === 'en').uid);
+  const wrongTr = g.cards.find((c) => c.side === 'tr' && c.pairId !== g.cards.find((x) => x.state === 'open').pairId);
+  MG.flipMemoryCard(g, wrongTr.uid);
+  MG.resolveMemoryMismatch(g);
+  const last = mgPlayAll(g);
+  eq(last.result, 'complete', 'tüm çiftler bulununca oyun tamamlanmalı');
+  eq(g.matches, 16); eq(g.attempts, 17, 'deneme sayısı (1 yanlış + 16 doğru) doğru hesaplanmalı');
+  ok(g.finishedAt, 'bitiş zamanı kaydedilmeli');
+  eq(MG.fmtClock(MG.memoryElapsedSec(g)), '01:35', 'geçen süre doğru hesaplanmalı');
+  eq(MG.flipMemoryCard(g, g.cards[0].uid).result, 'ignored', 'biten oyunda kart açılamamalı');
+  // Yeniden Oyna: aynı kelimeler, yeni karıştırma
+  const replay = await MG.prepareMemoryRound({ ...opts, repeatIds: r1.selected.map((p) => p.id) });
+  eq([...replay.selected.map((p) => p.id)].sort(), [...r1.selected.map((p) => p.id)].sort(), 'Yeniden Oyna aynı kelimeleri kullanmalı');
+  // Sonraki 16 Kelime
+  ok(r1.hasNextRound);
+  const r2 = await MG.prepareMemoryRound(opts);
+  const r1Set = new Set(r1.selected.map((p) => p.id));
+  eq(r2.selected.filter((p) => !r1Set.has(p.id)).length, 4, 'sonraki grup oynanmamış kelimelerle başlamalı');
+  const js = await readText('js/memory-game.js');
+  ok(js.includes('Tebrikler! Bütün eşleşmeleri tamamladın!') && js.includes('Yeniden Oyna') && js.includes('Sonraki 16 Kelime') && js.includes("Kelime Defterim'e Dön"), 'sonuç ekranı seçenekleri bulunmalı');
+  ok(js.includes("round.hasNextRound ? '<button"), 'Sonraki 16 Kelime yalnızca uygun havuz varsa gösterilmeli');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
