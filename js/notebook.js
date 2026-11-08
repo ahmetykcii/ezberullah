@@ -11,7 +11,11 @@ import { getCurrentUser } from './auth.js';
 import { startSession, sessionHooks, getStudyGroupRotation, saveStudyGroupRotation } from './learning.js';
 import { bumpDaily } from './statistics.js';
 import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
-import { syncListPath, removeListPath } from './paths.js';
+import { syncListPath, removeListPath, ensureListPaths, STOP_SIZE } from './paths.js';
+import {
+  pathCanvasHtml, openStopDetail, notebookPathSummary, getPreferredNotebookList, setPreferredNotebookList,
+  WINDOW_RADIUS, WINDOW_STEP, reduceMotion,
+} from './path-ui.js';
 
 /* ---------- Kullanıcı Kimlik Kapsamı (User Scoping) ---------- */
 export function getActiveUserId() {
@@ -1575,166 +1579,255 @@ export function openListWordsModal(listId, onUpdated = () => {}) {
   });
 }
 
-/* ---------- Ana Kelime Defterim Sayfası (Notebook View) ---------- */
+/* ---------- Kompakt Çalışma Seçenekleri Menüsü (v5.0 Mobil Revizyon) ---------- */
+export function openNotebookStudyMenuModal({ activeList = null, userId = getActiveUserId(), onUpdated = () => {} } = {}) {
+  const summary = getUserNotebookSummary(userId);
+  const listStats = activeList ? getListStats(activeList.id) : { total: 0 };
+  openModal({
+    title: 'Çalışma Seçenekleri',
+    html: `
+      <div class="nb-study-sheet">
+        <ul class="list nb-study-menu-list">
+          ${activeList ? `
+            <li>
+              <button type="button" class="list-row linkrow" id="btn-study-active-list" data-act="study-list" data-id="${activeList.id}" ${listStats.total ? '' : 'disabled'}>
+                <div class="row-main">
+                  <b>${esc(activeList.name)} Listesini Çalış</b>
+                  <span class="muted small">${listStats.total} kelime · Grup ve aşama seç</span>
+                </div>
+                ${ICONS.chev}
+              </button>
+            </li>
+          ` : ''}
+          <li>
+            <button type="button" class="list-row linkrow" id="btn-study-all" ${summary.totalWords ? '' : 'disabled'}>
+              <div class="row-main">
+                <b>Bütün Kelimelerimi Çalış</b>
+                <span class="muted small">${summary.totalWords} kişisel kelime</span>
+              </div>
+              ${ICONS.chev}
+            </button>
+          </li>
+          <li>
+            <button type="button" class="list-row linkrow" id="btn-study-unknown" ${summary.totalWords ? '' : 'disabled'}>
+              <div class="row-main">
+                <b>Yalnızca Bilmediklerimi Çalış</b>
+                <span class="muted small">Öğrenilmemiş veya hatalı kelimeler</span>
+              </div>
+              ${ICONS.chev}
+            </button>
+          </li>
+          <li>
+            <button type="button" class="list-row linkrow" id="btn-study-due" ${summary.dueWords ? '' : 'disabled'}>
+              <div class="row-main">
+                <b>Tekrar Zamanı Gelenler</b>
+                <span class="muted small">${summary.dueWords ? `${summary.dueWords} kelime tekrar bekliyor` : 'Şu an bekleyen tekrar yok'}</span>
+              </div>
+              ${ICONS.chev}
+            </button>
+          </li>
+          ${activeList ? `
+            <li>
+              <button type="button" class="list-row linkrow" id="btn-menu-view-words">
+                <div class="row-main">
+                  <b>Listedeki Kelimeleri Gör ve Yönet</b>
+                  <span class="muted small">${esc(activeList.name)} (${listStats.total} kelime)</span>
+                </div>
+                ${ICONS.chev}
+              </button>
+            </li>
+          ` : ''}
+        </ul>
+        <div class="row end"><button type="button" class="btn ghost" data-x>Kapat</button></div>
+      </div>
+    `,
+    onMount(b, api) {
+      $('[data-x]', b).onclick = api.close;
+      const studyActive = $('#btn-study-active-list', b);
+      if (studyActive && activeList) {
+        studyActive.onclick = () => { api.close(); openStageSelectionModal({ listId: activeList.id, mode: 'list', userId }); };
+      }
+      const studyAllBtn = $('#btn-study-all', b);
+      if (studyAllBtn) studyAllBtn.onclick = () => { api.close(); openStageSelectionModal({ mode: 'all', userId }); };
+      const studyUnknownBtn = $('#btn-study-unknown', b);
+      if (studyUnknownBtn) studyUnknownBtn.onclick = () => { api.close(); openStageSelectionModal({ mode: 'unknown', userId }); };
+      const studyDueBtn = $('#btn-study-due', b);
+      if (studyDueBtn) studyDueBtn.onclick = () => { api.close(); startStudyDue(userId); };
+      const viewWordsBtn = $('#btn-menu-view-words', b);
+      if (viewWordsBtn && activeList) {
+        viewWordsBtn.onclick = () => { api.close(); openListWordsModal(activeList.id, onUpdated); };
+      }
+    },
+  });
+}
+
+/* ---------- Ana Kelime Defterim Sayfası — Dikey Öğrenme Yolu (v5.0 Mobil Revizyon) ---------- */
 export function renderNotebook(v) {
   const userId = getActiveUserId();
-  const summary = getUserNotebookSummary(userId);
-  const lists = getUserNotebookLists(userId);
+  let win = null; // { key, lo, hi }
 
-  const listCardsHtml = lists.length
-    ? lists
-        .map((list) => {
-          const stats = getListStats(list.id);
-          const hasWords = stats.total > 0;
-          return `
-            <div class="notebook-card" data-list-id="${list.id}" style="background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px">
-              <div class="row between wrap gap" style="margin-bottom:8px">
-                <div style="flex:1">
-                  <h3 style="margin:0 0 4px;font-size:1.1rem;display:flex;align-items:center;gap:8px">
-                    <span>${esc(list.name)}</span>
-                    <span class="chip" style="font-size:0.75rem">${stats.total} kelime</span>
-                  </h3>
-                  <div class="muted small">
-                    ${stats.completed}/${stats.total} tamamlandı (%${stats.completion})
-                    ${stats.due ? ` · <span class="warn-t"><b>${stats.due} tekrar zamanı geldi</b></span>` : ''}
-                  </div>
-                </div>
-                <div class="row gap">
-                  <button type="button" class="btn sm primary" data-act="study-list" data-id="${list.id}" ${hasWords ? '' : 'disabled'}>
-                    🚀 Bu Listeyi Çalış
-                  </button>
-                  <button type="button" class="btn sm" data-act="view-list" data-id="${list.id}">
-                    Kelimeleri Gör
-                  </button>
-                  <button type="button" class="btn sm ghost" data-act="edit-list" data-id="${list.id}" title="Listeyi Düzenle">
-                    ✏️
-                  </button>
-                  <button type="button" class="btn sm ghost" data-act="del-list" data-id="${list.id}" title="Listeyi Sil" style="color:var(--no)">
-                    🗑️
-                  </button>
-                </div>
-              </div>
-              <div class="progress thin" style="margin-top:10px">
-                <i style="width:${stats.completion}%"></i>
-              </div>
+  const draw = async (opts = {}) => {
+    const lists = getUserNotebookLists(userId);
+    if (lists.length) await ensureListPaths(lists); // kalıcı durakları garanti et (idempotent)
+    const activeList = getPreferredNotebookList(userId);
+    const pathSum = notebookPathSummary(activeList);
+    const n = pathSum.totalStops;
+    const cur = Math.max(0, pathSum.currentIndex);
+    const key = `nb:${activeList?.id || ''}`;
+    if (!win || win.key !== key || opts.recenter) {
+      win = { key, lo: Math.max(0, cur - WINDOW_RADIUS), hi: Math.min(n - 1, cur + WINDOW_RADIUS) };
+    }
+    win.lo = Math.max(0, Math.min(win.lo, Math.max(0, n - 1)));
+    win.hi = Math.min(Math.max(0, n - 1), Math.max(win.hi, win.lo));
+
+    const listSelectHtml = lists.length
+      ? `<div class="nb-list-bar">
+          <select class="input sm nb-list-select" id="nb-active-list" aria-label="Kişisel liste seç">
+            ${lists.map((l) => `<option value="${esc(l.id)}" ${activeList && l.id === activeList.id ? 'selected' : ''}>${esc(l.name)} (${(l.wordIds || []).length})</option>`).join('')}
+          </select>
+          ${activeList ? `
+            <button type="button" class="icon-btn sm" data-act="view-list" data-id="${activeList.id}" aria-label="Listedeki kelimeleri gör" title="Kelimeleri Gör">${ICONS.stack}</button>
+            <button type="button" class="icon-btn sm" data-act="edit-list" data-id="${activeList.id}" aria-label="Listeyi düzenle" title="Listeyi Düzenle">✎</button>
+            <button type="button" class="icon-btn sm danger-text" data-act="del-list" data-id="${activeList.id}" aria-label="Listeyi sil" title="Listeyi Sil">✕</button>
+          ` : ''}
+        </div>`
+      : '';
+
+    const progressStripHtml = activeList && pathSum.totalWords
+      ? `<div class="nb-progress-strip">
+          <span class="nb-progress-text"><b>${pathSum.doneWords}/${pathSum.totalWords}</b> kelime · <b>${pathSum.doneStops}/${pathSum.totalStops}</b> durak (%${pathSum.pct})</span>
+          <div class="progress thin" role="progressbar" aria-valuenow="${pathSum.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pathSum.pct}%"></i></div>
+          ${n > 6 ? `<button type="button" class="text-btn small" id="nb-path-jump">Kaldığım Yere Git</button>` : ''}
+        </div>`
+      : '';
+
+    let bodyHtml = '';
+    if (!lists.length) {
+      bodyHtml = `
+        <div class="path-empty">
+          <b>Henüz bir kelime listen yok</b>
+          <button type="button" class="btn primary" id="btn-empty-create-list">＋ İlk Listeni Oluştur</button>
+        </div>
+      `;
+    } else if (!n) {
+      bodyHtml = `
+        <div class="path-empty">
+          <b>${esc(activeList.name)} listesinde henüz kelime yok</b>
+          <span class="muted small">Her ${STOP_SIZE} kelime dikey yolunda bir durak oluşturur.</span>
+          <button type="button" class="btn primary" id="btn-empty-add-word">＋ Kelime Ekle</button>
+        </div>
+      `;
+    } else {
+      const prevBtn = win.lo > 0 ? `<button type="button" class="btn ghost block path-more" id="nb-path-prev">Önceki durakları göster (${win.lo} durak)</button>` : '';
+      const nextBtn = win.hi < n - 1 ? `<button type="button" class="btn ghost block path-more" id="nb-path-next">Sonraki durakları göster (${n - 1 - win.hi} durak daha)</button>` : '';
+      bodyHtml = `
+        <div class="path-wrap nb-vertical-path">
+          ${prevBtn}
+          ${pathCanvasHtml(pathSum, win.lo, win.hi, 'notebook')}
+          ${nextBtn}
+        </div>
+      `;
+    }
+
+    v.innerHTML = `
+      <div class="page notebook-page">
+        <header class="nb-header">
+          <div class="nb-brand-row">
+            <span class="hero-title" aria-label="VELUNO">VELUNO</span>
+            <span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>
+          </div>
+          <div class="nb-top-bar">
+            <h1>Kelime Defterim</h1>
+            <div class="nb-top-actions">
+              <button type="button" class="btn sm primary" id="btn-top-add-word" aria-label="Kelime Ekle">＋ Kelime</button>
+              <button type="button" class="btn sm" id="btn-open-study-menu" aria-label="Çalışma seçenekleri">Çalış ▾</button>
+              <button type="button" class="btn sm ghost" id="btn-top-new-list" aria-label="Yeni liste oluştur">＋ Liste</button>
             </div>
-          `;
-        })
-        .join('')
-    : `
-      <div class="center" style="padding:2.5rem 1rem;background:var(--card);border:1px dashed var(--bd);border-radius:14px">
-        <p class="lead" style="margin-bottom:8px">Henüz bir kelime listeniz bulunmuyor.</p>
-        <p class="muted small" style="margin-bottom:16px">Dersleriniz, sınavlarınız veya günlük çalışmalarınız için hemen ilk listenizi oluşturun.</p>
-        <button type="button" class="btn primary" id="btn-empty-create-list">＋ İlk Listeni Oluştur</button>
+          </div>
+          ${listSelectHtml}
+          ${progressStripHtml}
+        </header>
+        ${bodyHtml}
       </div>
     `;
 
-  v.innerHTML = `
-    <div class="page notebook-page">
-      <div class="row between wrap gap" style="margin-bottom:16px;align-items:flex-start">
-        <div>
-          <h1 style="margin:0 0 4px">Kelime Defterim</h1>
-          <p class="lead" style="margin:0">Kişisel kelime listelerin, 4 aşamalı öğrenme ve akıllı tekrar.</p>
-        </div>
-        <div class="row gap wrap">
-          <button type="button" class="btn primary" id="btn-top-add-word">＋ Kelime Ekle</button>
-          <button type="button" class="btn" id="btn-top-new-list">＋ Yeni Liste</button>
-        </div>
-      </div>
+    const refresh = () => { win = null; draw(); };
 
-      <!-- ÇALIŞMA SEÇENEKLERİ (STUDY OPTIONS BANNER) -->
-      <section class="notebook-study-banner" style="background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:20px">
-        <div class="row between wrap gap" style="margin-bottom:12px">
-          <div>
-            <h2 style="font-size:1.05rem;margin:0 0 4px">Kişisel Çalışma Seçenekleri</h2>
-            <div class="muted small">
-              Toplam <b>${summary.totalWords}</b> kelime · <b>${summary.completedWords}</b> öğrenildi · <b>${summary.dueWords}</b> tekrar bekliyor
-            </div>
-          </div>
-          <div class="progress thin" style="max-width:180px;min-width:120px">
-            <i style="width:${summary.completion}%"></i>
-          </div>
-        </div>
-
-        <div class="notebook-study-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
-          <button type="button" class="btn" id="btn-study-all" ${summary.totalWords ? '' : 'disabled'} style="flex-direction:column;padding:12px 10px;height:auto">
-            <span style="font-size:1.2rem;margin-bottom:4px">⚡</span>
-            <b>Bütün Kelimelerimi Çalış</b>
-            <span class="muted small" style="font-size:0.75rem">${summary.totalWords} kelime</span>
-          </button>
-
-          <button type="button" class="btn" id="btn-study-unknown" ${summary.totalWords ? '' : 'disabled'} style="flex-direction:column;padding:12px 10px;height:auto">
-            <span style="font-size:1.2rem;margin-bottom:4px">🎯</span>
-            <b>Yalnızca Bilmediklerimi Çalış</b>
-            <span class="muted small" style="font-size:0.75rem">Öğrenilmemiş & Hatalı</span>
-          </button>
-
-          <button type="button" class="btn primary" id="btn-study-due" ${summary.dueWords ? '' : 'disabled'} style="flex-direction:column;padding:12px 10px;height:auto">
-            <span style="font-size:1.2rem;margin-bottom:4px">🧠</span>
-            <b>Tekrar Zamanı Gelenler</b>
-            <span class="muted small" style="font-size:0.75rem;color:var(--on-ac)">${summary.dueWords ? `${summary.dueWords} kelime bekliyor` : 'Şu an yok'}</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- LİSTELER BAŞLIĞI & KARTLAR -->
-      <div class="row between wrap gap" style="margin-bottom:12px">
-        <h2 style="font-size:1.15rem;margin:0">Listelerim (${summary.listCount})</h2>
-      </div>
-
-      <div class="notebook-lists-wrap">
-        ${listCardsHtml}
-      </div>
-    </div>
-  `;
-
-  // Buton Olayları (Event Bindings)
-  const refresh = () => renderNotebook(v);
-
-  const topNewList = $('#btn-top-new-list', v);
-  if (topNewList) topNewList.onclick = () => openListModal(null, refresh);
-
-  const emptyCreate = $('#btn-empty-create-list', v);
-  if (emptyCreate) emptyCreate.onclick = () => openListModal(null, refresh);
-
-  const topAddWord = $('#btn-top-add-word', v);
-  if (topAddWord) topAddWord.onclick = () => openAddWordModal({ onSaved: refresh });
-
-  // Çalışma Seçenekleri Butonları
-  const studyAllBtn = $('#btn-study-all', v);
-  if (studyAllBtn) studyAllBtn.onclick = () => openStageSelectionModal({ mode: 'all', userId });
-
-  const studyUnknownBtn = $('#btn-study-unknown', v);
-  if (studyUnknownBtn) studyUnknownBtn.onclick = () => openStageSelectionModal({ mode: 'unknown', userId });
-
-  const studyDueBtn = $('#btn-study-due', v);
-  if (studyDueBtn) studyDueBtn.onclick = () => startStudyDue(userId);
-
-  // Kart Butonları
-  $$('[data-act="study-list"]', v).forEach((btn) => {
-    btn.onclick = () => openStageSelectionModal({ listId: btn.dataset.id, mode: 'list', userId });
-  });
-
-  $$('[data-act="view-list"]', v).forEach((btn) => {
-    btn.onclick = () => openListWordsModal(btn.dataset.id, refresh);
-  });
-
-  $$('[data-act="edit-list"]', v).forEach((btn) => {
-    btn.onclick = () => {
-      const targetList = lists.find((l) => l.id === btn.dataset.id);
-      if (targetList) openListModal(targetList, refresh);
-    };
-  });
-
-  $$('[data-act="del-list"]', v).forEach((btn) => {
-    btn.onclick = async () => {
-      const targetList = lists.find((l) => l.id === btn.dataset.id);
-      if (!targetList) return;
-      const ok = await confirmDialog(`"${targetList.name}" listesi silinsin mi? (Bu listedeki kelimeler başka listelerde bulunmuyorsa silinecektir.)`, { danger: true });
-      if (!ok) return;
-      await deleteNotebookList(targetList.id);
-      toast(`"${esc(targetList.name)}" listesi silindi.`);
+    const topNewList = $('#btn-top-new-list', v);
+    if (topNewList) topNewList.onclick = () => openListModal(null, async (created) => {
+      if (created?.id) await setPreferredNotebookList(created.id, userId);
       refresh();
-    };
-  });
+    });
+
+    const emptyCreate = $('#btn-empty-create-list', v);
+    if (emptyCreate) emptyCreate.onclick = () => openListModal(null, async (created) => {
+      if (created?.id) await setPreferredNotebookList(created.id, userId);
+      refresh();
+    });
+
+    const topAddWord = $('#btn-top-add-word', v);
+    if (topAddWord) topAddWord.onclick = () => openAddWordModal({ defaultListId: activeList?.id || null, onSaved: refresh });
+
+    const emptyAddWord = $('#btn-empty-add-word', v);
+    if (emptyAddWord) emptyAddWord.onclick = () => openAddWordModal({ defaultListId: activeList?.id || null, onSaved: refresh });
+
+    const studyMenuBtn = $('#btn-open-study-menu', v);
+    if (studyMenuBtn) studyMenuBtn.onclick = () => openNotebookStudyMenuModal({ activeList, userId, onUpdated: refresh });
+
+    const listSel = $('#nb-active-list', v);
+    if (listSel) {
+      listSel.onchange = async () => {
+        await setPreferredNotebookList(listSel.value, userId);
+        win = null;
+        draw();
+      };
+    }
+
+    const prevEl = $('#nb-path-prev', v);
+    if (prevEl) prevEl.onclick = () => { win.lo = Math.max(0, win.lo - WINDOW_STEP); draw({ keepScroll: true }); };
+    const nextEl = $('#nb-path-next', v);
+    if (nextEl) nextEl.onclick = () => { win.hi = Math.min(n - 1, win.hi + WINDOW_STEP); draw(); };
+    const jumpEl = $('#nb-path-jump', v);
+    if (jumpEl) jumpEl.onclick = () => { draw({ recenter: true, scrollToCurrent: true }); };
+
+    $$('[data-stop-index]', v).forEach((b) => {
+      b.onclick = () => {
+        const s = pathSum.stops[Number(b.dataset.stopIndex)];
+        if (!s || !activeList) return;
+        openStopDetail({ kind: 'notebook', stop: s, list: activeList, onChanged: refresh });
+      };
+    });
+
+    $$('[data-act="view-list"]', v).forEach((btn) => {
+      btn.onclick = () => openListWordsModal(btn.dataset.id, refresh);
+    });
+
+    $$('[data-act="edit-list"]', v).forEach((btn) => {
+      btn.onclick = () => {
+        const targetList = lists.find((l) => l.id === btn.dataset.id);
+        if (targetList) openListModal(targetList, refresh);
+      };
+    });
+
+    $$('[data-act="del-list"]', v).forEach((btn) => {
+      btn.onclick = async () => {
+        const targetList = lists.find((l) => l.id === btn.dataset.id);
+        if (!targetList) return;
+        const ok = await confirmDialog(`"${targetList.name}" listesi silinsin mi? (Bu listedeki kelimeler başka listelerde bulunmuyorsa silinecektir.)`, { danger: true });
+        if (!ok) return;
+        await deleteNotebookList(targetList.id);
+        toast(`"${esc(targetList.name)}" listesi silindi.`);
+        refresh();
+      };
+    });
+
+    if (opts.scrollToCurrent || (opts.initial && cur > 2)) {
+      const target = $('.pstop.is-current', v) || $(`[data-stop-index="${cur}"]`, v);
+      if (target && typeof target.scrollIntoView === 'function') {
+        requestAnimationFrame(() => target.scrollIntoView({ block: 'center', behavior: opts.initial || reduceMotion() ? 'auto' : 'smooth' }));
+      }
+    }
+  };
+
+  draw({ initial: true }).catch((e) => { console.error(e); toast('Defterim yüklenemedi: ' + e.message, 'error'); });
 }

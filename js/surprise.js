@@ -20,7 +20,7 @@ export function renderSurprise(container) {
           <h2 class="jfy-title">Özel Sayfa</h2>
           <p class="jfy-lead muted">Bu sürpriz yalnızca yetkili hesaplara özeldir.<br>Normal İngilizce öğrenme deneyimine kaldığın yerden devam edebilirsin.</p>
           <div class="jfy-actions">
-            <a class="btn primary" href="#/dashboard">Ana Sayfaya Dön</a>
+            <a class="btn primary" href="#/notebook">Defterime Dön</a>
           </div>
         </div>
       </div>
@@ -292,7 +292,7 @@ function wireSurpriseEvents(container) {
         isAudioPlaying = false;
       }
       if (typeof location !== 'undefined') {
-        location.hash = '#/dashboard';
+        location.hash = '#/notebook';
       }
     };
   }

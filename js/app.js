@@ -1,9 +1,9 @@
-// VELUNO v5.0 (Ember Soft) — uygulama giriş noktası: açılış (hayrat) ekranı, router, Ana Sayfa, Yolum, Menü, Ayarlar, Tema Sistemi, PWA kaydı.
+// VELUNO v5.0 (Ember Soft) — uygulama giriş noktası: açılış (hayrat) ekranı, router, Defterim (varsayılan), Hazır Kelime Havuzu, Yolum, Menü, Ayarlar, Tema Sistemi, PWA kaydı.
 import { initStorage, state, getSettings, setSetting, getMeta, setMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
-import { seedBuiltIn, LEVELS, LEVEL_NAMES } from './vocabulary.js';
+import { seedBuiltIn, LEVELS } from './vocabulary.js';
 import { $, $$, esc, toast, confirmDialog, openModal, ICONS } from './ui.js';
-import { renderLearn, initKeys, abortSession, resumeSaved, startLearn } from './learning.js';
-import { renderReview, studyPlan, startReview } from './review.js';
+import { renderLearn, initKeys, abortSession } from './learning.js';
+import { renderReview, studyPlan } from './review.js';
 import { renderExams } from './exams.js';
 import { renderStats, levelStats, today, streakStats, todayLearnedCount } from './statistics.js';
 import { renderVocabulary } from './vocab-ui.js';
@@ -11,17 +11,16 @@ import { renderGrammar, nextGrammarTopic, openGrammarLesson, resetGrammarView } 
 import { exportBackup, pickAndRestore } from './import-export.js';
 import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser, hasSeenSurpriseThisSession, markSurpriseSeen, login, logout, testFirebaseAccess } from './auth.js';
 import { renderSurprise } from './surprise.js';
-import { renderNotebook, getUserNotebookSummary } from './notebook.js';
+import { renderNotebook, getAllNotebookLists } from './notebook.js';
 import { renderIrregularVerbs, resetIrregularView, computeVerbSetStats, BUILTIN_IRREGULAR_VERBS } from './irregular-verbs.js';
-import { renderPath, miniPathHtml, notebookPathSummary, levelPathSummary, getPreferredNotebookList, setPreferredNotebookList } from './path-ui.js';
+import { renderPath } from './path-ui.js';
 import { ensureListPaths } from './paths.js';
-import { getUserNotebookLists, getAllNotebookLists, getActiveUserId } from './notebook.js';
 
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
 
 /* ---------- Tema Çözümleme & Ayarların Uygulanması ---------- */
-export const THEME_META_COLORS = { dark: '#101317', studio: '#131F23', ember: '#181818', light: '#F7F9FC' };
+export const THEME_META_COLORS = { dark: '#101317', studio: '#131F23', ember: '#101820', light: '#F7F9FC' };
 export const THEME_IDS = ['light', 'dark', 'auto', 'studio', 'ember'];
 export function resolveTheme(themePref = 'light', prefersDark = null) {
   if (themePref === 'studio') return 'studio';
@@ -46,7 +45,7 @@ export function applySettings() {
   r.classList.toggle('reduce', !!s.reducedMotion);
   const metaTheme = document.getElementById('meta-theme-color');
   if (metaTheme) {
-    const metaColors = { dark: '#101317', studio: '#131F23', ember: '#181818', light: '#F7F9FC' };
+    const metaColors = { dark: '#101317', studio: '#131F23', ember: '#101820', light: '#F7F9FC' };
     metaTheme.setAttribute('content', metaColors[resolved] || '#F7F9FC');
   }
 }
@@ -86,21 +85,29 @@ function showIntro() {
 
 function enterApp() {
   $('#app').hidden = false;
-  if (!location.hash) location.hash = '#/dashboard';
+  if (!location.hash || location.hash === '#/dashboard') location.hash = '#/notebook';
   route();
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, path: renderPath, learn: renderLearn, review: renderReview, grammar: renderGrammar, notebook: renderNotebook, irregular: renderIrregularVerbs, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
-// v5.0: Mobil alt menü 4 sekme → Ana Sayfa · Defterim · Yolum · Menü. Diğer tüm bölümler "Menü" sekmesini aktif gösterir.
-const MORE_GROUP = ['more', 'learn', 'review', 'grammar', 'irregular', 'vocabulary', 'exams', 'statistics', 'settings', 'login', 'surprise'];
+const routes = { notebook: renderNotebook, dashboard: renderNotebook, learn: renderLearn, path: renderPath, review: renderReview, grammar: renderGrammar, irregular: renderIrregularVerbs, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
+// v5.0 Mobil Tasarım Revizyonu: Alt menü 4 sekme → Defterim · Hazır Kelime Havuzu · Yolum · Menü. Diğer tüm bölümler "Menü" sekmesini aktif gösterir.
+const MORE_GROUP = ['more', 'review', 'grammar', 'irregular', 'vocabulary', 'exams', 'statistics', 'settings', 'login', 'surprise'];
 let keepGrammarView = false;
 function gotoGrammarLesson(id) {
   if (openGrammarLesson(id, null)) { keepGrammarView = true; location.hash = '#/grammar'; }
 }
 function route() {
-  const name = (location.hash.replace('#/', '') || 'dashboard').split('?')[0];
-  const fn = routes[name] || renderDashboard;
+  const rawName = (location.hash.replace('#/', '') || 'notebook').split('?')[0];
+  const name = rawName === 'dashboard' ? 'notebook' : rawName;
+  if (rawName === 'dashboard' && typeof history !== 'undefined' && typeof history.replaceState === 'function') {
+    try { history.replaceState(null, '', '#/notebook'); } catch { /* */ }
+  }
+  if (isSude() && !hasSeenSurpriseThisSession() && name !== 'surprise') {
+    location.hash = '#/surprise';
+    return;
+  }
+  const fn = routes[name] || renderNotebook;
   abortSession();
   if (name === 'grammar') { if (!keepGrammarView) resetGrammarView(); keepGrammarView = false; }
   if (name === 'irregular') { resetIrregularView(); }
@@ -110,12 +117,12 @@ function route() {
     a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
   });
   view().classList.remove('page-in'); void view().offsetWidth; view().classList.add('page-in');
-  try { fn(view()); } catch (e) { console.error(e); view().innerHTML = `<div class="page"><h2>Bir hata oluştu</h2><p class="muted">${esc(e.message)}</p><a class="btn" href="#/dashboard">Ana Sayfaya Dön</a></div>`; }
+  try { fn(view()); } catch (e) { console.error(e); view().innerHTML = `<div class="page"><h2>Bir hata oluştu</h2><p class="muted">${esc(e.message)}</p><a class="btn" href="#/notebook">Defterime Dön</a></div>`; }
   window.scrollTo(0, 0);
   $('#view').focus({ preventScroll: true });
 }
 
-/* ---------- Ana Sayfa (Learning Home) & Serbest Seviye Seçimi (v3.2) ---------- */
+/* ---------- Serbest Seviye Seçimi & Günlük Hedef ---------- */
 export function openLevelSelectorModal(onSelect) {
   const current = getMeta('learnLevel');
   openModal({
@@ -167,173 +174,62 @@ function openGoalModal(onDone) {
   });
 }
 
-function renderDashboard(v) {
-  // Sude yeni oturumunda henüz sürprizi görmediyse sürpriz ekranına yönlendir
-  if (isSude() && !hasSeenSurpriseThisSession()) {
-    location.hash = '#/surprise';
-    return;
-  }
-
+/* ---------- Menü (4. Sekme: Çalışma Modülleri, Araçlar, Hesap ve Ayarlar) ---------- */
+function renderMore(v) {
+  const item = (href, ic, title, sub) => `<li><a class="list-row linkrow" href="${href}"><span class="row-ic">${ICONS[ic]}</span><div class="row-main"><b>${title}</b><span class="muted small">${sub}</span></div>${ICONS.chev}</a></li>`;
+  const u = getCurrentUser();
   const s = getSettings(), t = today();
   const dailyGoal = s.dailyGoal || 10;
   const tWords = todayLearnedCount(t);
-  const reached = tWords >= dailyGoal;
-
-  const prefLevel = getMeta('learnLevel');
-  const level = LEVELS.includes(prefLevel) ? prefLevel : LEVELS[0];
-  const hasPickedLevel = LEVELS.includes(prefLevel);
-  const byLevel = getMeta('activeSessionsByLevel') || {};
-  const activeSaved = hasPickedLevel ? byLevel[level] : null;
-  const hasSaved = !!(activeSaved && activeSaved.idx < (activeSaved.items?.length || 0));
-
   const strk = streakStats();
   const due = levelStats('').due;
   const gNext = nextGrammarTopic();
+  const irvStats = computeVerbSetStats(BUILTIN_IRREGULAR_VERBS);
   const plan = studyPlan();
-
   const ahmetBanner = isAhmet() ? `
     <div class="ahmet-preview-banner">
       <span>Ahmet & Sude Özel Alanı ❤️</span>
       <a href="#/surprise?preview=1">Sürprizi Önizle ❤️</a>
     </div>` : '';
 
-  // Kelime Defterim (birinci öncelik) — gerçek liste ve öğrenme kayıtları
-  const userId = getActiveUserId();
-  const nbLists = getUserNotebookLists(userId);
-  const nbSummary = getUserNotebookSummary(userId);
-  const nbList = getPreferredNotebookList(userId);
-  const nbPath = notebookPathSummary(nbList);
-  const nbLearned = nbSummary.completedWords;
-  const nbPicker = nbLists.length > 1
-    ? `<select class="input sm home-list-pick" id="home-list" aria-label="Liste seç">${nbLists.map((l) => `<option value="${esc(l.id)}" ${nbList && l.id === nbList.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select>`
-    : (nbList ? `<span class="home-list-name">${esc(nbList.name)}</span>` : '');
-  const nbBody = nbSummary.totalWords
-    ? `<div class="home-stats">
-        <div><b>${nbSummary.totalWords}</b><span>kişisel kelime</span></div>
-        <div><b>${nbLearned}</b><span>öğrenildi</span></div>
-        <div><b>${nbSummary.masteredWords}</b><span>kalıcı</span></div>
-      </div>
-      <div class="home-path-head">${nbPicker}<span class="muted small">${nbPath.totalStops ? `${nbPath.doneStops}/${nbPath.totalStops} durak` : 'Bu liste boş'}</span></div>
-      ${nbPath.totalStops ? `<a href="#/path" class="mini-link" data-open-path="notebook" aria-label="Kelime Defterim yolunu aç">${miniPathHtml(nbPath, 'notebook')}</a>` : ''}`
-    : `<p class="muted small home-empty">Kendi kelimelerini ekle; VELUNO onları aynı öğrenme akışıyla çalıştırsın ve her 10 kelimeyi bir durağa dönüştürsün.</p>`;
-
-  // Hazır Kelime Havuzu — seçili / son çalışılan seviye
-  const lvStats = levelStats(level);
-  const lvPath = levelPathSummary(level);
-  const learnLabel = hasSaved ? `Kaldığın Yerden Devam Et — ${level}` : 'Öğrenmeye Git';
-
-  const other = (href, ic, title, sub, id = '') => `<${href ? `a href="${href}"` : `button type="button" id="${id}"`} class="home-mini">
-      <span class="home-mini-ic" aria-hidden="true">${ICONS[ic] || ''}</span>
-      <span class="home-mini-t"><b>${title}</b><span class="muted small">${sub}</span></span>
-    </${href ? 'a' : 'button'}>`;
-  const irvStats = computeVerbSetStats(BUILTIN_IRREGULAR_VERBS);
-
-  v.innerHTML = `<div class="page home">
-  <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div></div></div></header>
+  v.innerHTML = `<div class="page">
+  <div class="nb-brand-row" style="margin-bottom:6px">
+    <span class="hero-title" aria-label="VELUNO">VELUNO</span>
+    <span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>
+  </div>
+  <h1>Menü</h1>
   ${ahmetBanner}
-
-  <section class="home-card home-nb" aria-labelledby="h-nb">
-    <div class="home-card-head"><h2 id="h-nb">Kelime Defterim</h2>${nbLists.length ? `<span class="home-tag">${nbLists.length} liste</span>` : ''}</div>
-    ${nbBody}
-    <div class="home-actions"><a class="btn primary block" href="#/notebook">Defterime Git</a>${nbPath.totalStops ? `<a class="btn ghost" href="#/path" data-open-path="notebook">Yolu Aç</a>` : ''}</div>
-  </section>
-
-  <section class="home-card home-lv" aria-labelledby="h-lv">
-    <div class="home-card-head"><h2 id="h-lv">Hazır Kelime Havuzu</h2>
-      <div class="seg sm" role="group" aria-label="Seviye">${LEVELS.map((l) => `<button type="button" class="seg-btn ${l === level ? 'active' : ''}" data-home-level="${l}">${l}</button>`).join('')}</div>
+  <div class="list" style="margin-bottom:14px">
+    <div class="list-row">
+      <div class="row-main">
+        <b>Günlük İlerleme · ${tWords}/${dailyGoal} kelime</b>
+        <span class="muted small"><span class="streak-mark">Seri ${strk.current} gün</span> · ${due ? `${due} kelime tekrar bekliyor` : 'Şu an bekleyen tekrar yok'}</span>
+      </div>
+      <button type="button" class="text-btn" id="edit-goal">Hedef</button>
     </div>
-    <div class="home-path-head"><span class="home-list-name">${level} — ${esc(LEVEL_NAMES[level] || '')}</span><span class="muted small">${lvStats.completed}/${lvStats.total} kelime · ${lvPath.doneStops}/${lvPath.totalStops} durak</span></div>
-    ${lvPath.totalStops ? `<a href="#/path" class="mini-link" data-open-path="builtin" aria-label="${level} yolunu aç">${miniPathHtml(lvPath, 'builtin')}</a>` : ''}
-    ${hasSaved ? `<p class="muted small home-saved">${esc(activeSaved.title)} · ${activeSaved.idx}/${activeSaved.items.length} · <button type="button" class="text-btn" id="discard">Vazgeç</button></p>` : ''}
-    <div class="home-actions"><button type="button" class="btn bronze block" id="go-learn">${learnLabel}</button><a class="btn ghost" href="#/path" data-open-path="builtin">Yolu Aç</a></div>
-  </section>
-
-  <section class="home-card home-rv" aria-labelledby="h-rv">
-    <div class="home-rv-row">
-      <div class="home-rv-main"><h2 id="h-rv">Tekrarlarım</h2>
-        <span class="muted small">${due ? `${due} kelime tekrar bekliyor` : 'Şu an bekleyen tekrar yok'}</span></div>
-      <span class="home-rv-count ${due ? 'has' : ''}" aria-hidden="true">${due}</span>
-    </div>
-    <div class="home-daily muted small">Bugün <b>${tWords}/${dailyGoal}</b> yeni kelime${reached ? ' · Hedef tamamlandı' : ''} · <span class="streak-mark">Seri ${strk.current} gün</span> · <button type="button" class="text-btn" id="edit-goal">Hedefi Değiştir</button></div>
-    <a class="btn block ${due ? 'primary' : ''}" href="#/review">Tekrara Git</a>
-  </section>
-
-  <section class="home-other" aria-labelledby="h-other">
-    <h2 class="group-title" id="h-other">Diğer Çalışmalar</h2>
-    <div class="home-mini-grid">
-      ${other(gNext ? '' : '#/grammar', 'book', 'Grammar Academy', gNext ? `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}` : 'Konular ve alıştırmalar', gNext ? 'go-grammar' : '')}
-      ${other('#/irregular', 'repeat', 'Fiillerin 3 Hali', irvStats.learned ? `${irvStats.learned}/${irvStats.total} fiil öğrenildi` : `${irvStats.total} düzensiz fiil`)}
-      ${other('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları')}
-      ${other('#/statistics', 'chart', 'İstatistikler', plan && !plan.past ? `Sınava ${plan.days} gün · günlük ${plan.suggested}` : 'İlerlemeni takip et')}
-      ${other('#/vocabulary', 'stack', 'Kelime Havuzum', 'Ara, incele, düzenle')}
-      ${other('#/settings', 'gear', 'Ayarlar', 'Tema, hedef, yedekleme')}
-    </div>
-  </section>
-  </div>`;
-
-  // Kalıcı durak kayıtları yoksa bir kez oluştur (idempotent; mevcut kelime/ilerleme verisine dokunmaz)
-  if (nbLists.length) ensureListPaths(nbLists).catch((e) => console.warn('Yol kaydı oluşturulamadı', e));
-
-  $$('[data-open-path]', v).forEach((a) => {
-    a.addEventListener('click', () => { setMeta('pathTab', a.dataset.openPath); });
-  });
-  const hl = $('#home-list', v);
-  if (hl) hl.onchange = async () => { await setPreferredNotebookList(hl.value, userId); renderDashboard(v); };
-  $$('[data-home-level]', v).forEach((b) => {
-    b.onclick = async () => {
-      const newLevel = b.dataset.homeLevel;
-      await setMeta('learnLevel', newLevel);
-      const byL = getMeta('activeSessionsByLevel') || {};
-      await setMeta('activeSession', byL[newLevel] || null);
-      renderDashboard(v);
-    };
-  });
-  $('#go-learn', v).onclick = async () => {
-    if (hasSaved) { if (!(await resumeSaved(level))) toast('Oturum devam ettirilemedi.', 'error'); return; }
-    if (!hasPickedLevel) await setMeta('learnLevel', level);
-    await startLearn(level);
-  };
-  const gg = $('#go-grammar', v); if (gg) gg.onclick = () => gotoGrammarLesson(gNext.id);
-  $('#edit-goal', v).onclick = () => openGoalModal(() => renderDashboard(v));
-  const dc = $('#discard', v);
-  if (dc) dc.onclick = async () => {
-    if (await confirmDialog('Yarım kalan oturum silinsin mi? (Verdiğiniz cevaplar zaten kaydedildi.)', { danger: true })) {
-      await setMeta('activeSession', null);
-      const byL = getMeta('activeSessionsByLevel') || {};
-      if (level && byL[level]) {
-        delete byL[level];
-        await setMeta('activeSessionsByLevel', byL);
-      }
-      renderDashboard(v);
-    }
-  };
-}
-
-/* ---------- Menü (eski "Diğer") ---------- */
-function renderMore(v) {
-  const item = (href, ic, title, sub) => `<li><a class="list-row linkrow" href="${href}"><span class="row-ic">${ICONS[ic]}</span><div class="row-main"><b>${title}</b><span class="muted small">${sub}</span></div>${ICONS.chev}</a></li>`;
-  const u = getCurrentUser();
-  v.innerHTML = `<div class="page"><h1>Menü</h1>
+  </div>
   <h2 class="group-title">Çalış</h2>
   <ul class="list">
-    ${item('#/learn', 'book', 'Kelime Öğren', 'A2, B1 ve B2 hazır kelimeler · 4 aşamalı öğrenme')}
-    ${item('#/review', 'repeat', 'Tekrarlarım', 'Aralıklı tekrar (SRS) kuyruğu')}
-    ${item('#/grammar', 'book', 'Grammar Academy', 'Dilbilgisi konuları ve alıştırmalar')}
-    ${item('#/irregular', 'repeat', 'Fiillerin 3 Hali', 'Düzensiz fiiller (V1, V2, V3) ve kişisel listelerin')}
-    ${item('#/notebook', 'book', 'Kelime Defterim', 'Kişisel kelime listelerin ve çalışmaların')}
+    ${item('#/notebook', 'book', 'Kelime Defterim', 'Kişisel kelime listelerin ve dikey öğrenme yolun')}
+    ${item('#/learn', 'book', 'Hazır Kelime Havuzu', 'A2, B1 ve B2 hazır kelimeler · 4 aşamalı öğrenme')}
     ${item('#/path', 'chart', 'Yolum', 'Kişisel ve hazır öğrenme yolların')}
+    ${item('#/review', 'repeat', 'Tekrarlarım', due ? `${due} kelime tekrar bekliyor (SRS)` : 'Aralıklı tekrar (SRS) kuyruğu')}
+    ${item('#/grammar', 'book', 'Grammar Academy', gNext ? `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}` : 'Dilbilgisi konuları ve alıştırmalar')}
+    ${item('#/irregular', 'repeat', 'Fiillerin 3 Hali', irvStats.learned ? `${irvStats.learned}/${irvStats.total} fiil öğrenildi` : 'Düzensiz fiiller (V1, V2, V3) ve kişisel listelerin')}
   </ul>
   <h2 class="group-title">Araçlar</h2>
   <ul class="list">
     ${item('#/vocabulary', 'stack', 'Kelime Havuzum', 'Kelimeleri ara, incele ve düzenle')}
     ${item('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları ve geçmiş sonuçlar')}
-    ${item('#/statistics', 'chart', 'İstatistikler', 'İlerlemeni takip et')}
+    ${item('#/statistics', 'chart', 'İstatistikler', plan && !plan.past ? `Sınava ${plan.days} gün · günlük ${plan.suggested}` : 'İlerlemeni takip et')}
   </ul>
   <h2 class="group-title">Hesap ve Ayarlar</h2>
   <ul class="list">
     ${item('#/settings', 'gear', 'Ayarlar', 'Tema, hedef, yedekleme')}
     ${u ? item('#/settings', 'gear', 'Profil', esc(u.email || u.displayName || 'Giriş yapıldı')) : item('#/login', 'gear', 'Özel Giriş (Ahmet & Sude)', 'Profil ve sürpriz hesabı')}
   </ul></div>`;
+  const eg = $('#edit-goal', v);
+  if (eg) eg.onclick = () => openGoalModal(() => renderMore(v));
 }
 
 /* ---------- Ayarlar (iOS tarzı liste) ---------- */

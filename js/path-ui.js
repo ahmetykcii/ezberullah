@@ -1,18 +1,26 @@
-// VELUNO v5.0 — Yolum ekranı, kıvrımlı öğrenme yolları, durak detay paneli ve ana sayfa önizlemeleri.
+// VELUNO v5.0 — Dikey kıvrımlı öğrenme yolları, durak detay paneli ve Yolum ekranı.
 // Bütün ilerleme gerçek öğrenme kayıtlarından (state.progress) okunur; bu modül hiçbir ilerleme kaydı YAZMAZ.
 import { state, getMeta, setMeta, getSettings } from './storage.js';
 import { $, $$, esc, openModal, toast } from './ui.js';
 import { LEVELS, LEVEL_NAMES } from './vocabulary.js';
-import { getUserNotebookLists, getActiveUserId, openStageSelectionModal } from './notebook.js';
-import { startLearn } from './learning.js';
+import { getCurrentUser } from './auth.js';
 import {
   STOP_SIZE, summarizePath, ensureListPaths, getListPathStops, getLevelPathStops, wordPathState, computeStopProgress,
 } from './paths.js';
 
-const ROW = 96;            // durak satır yüksekliği (px)
-const PAD = 28;            // tuval üst/alt boşluğu
-const WINDOW_RADIUS = 15;  // ilk açılışta geçerli durağın iki yanında çizilen durak sayısı
-const WINDOW_STEP = 30;    // "daha fazla göster" ile eklenen durak sayısı
+function getActiveUserId() {
+  const u = getCurrentUser();
+  return u && u.uid ? u.uid : 'guest';
+}
+function getUserNotebookLists(userId = getActiveUserId()) {
+  const all = Array.isArray(state.meta?.notebookLists) ? state.meta.notebookLists : [];
+  return all.filter((l) => l && l.userId === userId);
+}
+
+export const ROW = 94;            // durak satır yüksekliği (px)
+export const PAD = 26;            // tuval üst/alt boşluğu
+export const WINDOW_RADIUS = 15;  // ilk açılışta geçerli durağın iki yanında çizilen durak sayısı
+export const WINDOW_STEP = 30;    // "daha fazla göster" ile eklenen durak sayısı
 
 /* ---------- Tercihler (yalnızca görünüm tercihi; öğrenme verisi değildir) ---------- */
 export function getPathTab() {
@@ -47,17 +55,17 @@ export function levelPathSummary(level) {
   return summarizePath(getLevelPathStops(level), state.progress);
 }
 
-const STATE_TEXT = { done: 'Tamamlandı', active: 'Devam ediyor', todo: 'Henüz başlanmadı', empty: 'Boş' };
-const STATE_ICON = { done: '✓', active: '◐', todo: '○', empty: '·' };
+export const STATE_TEXT = { done: 'Tamamlandı', active: 'Devam ediyor', todo: 'Henüz başlanmadı', empty: 'Boş' };
+export const STATE_ICON = { done: '✓', active: '◐', todo: '○', empty: '·' };
 
-const reduceMotion = () => {
+export const reduceMotion = () => {
   const s = getSettings();
   return !!s.reducedMotion || !s.animations
     || (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
 };
 
-/* ---------- Geometri (ekran genişliğine duyarlı: x yüzde, y piksel) ---------- */
-export const stopX = (i) => 50 + Math.sin(i * 0.9) * 28; // %22 – %78 arası yumuşak kıvrım
+/* ---------- Geometri (ekran genişliğine duyarlı: x yüzde, y piksel; yukarıdan aşağıya dikey akış) ---------- */
+export const stopX = (i) => 50 + Math.sin(i * 0.92) * 24; // %26 – %74 arası yumuşak dikey kıvrım
 
 function segmentPath(points) {
   if (points.length < 2) return '';
@@ -70,16 +78,19 @@ function segmentPath(points) {
   return d;
 }
 
-/** Durak penceresi [lo, hi] için kıvrımlı yol HTML'i (yalnızca görünen duraklar DOM'a eklenir). */
+/**
+ * Durak penceresi [lo, hi] için yukarıdan aşağıya dikey kıvrımlı yol HTML'i.
+ * 1. durak en üstte başlar ve aşağıya doğru ilerler; yalnızca görünür penceredeki duraklar DOM'a eklenir.
+ */
 export function pathCanvasHtml(summary, lo, hi, kind) {
   const n = hi - lo + 1;
   if (n <= 0) return '';
   const H = PAD * 2 + n * ROW;
-  const yOf = (i) => PAD + (hi - i) * ROW + ROW / 2; // 1. durak en altta → yol yukarı doğru ilerler
+  const yOf = (i) => PAD + (i - lo) * ROW + ROW / 2; // 1. durak en üstte → yol yukarıdan aşağıya ilerler
   const pts = [];
   for (let i = lo; i <= hi; i++) pts.push({ i, x: stopX(i), y: yOf(i) });
   const track = segmentPath(pts);
-  // Tamamlanan bölümler: alt durağı tamamlanmış ardışık parçalar
+  // Tamamlanan bölümler: üst durağı tamamlanmış ardışık parçalar
   let doneD = '';
   for (let k = 1; k < pts.length; k++) {
     const prev = summary.stops[pts[k - 1].i];
@@ -93,10 +104,10 @@ export function pathCanvasHtml(summary, lo, hi, kind) {
     return `<button type="button" class="pstop is-${st} ${isCur ? 'is-current' : ''}" data-stop-index="${i}" style="left:${x.toFixed(2)}%;top:${y}px;--p:${s.progress.pct}"
         aria-label="Durak ${s.number}: ${s.progress.done}/${s.progress.total} kelime tamamlandı, ${STATE_TEXT[st]}">
         <span class="pstop-core" aria-hidden="true">${st === 'done' ? '✓' : s.number}</span>
-        <span class="pstop-label ${side}" aria-hidden="true"><b>Durak ${s.number}</b><small>${STATE_ICON[st]} ${s.progress.done}/${s.progress.total} · ${STATE_TEXT[st]}</small>${isCur ? '<em>Buradasın</em>' : ''}</span>
+        <span class="pstop-label ${side}" aria-hidden="true"><b>Durak ${s.number}</b><small>${STATE_ICON[st]} ${s.progress.done}/${s.progress.total}</small>${isCur ? '<em>Aktif</em>' : ''}</span>
       </button>`;
   }).join('');
-  return `<div class="path-canvas path-${kind}" style="height:${H}px">
+  return `<div class="path-canvas path-${kind}" data-direction="vertical" style="height:${H}px">
       <svg class="path-svg" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <path class="path-track" d="${track}" vector-effect="non-scaling-stroke"/>
         ${doneD ? `<path class="path-done" d="${doneD.trim()}" vector-effect="non-scaling-stroke"/>` : ''}
@@ -105,7 +116,7 @@ export function pathCanvasHtml(summary, lo, hi, kind) {
     </div>`;
 }
 
-/** Ana sayfa için kısa yol önizlemesi (en çok 5 durak; geçerli durak ortada). */
+/** Kısa yol önizleme yardımcısı (geriye dönük uyumluluk için korunur). */
 export function miniPathHtml(summary, kind) {
   if (!summary.totalStops) return '';
   const cur = Math.max(0, summary.currentIndex);
@@ -143,11 +154,11 @@ export function miniPathHtml(summary, kind) {
 
 /* ---------- Durak detay paneli ---------- */
 const WORD_STATE = {
-  mastered: { t: 'Kalıcı öğrenildi', c: 'ok', i: '★' },
+  mastered: { t: 'Kalıcı', c: 'ok', i: '★' },
   learned: { t: 'Öğrenildi', c: 'ok', i: '✓' },
-  'learned-review': { t: 'Öğrenildi · tekrar zamanı', c: 'ok', i: '✓' },
-  review: { t: 'Tekrar edilecek', c: 'warn', i: '↻' },
-  learning: { t: 'Öğreniliyor', c: 'mid', i: '◐' },
+  'learned-review': { t: 'Öğrenildi', c: 'ok', i: '✓' },
+  review: { t: 'Tekrar', c: 'warn', i: '↻' },
+  learning: { t: 'Çalışılıyor', c: 'mid', i: '◐' },
   new: { t: 'Yeni', c: 'new', i: '○' },
 };
 
@@ -165,13 +176,11 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
     html: `<div class="stop-detail path-${kind}">
         <p class="muted small stop-ctx">${ctx}</p>
         <div class="stop-stats">
-          <div><b>${pr.total}</b><span>Kelime</span></div>
-          <div><b>${pr.done}</b><span>Öğrenildi / Kalıcı</span></div>
+          <div><b>${pr.done}/${pr.total}</b><span>Kelime</span></div>
           <div><b>%${pr.pct}</b><span>${STATE_TEXT[pr.state]}</span></div>
         </div>
         <div class="progress stop-bar" role="progressbar" aria-valuenow="${pr.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pr.pct}%"></i></div>
         <ul class="stop-words">${rows || '<li class="muted small">Bu durakta kelime yok.</li>'}</ul>
-        <p class="muted small stop-note">Çalışma, bu duraktaki ${ids.length} kelimenin tamamıyla (öğrenilmiş olanlar dahil) mevcut öğrenme akışında başlar. Paneli açmak ilerlemeni değiştirmez.</p>
         <div class="row end gap"><button type="button" class="btn ghost" data-x>Kapat</button><button type="button" class="btn primary" id="stop-study" ${ids.length ? '' : 'disabled'}>Bu Duraktaki Kelimeleri Çalış</button></div>
       </div>`,
     onMount(b, api) {
@@ -180,8 +189,10 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
         api.close();
         if (kind === 'notebook') {
           await setPreferredNotebookList(list.id, list.userId);
+          const { openStageSelectionModal } = await import('./notebook.js');
           openStageSelectionModal({ listId: list.id, mode: 'list', userId: list.userId, pathStop: { wordIds: ids, stopId: stop.id, number: stop.number } });
         } else {
+          const { startLearn } = await import('./learning.js');
           await startLearn(level, { skipModal: true, explicitWordIds: ids, pathStop: { stopId: stop.id, number: stop.number } });
         }
         if (typeof onChanged === 'function') onChanged();
@@ -213,41 +224,37 @@ export function renderPath(v) {
     win.hi = Math.min(n - 1, Math.max(win.hi, win.lo));
 
     const tabs = `<div class="seg full path-tabs" role="tablist" aria-label="Yol türü">
-        <button type="button" role="tab" class="seg-btn ${tab === 'notebook' ? 'active' : ''}" aria-selected="${tab === 'notebook'}" data-path-tab="notebook">Kelime Defterim</button>
+        <button type="button" role="tab" class="seg-btn ${tab === 'notebook' ? 'active' : ''}" aria-selected="${tab === 'notebook'}" data-path-tab="notebook">Defterim</button>
         <button type="button" role="tab" class="seg-btn ${tab === 'builtin' ? 'active' : ''}" aria-selected="${tab === 'builtin'}" data-path-tab="builtin">Hazır Kelimeler</button>
       </div>`;
 
     let picker = '';
     if (tab === 'notebook' && lists.length > 1) {
-      picker = `<label class="path-picker"><span class="sr-only">Liste seç</span><select class="input" id="path-list">${lists.map((l) => `<option value="${esc(l.id)}" ${list && l.id === list.id ? 'selected' : ''}>${esc(l.name)} (${(l.wordIds || []).length})</option>`).join('')}</select></label>`;
+      picker = `<label class="path-picker"><span class="sr-only">Liste seç</span><select class="input sm" id="path-list">${lists.map((l) => `<option value="${esc(l.id)}" ${list && l.id === list.id ? 'selected' : ''}>${esc(l.name)} (${(l.wordIds || []).length})</option>`).join('')}</select></label>`;
     } else if (tab === 'builtin') {
       picker = `<div class="seg sm path-levels" role="group" aria-label="Seviye">${LEVELS.map((l) => `<button type="button" class="seg-btn ${l === level ? 'active' : ''}" data-path-level="${l}">${l}</button>`).join('')}</div>`;
     }
 
     let body = '';
     if (tab === 'notebook' && !lists.length) {
-      body = `<div class="path-empty"><b>Henüz kişisel listen yok</b><p class="muted small">Kelime Defterim'de bir liste oluşturup kelime ekle; her 10 kelime yolunda bir durak olur.</p><a class="btn primary" href="#/notebook">Liste Oluştur</a></div>`;
+      body = `<div class="path-empty"><b>Henüz kişisel listen yok</b><a class="btn primary sm" href="#/notebook">Liste Oluştur</a></div>`;
     } else if (!n) {
       body = tab === 'notebook'
-        ? `<div class="path-empty"><b>${esc(list?.name || 'Liste')} henüz boş</b><p class="muted small">Kelime ekledikçe yolun burada oluşacak. Her durak en fazla ${STOP_SIZE} kelimeden oluşur.</p><a class="btn primary" href="#/notebook">Kelime Ekle</a></div>`
+        ? `<div class="path-empty"><b>${esc(list?.name || 'Liste')} henüz boş</b><a class="btn primary sm" href="#/notebook">Kelime Ekle</a></div>`
         : `<div class="path-empty"><b>${esc(level)} için hazır kelime bulunamadı</b></div>`;
     } else {
-      const head = `<div class="path-summary">
-          <div><b>${summary.doneStops}/${summary.totalStops}</b><span>durak tamamlandı</span></div>
-          <div><b>${summary.doneWords}/${summary.totalWords}</b><span>kelime öğrenildi</span></div>
-          <div><b>%${summary.pct}</b><span>${summary.allDone ? 'Tamamlandı' : summary.doneWords ? 'Devam ediyor' : 'Başlangıç'}</span></div>
-        </div>
-        ${n > 6 ? `<button type="button" class="btn sm path-jump" id="path-jump">Kaldığım Yere Git</button>` : ''}`;
-      const more = win.hi < n - 1 ? `<button type="button" class="btn ghost block path-more" id="path-more-up">Sonraki durakları göster (${n - 1 - win.hi} durak daha)</button>` : '';
-      const less = win.lo > 0 ? `<button type="button" class="btn ghost block path-more" id="path-more-down">Önceki durakları göster (${win.lo} durak)</button>` : '';
-      body = `${head}<div class="path-wrap">${more}${pathCanvasHtml(summary, win.lo, win.hi, kind)}${less}</div>
-        <p class="muted small path-legend"><span class="lg done">✓ Tamamlandı</span><span class="lg active">◐ Devam ediyor</span><span class="lg todo">○ Henüz başlanmadı</span></p>`;
+      const head = `<div class="path-bar-strip">
+          <span class="path-bar-text"><b>${summary.doneStops}/${summary.totalStops}</b> durak · <b>${summary.doneWords}/${summary.totalWords}</b> kelime (%${summary.pct})</span>
+          ${n > 6 ? `<button type="button" class="btn sm ghost path-jump" id="path-jump">Kaldığım Yere Git</button>` : ''}
+        </div>`;
+      const prevBtn = win.lo > 0 ? `<button type="button" class="btn ghost block path-more" id="path-more-down">Önceki durakları göster (${win.lo} durak)</button>` : '';
+      const nextBtn = win.hi < n - 1 ? `<button type="button" class="btn ghost block path-more" id="path-more-up">Sonraki durakları göster (${n - 1 - win.hi} durak daha)</button>` : '';
+      body = `${head}<div class="path-wrap">${prevBtn}${pathCanvasHtml(summary, win.lo, win.hi, kind)}${nextBtn}</div>`;
     }
 
     v.innerHTML = `<div class="page path-page">
-        <div class="page-head"><h1>Yolum</h1></div>
+        <div class="page-head compact-head"><h1>Yolum</h1>${picker}</div>
         ${tabs}
-        <div class="path-toolbar">${picker}</div>
         ${body}
       </div>`;
 
@@ -268,7 +275,7 @@ export function renderPath(v) {
         openStopDetail({ kind, stop: s, list, level });
       };
     });
-    if (opts.scrollToCurrent || opts.initial) {
+    if (opts.scrollToCurrent || (opts.initial && cur > 2)) {
       const target = $('.pstop.is-current', v) || $(`[data-stop-index="${cur}"]`, v);
       if (target && typeof target.scrollIntoView === 'function') {
         requestAnimationFrame(() => target.scrollIntoView({ block: 'center', behavior: opts.initial || reduceMotion() ? 'auto' : 'smooth' }));

@@ -5,6 +5,7 @@ import * as E from './engine.js';
 import { $, $$, esc, toast, speak, sfx, openModal, hasModal, closeTopModal, confirmDialog, ICONS, successMark } from './ui.js';
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { bumpDaily, levelStats } from './statistics.js';
+import { pathCanvasHtml, levelPathSummary, openStopDetail, WINDOW_RADIUS, WINDOW_STEP, reduceMotion } from './path-ui.js';
 
 export const handlers = {}; // kind -> { onAnswer(item, ok, info), onDone(results, sess) }
 let cur = null;
@@ -127,7 +128,7 @@ async function finish() {
 /** Oturum sonrası kancalar (ör. Kelime Defterim → Eşini Bul). Döngüsel içe aktarmayı önlemek için kayıt usulü. */
 export const sessionHooks = {};
 export const summaryHtml = ({ title, big, sub, extra = '', actions = '', verdict = '', mark = true }) =>
-  `<div class="summary">${mark ? successMark() : ''}<h2>${esc(title)}</h2><div class="big-num">${big}</div>${verdict ? `<p class="verdict">${verdict}</p>` : ''}<p class="muted">${sub}</p>${extra ? `<details class="more"><summary>Ayrıntılar</summary><div class="more-body">${extra}</div></details>` : ''}<div class="sum-actions">${actions}<a class="btn ghost" href="#/dashboard">Ana Sayfa</a></div></div>`;
+  `<div class="summary">${mark ? successMark() : ''}<h2>${esc(title)}</h2><div class="big-num">${big}</div>${verdict ? `<p class="verdict">${verdict}</p>` : ''}<p class="muted">${sub}</p>${extra ? `<details class="more"><summary>Ayrıntılar</summary><div class="more-body">${extra}</div></details>` : ''}<div class="sum-actions">${actions}<a class="btn ghost" href="#/notebook">Defterim</a></div></div>`;
 
 const TYPE_LABEL = {
   card: 'Kelimeyi Öğren',
@@ -186,11 +187,11 @@ function renderItem() {
     abortSession();
     if (isNotebook) {
       location.hash = '#/notebook';
-      toast('Oturum kaydedildi; Kelime Defterinizden devam edebilirsiniz.');
+      toast('Oturum kaydedildi; Defterim ekranından devam edebilirsiniz.');
     } else {
-      if (location.hash === '#/dashboard') window.dispatchEvent(new HashChangeEvent('hashchange'));
-      else location.hash = '#/dashboard';
-      toast('Oturum kaydedildi; Ana Sayfadan kaldığınız yerden devam edebilirsiniz.');
+      if (location.hash === '#/learn') window.dispatchEvent(new HashChangeEvent('hashchange'));
+      else location.hash = '#/learn';
+      toast('Oturum kaydedildi; Hazır Kelime Havuzu ekranından kaldığınız yerden devam edebilirsiniz.');
     }
   };
   wire(item, word);
@@ -516,28 +517,93 @@ export async function startLearn(level, options = null) {
 
 export function renderLearn(v) {
   let lv = LEVELS.includes(getMeta('learnLevel')) ? getMeta('learnLevel') : LEVELS[0];
-  const draw = () => {
+  let win = null;
+
+  const draw = (opts = {}) => {
     const s = levelStats(lv);
-    v.innerHTML = `<div class="page">
-      <h1>Kelime Öğren</h1>
-      <p class="lead">Seviyeni seç, kısa bir grupla başla.</p>
-      <div class="seg" role="group" aria-label="Seviye">${LEVELS.map((l) => `<button type="button" class="seg-btn ${l === lv ? 'active' : ''}" data-l="${l}">${l}</button>`).join('')}</div>
-      <div class="level-line">
-        <div class="level-name">${lv} — ${LEVEL_NAMES[lv]}</div>
-        <div class="progress thin"><i style="width:${s.completion}%"></i></div>
-        <div class="muted small">${s.completed}/${s.total} kelime tamamlandı</div>
+    const pathSum = levelPathSummary(lv);
+    const n = pathSum.totalStops;
+    const curIdx = Math.max(0, pathSum.currentIndex);
+    const key = `lv:${lv}`;
+    if (!win || win.key !== key || opts.recenter) {
+      win = { key, lo: Math.max(0, curIdx - WINDOW_RADIUS), hi: Math.min(n - 1, curIdx + WINDOW_RADIUS) };
+    }
+    win.lo = Math.max(0, Math.min(win.lo, Math.max(0, n - 1)));
+    win.hi = Math.min(Math.max(0, n - 1), Math.max(win.hi, win.lo));
+
+    const byLevel = getMeta('activeSessionsByLevel') || {};
+    const activeSaved = byLevel[lv];
+    const hasSaved = !!(activeSaved && activeSaved.idx < (activeSaved.items?.length || 0));
+
+    const prevBtn = win.lo > 0 ? `<button type="button" class="btn ghost block path-more" id="lv-path-prev">Önceki durakları göster (${win.lo} durak)</button>` : '';
+    const nextBtn = win.hi < n - 1 ? `<button type="button" class="btn ghost block path-more" id="lv-path-next">Sonraki durakları göster (${n - 1 - win.hi} durak daha)</button>` : '';
+
+    v.innerHTML = `<div class="page learn-pool-page">
+      <div class="learn-top-bar">
+        <h1>Hazır Kelime Havuzu</h1>
+        <div class="seg sm" role="group" aria-label="Seviye">${LEVELS.map((l) => `<button type="button" class="seg-btn ${l === lv ? 'active' : ''}" data-l="${l}">${l}</button>`).join('')}</div>
       </div>
-      <button class="btn primary xl block" id="go">${lv} Öğrenmeye Başla</button>
-      <details class="more">
-        <summary>4 aşamalı öğrenme nasıl işler?</summary>
-        <div class="more-body">
-          <ol class="plain"><li>Kelimeyi öğren</li><li>Çoktan seçmeli soru</li><li>İngilizce kelimeyi yaz</li><li>Eksik harfleri tamamla</li></ol>
-          <p class="muted small">Dördüncü aşamayı başarıyla tamamladığında kelime öğrenilmiş sayılır ve aralıklı tekrar (SRS) takvimine eklenir.</p>
-        </div>
-      </details>
+      <div class="nb-progress-strip">
+        <span class="nb-progress-text"><b>${lv} (${LEVEL_NAMES[lv]})</b> · <b>${s.completed}/${s.total}</b> kelime · <b>${pathSum.doneStops}/${pathSum.totalStops}</b> durak (%${Math.round(s.completion)})</span>
+        <div class="progress thin" role="progressbar" aria-valuenow="${Math.round(s.completion)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${s.completion}%"></i></div>
+        ${n > 6 ? `<button type="button" class="text-btn small" id="lv-path-jump">Kaldığım Yere Git</button>` : ''}
+      </div>
+      <div class="learn-cta-row">
+        ${hasSaved ? `
+          <button type="button" class="btn bronze block" id="resume">Kaldığın Yerden Devam Et — ${lv} (${activeSaved.idx}/${activeSaved.items.length})</button>
+          <button type="button" class="btn sm ghost" id="discard">Vazgeç</button>
+        ` : ''}
+        <button type="button" class="btn ${hasSaved ? '' : 'bronze xl'} block" id="go">${lv} Öğrenmeye Başla</button>
+      </div>
+      ${n ? `<div class="path-wrap lv-vertical-path">${prevBtn}${pathCanvasHtml(pathSum, win.lo, win.hi, 'builtin')}${nextBtn}</div>` : ''}
     </div>`;
-    $$('[data-l]', v).forEach((b) => { b.onclick = () => { lv = b.dataset.l; setMeta('learnLevel', lv); draw(); }; });
+
+    $$('[data-l]', v).forEach((b) => {
+      b.onclick = async () => {
+        lv = b.dataset.l;
+        await setMeta('learnLevel', lv);
+        const byL = getMeta('activeSessionsByLevel') || {};
+        await setMeta('activeSession', byL[lv] || null);
+        win = null;
+        draw();
+      };
+    });
     $('#go', v).onclick = () => startLearn(lv);
+    const rs = $('#resume', v);
+    if (rs) rs.onclick = async () => { if (!(await resumeSaved(lv))) toast('Oturum devam ettirilemedi.', 'error'); };
+    const dc = $('#discard', v);
+    if (dc) {
+      dc.onclick = async () => {
+        if (await confirmDialog('Yarım kalan oturum silinsin mi? (Verdiğiniz cevaplar zaten kaydedildi.)', { danger: true })) {
+          await setMeta('activeSession', null);
+          const byL = getMeta('activeSessionsByLevel') || {};
+          if (byL[lv]) {
+            delete byL[lv];
+            await setMeta('activeSessionsByLevel', byL);
+          }
+          draw();
+        }
+      };
+    }
+    const prevEl = $('#lv-path-prev', v);
+    if (prevEl) prevEl.onclick = () => { win.lo = Math.max(0, win.lo - WINDOW_STEP); draw({ keepScroll: true }); };
+    const nextEl = $('#lv-path-next', v);
+    if (nextEl) nextEl.onclick = () => { win.hi = Math.min(n - 1, win.hi + WINDOW_STEP); draw(); };
+    const jumpEl = $('#lv-path-jump', v);
+    if (jumpEl) jumpEl.onclick = () => { draw({ recenter: true, scrollToCurrent: true }); };
+    $$('[data-stop-index]', v).forEach((b) => {
+      b.onclick = () => {
+        const st = pathSum.stops[Number(b.dataset.stopIndex)];
+        if (!st) return;
+        openStopDetail({ kind: 'builtin', stop: st, level: lv, onChanged: () => draw() });
+      };
+    });
+    if (opts.scrollToCurrent) {
+      const target = $('.pstop.is-current', v) || $(`[data-stop-index="${curIdx}"]`, v);
+      if (target && typeof target.scrollIntoView === 'function') {
+        requestAnimationFrame(() => target.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' }));
+      }
+    }
   };
   draw();
 }

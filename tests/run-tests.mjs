@@ -137,7 +137,7 @@ await test('Ayarlar sayfasında #intro ID çakışması yok ve index.html Türk�
   ok(!appCode.includes('id="intro"'), 'app.js içinde id="intro" kalmamalı');
   ok(appCode.includes("btnRow('replay-intro'") && appCode.includes("$('#replay-intro'"), 'replay-intro butonu bulunmalı');
   const html = await readText('index.html');
-  for (const label of ['Ana Sayfa', 'Kelime Öğren', 'Tekrar', 'Grammar', 'Kelime Havuzum', 'Sınavlar', 'İstatistikler', 'Ayarlar']) {
+  for (const label of ['Kelime Defterim', 'Hazır Kelime Havuzu', 'Yolum', 'Tekrar', 'Grammar', 'Kelime Havuzum', 'Sınavlar', 'İstatistikler', 'Ayarlar']) {
     ok(html.includes(label), 'Eksik menü etiketi: ' + label);
   }
 });
@@ -399,9 +399,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v5.0.0) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v5.0.1) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'SW sürümü veluno-v5.0.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'SW sürümü veluno-v5.0.1 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -431,8 +431,8 @@ await test('VELUNO marka dönüşümü, modern safir-mavi ikon sistemi, Apple be
   ok(svgIcon.includes('aria-label="VELUNO"') && svgIcon.includes('#4F8EF7') && !svgIcon.includes('<text'), 'Telefon/uygulama ikonunda yalnızca VELUNO sembolü bulunmalı');
   ok(svgLogoFull.includes('VELUNO'), 'Tam logoda VELUNO başlığı olmalı');
 
-  ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı bulunmalı');
-  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Ana sayfada küçük harfli ahmet ❤️ sude imzası dokunulmadan korunmalı');
+  ok(appCode.includes('<span class="hero-title" aria-label="VELUNO">VELUNO</span>'), 'Üst marka alanında VELUNO başlığı bulunmalı');
+  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Küçük harfli ahmet ❤️ sude imzası dokunulmadan korunmalı');
   ok(css.includes('.hero-sig{') && css.includes('text-transform:lowercase') && css.includes('font-weight:300') && css.includes('align-self:flex-end'), 'İmza CSS kuralları (küçük harf, ince font, sağ alt hiza) bulunmalı');
   ok(css.includes('.sig-heart{color:#EF4444'), 'Kalp kırmızı renkte (#EF4444) tanımlanmalı');
   ok(!css.includes('#D4B475') && !css.includes('#C9A86A'), 'Eski sarı/altın renk kodları (#D4B475, #C9A86A) tamamen kaldırılmış olmalı');
@@ -755,18 +755,20 @@ await test('v2.1 Kaldığın Yerden Devam Et: yarım kalan oturumun korunması, 
   eq(getMeta('activeSession'), null);
 });
 
-await test('v3.1 Ana sayfa (Learning Home): tek ana eylem, günlük hedef, devam et ve ahmet ❤️ sude imzasının korunması', async () => {
+await test('v3.1 Varsayılan Defterim ekranı, Menü günlük hedef/seri satırı ve ahmet ❤️ sude imzasının korunması', async () => {
   const appCode = await readText('js/app.js');
+  const nbCode = await readText('js/notebook.js');
+  const learnCode = await readText('js/learning.js');
   const css = await readText('css/style.css');
 
-  ok(appCode.includes('dailyGoal') && appCode.includes('edit-goal'), 'Ana sayfada Günlük Hedef satırı bulunmalı');
+  ok(appCode.includes('dailyGoal') && appCode.includes('edit-goal'), 'Menüde Günlük Hedef satırı bulunmalı');
   ok(appCode.includes('[5, 10, 15, 20]') && appCode.includes('data-set-goal='), 'Günlük hedef seçenekleri (5, 10, 15, 20, Özel) bulunmalı');
-  ok(appCode.includes('Seri ${strk.current} gün'), 'Ana sayfada tek satırlık seri bilgisi bulunmalı');
-  ok(appCode.includes('Öğrenmeye Git') && appCode.includes('Kaldığın Yerden Devam Et'), 'Ana sayfada birincil eylem bulunmalı');
-  ok(appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
-  ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı bulunmalı');
-  ok(!appCode.includes('class="grid stats"') && !appCode.includes('smart-grid'), 'Ana sayfada dashboard kart ızgarası kalmamalı');
-  ok(css.includes('.home-card{') && css.includes('.today{') && css.includes('.cta-block{'), 'Learning Home CSS kuralları bulunmalı');
+  ok(appCode.includes('Seri ${strk.current} gün'), 'Tek satırlık seri bilgisi bulunmalı');
+  ok(learnCode.includes('Öğrenmeye Başla') && learnCode.includes('Kaldığın Yerden Devam Et'), 'Hazır Kelime Havuzu ekranında birincil eylem bulunmalı');
+  ok(nbCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude') && appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
+  ok(nbCode.includes('aria-label="VELUNO">VELUNO</span>'), 'Defterim üst alanında VELUNO başlığı bulunmalı');
+  ok(!appCode.includes('function renderDashboard'), 'Eski Ana Sayfa (renderDashboard) tamamen kaldırılmış olmalı');
+  ok(css.includes('.nb-header{') && css.includes('.nb-progress-strip{') && css.includes('.path-canvas{'), 'Defterim ve öğrenme yolu CSS kuralları bulunmalı');
 });
 
 await test('v3.1 Tasarım sistemi: gradient / cam efekti / büyük gölge yok, altın ton yok, reduced-motion destekli', async () => {
@@ -781,15 +783,16 @@ await test('v3.1 Tasarım sistemi: gradient / cam efekti / büyük gölge yok, a
   ok(css.includes('.page{max-width:680px'), 'Masaüstünde içerik genişliği sınırlı olmalı');
 });
 
-await test('v3.1 Gezinme: mobil alt menüde 4 sekme (Ana Sayfa, Defterim, Yolum, Menü), SVG ikonlar, emoji yok ve Menü sayfası ile ikincil bölümlere erişim', async () => {
+await test('v3.1 Gezinme: mobil alt menüde 4 sekme (Defterim, Hazır Havuz, Yolum, Menü), SVG ikonlar, emoji yok ve Menü sayfası ile ikincil bölümlere erişim', async () => {
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
   const bottom = html.slice(html.indexOf('<nav id="bottomnav"'), html.indexOf('</nav>', html.indexOf('<nav id="bottomnav"')));
   eq((bottom.match(/data-nav=/g) || []).length, 4, 'Alt menüde tam 4 sekme olmalı');
-  ok(bottom.includes('data-nav="dashboard"') && bottom.includes('data-nav="notebook"') && bottom.includes('data-nav="path"') && bottom.includes('data-nav="more"'), 'Alt menüde Ana Sayfa, Defterim, Yolum ve Menü bulunmalı');
+  ok(bottom.includes('data-nav="notebook"') && bottom.includes('data-nav="learn"') && bottom.includes('data-nav="path"') && bottom.includes('data-nav="more"'), 'Alt menüde Defterim, Hazır Kelime Havuzu, Yolum ve Menü bulunmalı');
+  ok(!bottom.includes('data-nav="dashboard"'), 'Alt menüde eski Ana Sayfa sekmesi bulunmamalı');
   ok(!/[\u{1F300}-\u{1FAFF}\u2699\u2600-\u27BF]/u.test(html.slice(html.indexOf('<aside'), html.indexOf('<div id="modal-root"'))), 'Navigasyonda emoji kullanılmamalı');
   ok(bottom.includes('<svg viewBox="0 0 24 24"'), 'Alt menü SVG ikon kullanmalı');
-  for (const r of ['dashboard', 'path', 'learn', 'review', 'grammar', 'more', 'vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`${r}:`), `Rota korunmalı: ${r}`);
+  for (const r of ['notebook', 'dashboard', 'path', 'learn', 'review', 'grammar', 'more', 'vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`${r}:`), `Rota korunmalı: ${r}`);
   for (const r of ['vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`item('#/${r}'`), `Menü sayfasından erişilebilmeli: ${r}`);
 });
 
@@ -1305,7 +1308,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'SW sürümü veluno-v5.0.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'SW sürümü veluno-v5.0.1 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1504,9 +1507,9 @@ await test('UI Refinement: Kelime öğrenme ekranında Yavaş metni kaldırıld�
   ok(!learnSrc.includes('>Yavaş</button>') && !learnSrc.includes('data-slow'), 'Öğrenme ekranında Yavaş butonu ve metni bulunmamalı');
   ok(learnSrc.includes('class="speak-btn"') && learnSrc.includes('data-speak='), 'Öğrenme ekranında seslendirme butonu ve data-speak korunmalı');
 
-  // 2) Ana sayfada üst logoyu içermemeli, VELUNO başlığı ve imza yan yana korunmalı
-  ok(!appSrc.includes('alt="VELUNO logosu"') && !appSrc.includes('class="hero-logo"'), 'Ana sayfa üst bölümünde logo görseli bulunmamalı');
-  ok(appSrc.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı korunmalı');
+  // 2) Üst logoyu içermemeli, VELUNO başlığı ve imza yan yana korunmalı
+  ok(!appSrc.includes('alt="VELUNO logosu"') && !appSrc.includes('class="hero-logo"'), 'Üst bölümde logo görseli bulunmamalı');
+  ok(appSrc.includes('<span class="hero-title" aria-label="VELUNO">VELUNO</span>'), 'VELUNO başlığı korunmalı');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
   ok(css.includes('.hero-title-row{') && css.includes('.hero-sig{'), 'Başlık ve imza satır CSS kuralları korunmalı');
 });
@@ -1729,8 +1732,8 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   // 5) prefers-reduced-motion & Azaltılmış Hareket Erişilebilirliği
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
-  // 6) Service Worker Önbellek Yenilenmesi (v4.5.2)
-  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  // 6) Service Worker Önbellek Yenilenmesi
+  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2799,7 +2802,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.1';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3286,10 +3289,10 @@ await test('v4.6.1 [23] Eski v4.6.0 hafıza oyunu verileriyle geriye dönük uyu
   eq(MG.getMemoryRotation('legacy_u', 'all'), ['w4', 'w5']);
 });
 
-/* ---------- 19) v5.0 — Ember Soft Tema, Mobil Ana Sayfa, 4 Sekmeli Navigasyon ve Dinamik Öğrenme Yolları Testleri ---------- */
-out('\n--- 19) v5.0 — Ember Soft Tema, Mobil Ana Sayfa, 4 Sekmeli Navigasyon ve Dinamik Öğrenme Yolları Testleri ---');
+/* ---------- 19) v5.0 — Ember Soft Mobil Tasarım Revizyonu, Defterim Dikey Öğrenme Yolu, 4 Sekmeli Navigasyon ve Dinamik Öğrenme Yolları Testleri ---------- */
+out('\n--- 19) v5.0 — Ember Soft Mobil Tasarım Revizyonu, Defterim Dikey Öğrenme Yolu, 4 Sekmeli Navigasyon ve Dinamik Öğrenme Yolları Testleri ---');
 
-await test('v5.0 [1] Ember Soft seçiliyor ve uygulamanın tamamında kesin renk paletiyle doğru çalışıyor', async () => {
+await test('v5.0 [1] Ember Soft seçiliyor ve ana arka plan rengi #101820 ile kesin renk paletiyle doğru çalışıyor', async () => {
   const css = await readText('css/style.css');
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
@@ -3298,18 +3301,20 @@ await test('v5.0 [1] Ember Soft seçiliyor ve uygulamanın tamamında kesin renk
   eq(resolveTheme('ember', true), 'ember', 'Ember Soft koyu cihaz modunda ember dönmeli');
   eq(resolveTheme('ember'), 'ember', 'Ember Soft argümansız ember dönmeli');
   ok(THEME_IDS.includes('ember'), 'THEME_IDS içinde ember bulunmalı');
-  eq(THEME_META_COLORS.ember, '#181818', 'Ember Soft meta theme-color #181818 olmalı');
-  ok(html.includes("pref === 'ember'") && html.includes("ember: '#181818'"), 'index.html inline scripti ember temasını tanımalı');
+  eq(THEME_META_COLORS.ember, '#101820', 'Ember Soft meta theme-color #101820 olmalı');
+  ok(html.includes("pref === 'ember'") && html.includes("ember: '#101820'"), 'index.html inline scripti ember temasını ve #101820 arka planını tanımalı');
   ok(appCode.includes('data-set-theme="ember"') && appCode.includes('Ember Soft'), 'Ayarlarda 5. tema olarak Ember Soft butonu bulunmalı');
 
   const requiredHex = [
-    '#181818', '#242424', '#245C60', '#438A8B', '#AC9160', '#75603C',
+    '#101820', '#242424', '#245C60', '#438A8B', '#AC9160', '#75603C',
     '#3FC877', '#19261C', '#57191C', '#281819', '#FB6A21', '#F5F5F5', '#A5A5A5',
   ];
   for (const hex of requiredHex) {
     ok(css.includes(hex), `Ember Soft palet rengi CSS içinde tanımlı olmalı: ${hex}`);
   }
-  ok(css.includes(':root[data-theme=ember]') && css.includes('--ac:#245C60') && css.includes('--ac2:#438A8B'), 'Merkezi tema değişkenleri #245C60 ve #438A8B kullanmalı');
+  ok(css.includes(':root[data-theme=ember]') && css.includes('--ember-bg:#101820') && css.includes('--bg:#101820'), 'Ember Soft ana arka plan rengi #101820 olmalı');
+  ok(!css.includes('--ember-bg:#181818') && !css.includes('--surf:#2E2E2E'), 'Eski #181818 ve #2E2E2E gri arka planları Ember Soft içinde kalmamalı');
+  ok(css.includes('--ac:#245C60') && css.includes('--ac2:#438A8B'), 'Merkezi tema değişkenleri #245C60 ve #438A8B kullanmalı');
   ok(!css.includes('--ac:#FB6A21'), '#FB6A21 kesinlikle ana renk olmamalı');
 });
 
@@ -3327,51 +3332,52 @@ await test('v5.0 [2] Mevcut dört tema (light, dark, auto, studio) ve kullanıc�
   setSetting('theme', 'light');
 });
 
-await test('v5.0 [3] VELUNO başlığı ve mevcut ahmet ❤️ sude imzası aynen korunmuş', async () => {
+await test('v5.0 [3] VELUNO başlığı ve mevcut ahmet ❤️ sude imzası Defterim ve Menü ekranlarında aynen korunmuş', async () => {
   const appCode = await readText('js/app.js');
-  ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'VELUNO başlığı korunmalı');
-  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Mevcut imza karakteri karakterine korunmalı');
+  const nbCode = await readText('js/notebook.js');
+  ok(nbCode.includes('<span class="hero-title" aria-label="VELUNO">VELUNO</span>'), 'Defterim ekranında VELUNO başlığı korunmalı');
+  ok(nbCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Defterim ekranında ahmet ❤️ sude imzası korunmalı');
+  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Menü ekranında ahmet ❤️ sude imzası korunmalı');
 });
 
-await test('v5.0 [4] "Hoş geldin." ve "Bugün kısa bir adım yeterli." karşılama metinleri ana sayfadan tamamen kaldırılmış', async () => {
+await test('v5.0 [4] Eski Ana Sayfa tamamen kaldırılmış ve uygulama açıldığında doğrudan Defterim (#/notebook) ekranı geliyor', async () => {
   const appCode = await readText('js/app.js');
-  const dashStart = appCode.indexOf('function renderDashboard(v)');
-  const dashEnd = appCode.indexOf('function renderMore(v)');
-  const dashCode = appCode.slice(dashStart, dashEnd);
-  ok(!dashCode.includes('Hoş geldin.'), 'Ana sayfada "Hoş geldin." metni bulunmamalı');
-  ok(!dashCode.includes('Bugün kısa bir adım yeterli.'), 'Ana sayfada "Bugün kısa bir adım yeterli." metni bulunmamalı');
-  ok(!dashCode.includes('hero-tagline'), 'Ana sayfada karşılama tagline bloğu bulunmamalı');
+  const html = await readText('index.html');
+  ok(!appCode.includes('function renderDashboard'), 'renderDashboard fonksiyonu tamamen kaldırılmış olmalı');
+  ok(!html.includes('data-nav="dashboard"'), 'index.html içinde eski Ana Sayfa sekmesi bulunmamalı');
+  ok(appCode.includes("if (!location.hash || location.hash === '#/dashboard') location.hash = '#/notebook';"), 'Uygulama açıldığında varsayılan ekran #/notebook olmalı');
+  ok(appCode.includes("const rawName = (location.hash.replace('#/', '') || 'notebook').split('?')[0];"), 'Boş hash doğrudan notebook rotasına çözümlenmeli');
+  ok(appCode.includes("const name = rawName === 'dashboard' ? 'notebook' : rawName;"), 'Eski #/dashboard yönlendirmeleri güvenli biçimde Defterim ekranına yönlendirilmeli');
 });
 
-await test('v5.0 [5] Ana sayfanın 5 bölümü (Üst alan, Kelime Defterim 1. öncelik, Hazır Kelime Havuzu, Tekrarlarım, Diğer Çalışmalar) ve tüm özelliklere erişim', async () => {
-  const appCode = await readText('js/app.js');
-  const dashStart = appCode.indexOf('function renderDashboard(v)');
-  const dashEnd = appCode.indexOf('function renderMore(v)');
-  const dashCode = appCode.slice(dashStart, dashEnd);
+await test('v5.0 [5] Defterim ekranında eski büyük buton grubu kaldırılıp yukarıdan aşağıya kıvrımlı öğrenme yolu ve kompakt Çalış menüsü gösteriliyor', async () => {
+  const nbCode = await readText('js/notebook.js');
+  const pathUiCode = await readText('js/path-ui.js');
+  const learnCode = await readText('js/learning.js');
 
-  const iHero = dashCode.indexOf('<header class="hero">');
-  const iNb = dashCode.indexOf('home-nb');
-  const iLv = dashCode.indexOf('home-lv');
-  const iRv = dashCode.indexOf('home-rv');
-  const iOther = dashCode.indexOf('home-other');
-  ok(iHero > 0 && iHero < iNb && iNb < iLv && iLv < iRv && iRv < iOther, 'Ana sayfa bölümleri: Üst alan → Kelime Defterim → Hazır Kelime Havuzu → Tekrarlarım → Diğer Çalışmalar sırasıyla dizilmeli');
-  ok(dashCode.includes("miniPathHtml(nbPath, 'notebook')") && dashCode.includes("miniPathHtml(lvPath, 'builtin')"), 'Ana sayfada kişisel (petrol) ve hazır (bronz) kısa yol önizlemeleri bulunmalı');
-  for (const label of ['Defterime Git', 'Öğrenmeye Git', 'Tekrara Git', 'Grammar Academy', 'Fiillerin 3 Hali', 'Sınavlar', 'İstatistikler', 'Kelime Havuzum', 'Ayarlar']) {
-    ok(dashCode.includes(label), `Ana sayfadan "${label}" özelliğine erişilebilmeli`);
-  }
+  const renderStart = nbCode.indexOf('export function renderNotebook(');
+  const renderSection = nbCode.slice(renderStart);
+  ok(!renderSection.includes('Kişisel Çalışma Seçenekleri'), 'Defterim ana ekranında eski "Kişisel Çalışma Seçenekleri" büyük kart bloğu olmamalı');
+  ok(renderSection.includes('id="btn-top-add-word"') && renderSection.includes('id="btn-open-study-menu"') && renderSection.includes('id="btn-top-new-list"'), 'Defterim kompakt üst alanında + Kelime, Çalış ve + Liste butonları bulunmalı');
+  ok(renderSection.includes('id="nb-active-list"'), 'Defterim üst alanında kişisel liste seçici bulunmalı');
+  ok(renderSection.includes("pathCanvasHtml(pathSum, win.lo, win.hi, 'notebook')"), 'Defterim ekranının ilk görünür alanında doğrudan kişisel öğrenme yolu çizilmeli');
+  ok(nbCode.includes('export function openNotebookStudyMenuModal'), 'Kompakt Çalış menüsü (Seçili Listeyi Çalış, Bütün Kelimelerimi Çalış, Yalnızca Bilmediklerimi Çalış, Tekrar Zamanı Gelenler) korunmalı');
+  ok(pathUiCode.includes('const yOf = (i) => PAD + (i - lo) * ROW + ROW / 2;') && pathUiCode.includes('data-direction="vertical"'), 'Öğrenme yolu yukarıdan aşağıya (1. durak en üstte) dikey kıvrımlı akmalı');
+  ok(learnCode.includes('<h1>Hazır Kelime Havuzu</h1>') && learnCode.includes("pathCanvasHtml(pathSum, win.lo, win.hi, 'builtin')"), '2. sekme Hazır Kelime Havuzu başlığıyla açılmalı ve dikey bronz öğrenme yolunu göstermeli');
 });
 
-await test('v5.0 [6] Dört mobil navigasyon sekmesi (Ana Sayfa, Defterim, Yolum, Menü) doğru tanımlı ve çalışıyor', async () => {
+await test('v5.0 [6] Dört mobil navigasyon sekmesi (Defterim, Hazır Kelime Havuzu / Hazır Havuz, Yolum, Menü) doğru tanımlı ve çalışıyor', async () => {
   const html = await readText('index.html');
   const css = await readText('css/style.css');
   const bottom = html.slice(html.indexOf('<nav id="bottomnav"'), html.indexOf('</nav>', html.indexOf('<nav id="bottomnav"')));
   const tabs = [...bottom.matchAll(/data-nav="([^"]+)"[\s\S]*?<span class="nav-lb">([^<]+)<\/span>/g)].map((m) => [m[1], m[2]]);
   eq(tabs, [
-    ['dashboard', 'Ana Sayfa'],
     ['notebook', 'Defterim'],
+    ['learn', 'Hazır Havuz'],
     ['path', 'Yolum'],
     ['more', 'Menü'],
-  ], 'Mobil alt navigasyon tam olarak Ana Sayfa, Defterim, Yolum, Menü olmalı');
+  ], 'Mobil alt navigasyon tam olarak Defterim, Hazır Havuz (Hazır Kelime Havuzu), Yolum, Menü olmalı');
+  ok(bottom.includes('aria-label="Hazır Kelime Havuzu"'), '2. sekmenin erişilebilir tam adı Hazır Kelime Havuzu olmalı');
   ok(css.includes(':root[data-theme=ember] #bottomnav a.active{color:var(--ember-active)'), 'Aktif sekme petrol tonuyla (#438A8B) belirtilmeli');
   ok(css.includes('env(safe-area-inset-bottom)'), 'iPhone safe-area alt alanı desteklenmeli');
 });
@@ -3398,11 +3404,12 @@ await test('v5.0 [7] Kelime Defterim listelerinin yolları birbirinden bağıms�
   eq(stopsBAfter[0].wordIds, stopB1WordsBefore, 'Liste A değiştiğinde Liste B durak yerleşimi değişmemeli');
 });
 
-await test('v5.0 [8] 7, 10, 11, 35, 100 ve 2000 kelime sayılarında doğru duraklar (her durak en fazla 10 kelime) oluşuyor', async () => {
+await test('v5.0 [8] 7, 10, 11, 21, 35, 100 ve 2000 kelime sayılarında doğru duraklar (ör. 21 kelime → 10+10+1 = 3 durak) oluşuyor', async () => {
   const cases = [
     [7, 1, 7],
     [10, 1, 10],
     [11, 2, 1],
+    [21, 3, 1],
     [25, 3, 5],
     [35, 4, 5],
     [100, 10, 10],
@@ -3420,6 +3427,9 @@ await test('v5.0 [8] 7, 10, 11, 35, 100 ve 2000 kelime sayılarında doğru dura
     eq(path.stops[path.stops.length - 1].wordIds.length, expectedLastLen, `${count} kelimede son durakta ${expectedLastLen} kelime olmalı`);
     ok(path.stops.every((s) => s.wordIds.length >= 1 && s.wordIds.length <= Paths.STOP_SIZE), 'Her durakta 1..10 arası kelime olmalı');
   }
+  // 21 kelimelik örnek kontrolü: 1. durak = 10, 2. durak = 10, 3. durak = 1
+  const { path: p21 } = Paths.syncPathRecord(null, { id: 'list_21', userId: 'u_21', wordIds: Array.from({ length: 21 }, (_, i) => `w21_${i + 1}`) });
+  eq(p21.stops.map((s) => s.wordIds.length), [10, 10, 1], '21 kelimelik listede 1. durak=10, 2. durak=10, 3. durak=1 kelime olmalı');
 });
 
 await test('v5.0 [9] Yeni kelimeler eski durak yerleşimlerini bozmadan son durağın boş kapasitesine veya yeni durağa ekleniyor', async () => {
@@ -3664,9 +3674,9 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'Service Worker sürümü veluno-v5.0.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'Service Worker sürümü veluno-v5.0.1 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
-  ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
+  ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);
