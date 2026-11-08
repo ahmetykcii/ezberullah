@@ -1710,7 +1710,6 @@ export function renderNotebook(v) {
     if (!lists.length) {
       bodyHtml = `
         <div class="path-empty">
-          <img src="assets/mascot/siyami-hello.png" alt="" class="siyami-empty-cat" loading="lazy"/>
           <b>Henüz bir kelime listen yok</b>
           <button type="button" class="btn primary" id="btn-empty-create-list">＋ İlk Listeni Oluştur</button>
         </div>
@@ -1718,7 +1717,6 @@ export function renderNotebook(v) {
     } else if (!n) {
       bodyHtml = `
         <div class="path-empty">
-          <img src="assets/mascot/siyami-curious.png" alt="" class="siyami-empty-cat" loading="lazy"/>
           <b>${esc(activeList.name)} listesinde henüz kelime yok</b>
           <span class="muted small">Her ${STOP_SIZE} kelime dikey yolunda bir durak oluşturur.</span>
           <button type="button" class="btn primary" id="btn-empty-add-word">＋ Kelime Ekle</button>

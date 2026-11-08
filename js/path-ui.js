@@ -101,11 +101,9 @@ export function pathCanvasHtml(summary, lo, hi, kind) {
     const st = s.progress.state;
     const isCur = i === summary.currentIndex && !summary.allDone;
     const side = x > 50 ? 'left' : 'right';
-    const mascotHtml = isCur ? `<span class="pstop-mascot pstop-mascot-${side === 'left' ? 'right' : 'left'}" aria-hidden="true"><img src="assets/mascot/siyami-curious.png" alt="" class="pstop-mascot-img" loading="lazy"/></span>` : '';
     return `<button type="button" class="pstop is-${st} ${isCur ? 'is-current' : ''}" data-stop-index="${i}" style="left:${x.toFixed(2)}%;top:${y}px;--p:${s.progress.pct}"
         aria-label="Durak ${s.number}: ${s.progress.done}/${s.progress.total} kelime tamamlandı, ${STATE_TEXT[st]}">
         <span class="pstop-core" aria-hidden="true">${st === 'done' ? '✓' : s.number}</span>
-        ${mascotHtml}
         <span class="pstop-label ${side}" aria-hidden="true"><b>Durak ${s.number}</b><small>${STATE_ICON[st]} ${s.progress.done}/${s.progress.total}</small>${isCur ? '<em>Aktif</em>' : ''}</span>
       </button>`;
   }).join('');
@@ -173,12 +171,9 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
     return `<li class="stop-word"><span class="stop-word-main"><b>${esc(w.word)}</b><span class="muted small">${esc((w.meanings || []).join(', '))}</span></span><span class="stop-chip ${ws.c}"><span aria-hidden="true">${ws.i}</span> ${ws.t}</span></li>`;
   }).join('');
   const ctx = kind === 'notebook' ? esc(list?.name || 'Kelime Defterim') : `${esc(level)} — ${esc(LEVEL_NAMES[level] || '')}`;
-  const mascotImg = pr.state === 'done' ? 'assets/mascot/siyami-complete.png' : 'assets/mascot/siyami-focused.png';
-  const mascotAlt = pr.state === 'done' ? 'Durak Tamamlandı' : 'Çalışılıyor';
   openModal({
     title: `Durak ${stop.number}`,
     html: `<div class="stop-detail path-${kind}">
-        <div class="siyami-modal-badge" aria-hidden="true"><img class="siyami-img" src="${mascotImg}" alt="${mascotAlt}" loading="lazy"/></div>
         <p class="muted small stop-ctx">${ctx}</p>
         <div class="stop-stats">
           <div><b>${pr.done}/${pr.total}</b><span>Kelime</span></div>
@@ -243,11 +238,11 @@ export function renderPath(v) {
 
     let body = '';
     if (tab === 'notebook' && !lists.length) {
-      body = `<div class="path-empty"><img src="assets/mascot/siyami-hello.png" alt="" class="siyami-empty-cat" loading="lazy"/><b>Henüz kişisel listen yok</b><a class="btn primary sm" href="#/notebook">Liste Oluştur</a></div>`;
+      body = `<div class="path-empty"><b>Henüz kişisel listen yok</b><a class="btn primary sm" href="#/notebook">Liste Oluştur</a></div>`;
     } else if (!n) {
       body = tab === 'notebook'
-        ? `<div class="path-empty"><img src="assets/mascot/siyami-curious.png" alt="" class="siyami-empty-cat" loading="lazy"/><b>${esc(list?.name || 'Liste')} henüz boş</b><a class="btn primary sm" href="#/notebook">Kelime Ekle</a></div>`
-        : `<div class="path-empty"><img src="assets/mascot/siyami-sleep.png" alt="" class="siyami-empty-cat" loading="lazy"/><b>${esc(level)} için hazır kelime bulunamadı</b></div>`;
+        ? `<div class="path-empty"><b>${esc(list?.name || 'Liste')} henüz boş</b><a class="btn primary sm" href="#/notebook">Kelime Ekle</a></div>`
+        : `<div class="path-empty"><b>${esc(level)} için hazır kelime bulunamadı</b></div>`;
     } else {
       const head = `<div class="path-bar-strip">
           <span class="path-bar-text"><b>${summary.doneStops}/${summary.totalStops}</b> durak · <b>${summary.doneWords}/${summary.totalWords}</b> kelime (%${summary.pct})</span>
