@@ -3,6 +3,7 @@ import { state, saveMany, replaceAll, getSettings, setAllSettings, getMeta } fro
 import { validateWord, buildWord, findDuplicate, LEVELS } from './vocabulary.js';
 import { SCHEMA_VERSION } from './storage.js';
 import { $, $$, esc, openModal, toast, confirmDialog } from './ui.js';
+import { ensureListPaths } from './paths.js';
 
 /* ---------- Ayrıştırma (saf fonksiyonlar) ---------- */
 export function parseCSV(text, delim = ',') {
@@ -142,7 +143,7 @@ export function openImportWizard(onDone) {
 /* ---------- Yedekleme ---------- */
 export function buildBackup() {
   const meta = [];
-  for (const k of ['deletedIds', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'irregularProgress', 'memoryGameStats', 'memoryGameRotation', 'studyGroupRotation']) {
+  for (const k of ['deletedIds', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'irregularProgress', 'memoryGameStats', 'memoryGameRotation', 'studyGroupRotation', 'notebookPaths', 'pathTab', 'pathListByUser']) {
     if (getMeta(k)) meta.push({ key: k, value: getMeta(k) });
   }
   if (state.grammarProgress && Object.keys(state.grammarProgress).length) {
@@ -183,6 +184,9 @@ export async function restoreBackup(o) {
     grammarProgress: o.grammarProgress,
     meta: [...o.meta, { key: 'schemaVersion', value: SCHEMA_VERSION }],
   });
+  if (Array.isArray(state.meta.notebookLists) && state.meta.notebookLists.length) {
+    await ensureListPaths(state.meta.notebookLists);
+  }
   if (o.settings) setAllSettings(o.settings);
 }
 export function downloadFile(name, text, type = 'application/json') {

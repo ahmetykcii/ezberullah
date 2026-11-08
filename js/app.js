@@ -1,5 +1,5 @@
-// VELUNO v3.1 — uygulama giriş noktası: açılış (hayrat) ekranı, router, Learning Home, Diğer, Ayarlar, Tema Sistemi, PWA kaydı.
-import { initStorage, state, getSettings, setSetting, getMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
+// VELUNO v5.0 (Ember Soft) — uygulama giriş noktası: açılış (hayrat) ekranı, router, Ana Sayfa, Yolum, Menü, Ayarlar, Tema Sistemi, PWA kaydı.
+import { initStorage, state, getSettings, setSetting, getMeta, setMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
 import { seedBuiltIn, LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { $, $$, esc, toast, confirmDialog, openModal, ICONS } from './ui.js';
 import { renderLearn, initKeys, abortSession, resumeSaved, startLearn } from './learning.js';
@@ -13,13 +13,19 @@ import { initAuth, getCurrentUser, isLoggedIn, isSude, isAhmet, isAuthorizedUser
 import { renderSurprise } from './surprise.js';
 import { renderNotebook, getUserNotebookSummary } from './notebook.js';
 import { renderIrregularVerbs, resetIrregularView, computeVerbSetStats, BUILTIN_IRREGULAR_VERBS } from './irregular-verbs.js';
+import { renderPath, miniPathHtml, notebookPathSummary, levelPathSummary, getPreferredNotebookList, setPreferredNotebookList } from './path-ui.js';
+import { ensureListPaths } from './paths.js';
+import { getUserNotebookLists, getAllNotebookLists, getActiveUserId } from './notebook.js';
 
 const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
 
 /* ---------- Tema Çözümleme & Ayarların Uygulanması ---------- */
+export const THEME_META_COLORS = { dark: '#101317', studio: '#131F23', ember: '#181818', light: '#F7F9FC' };
+export const THEME_IDS = ['light', 'dark', 'auto', 'studio', 'ember'];
 export function resolveTheme(themePref = 'light', prefersDark = null) {
   if (themePref === 'studio') return 'studio';
+  if (themePref === 'ember') return 'ember';
   if (themePref === 'dark') return 'dark';
   if (themePref === 'auto') {
     const isDark = prefersDark !== null
@@ -40,7 +46,7 @@ export function applySettings() {
   r.classList.toggle('reduce', !!s.reducedMotion);
   const metaTheme = document.getElementById('meta-theme-color');
   if (metaTheme) {
-    const metaColors = { dark: '#101317', studio: '#131F23', light: '#F7F9FC' };
+    const metaColors = { dark: '#101317', studio: '#131F23', ember: '#181818', light: '#F7F9FC' };
     metaTheme.setAttribute('content', metaColors[resolved] || '#F7F9FC');
   }
 }
@@ -85,8 +91,9 @@ function enterApp() {
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
-const routes = { dashboard: renderDashboard, learn: renderLearn, review: renderReview, grammar: renderGrammar, notebook: renderNotebook, irregular: renderIrregularVerbs, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
-const MORE_GROUP = ['more', 'notebook', 'irregular', 'vocabulary', 'exams', 'statistics', 'settings'];
+const routes = { dashboard: renderDashboard, path: renderPath, learn: renderLearn, review: renderReview, grammar: renderGrammar, notebook: renderNotebook, irregular: renderIrregularVerbs, more: renderMore, vocabulary: renderVocabulary, exams: renderExams, statistics: renderStats, settings: renderSettings, surprise: renderSurprise, login: (v) => { renderSettings(v); openAuthModal(() => renderSettings(v)); } };
+// v5.0: Mobil alt menü 4 sekme → Ana Sayfa · Defterim · Yolum · Menü. Diğer tüm bölümler "Menü" sekmesini aktif gösterir.
+const MORE_GROUP = ['more', 'learn', 'review', 'grammar', 'irregular', 'vocabulary', 'exams', 'statistics', 'settings', 'login', 'surprise'];
 let keepGrammarView = false;
 function gotoGrammarLesson(id) {
   if (openGrammarLesson(id, null)) { keepGrammarView = true; location.hash = '#/grammar'; }
@@ -98,7 +105,8 @@ function route() {
   if (name === 'grammar') { if (!keepGrammarView) resetGrammarView(); keepGrammarView = false; }
   if (name === 'irregular') { resetIrregularView(); }
   $$('[data-nav]').forEach((a) => {
-    const on = a.dataset.nav === name || (a.dataset.nav === 'more' && MORE_GROUP.includes(name));
+    const inBottom = !!a.closest('#bottomnav');
+    const on = a.dataset.nav === name || (inBottom && a.dataset.nav === 'more' && MORE_GROUP.includes(name));
     a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
   });
   view().classList.remove('page-in'); void view().offsetWidth; view().classList.add('page-in');
@@ -170,33 +178,18 @@ function renderDashboard(v) {
   const dailyGoal = s.dailyGoal || 10;
   const tWords = todayLearnedCount(t);
   const reached = tWords >= dailyGoal;
-  const goalPct = Math.min(100, Math.round((tWords / dailyGoal) * 100));
 
   const prefLevel = getMeta('learnLevel');
-  const level = LEVELS.includes(prefLevel) ? prefLevel : null;
+  const level = LEVELS.includes(prefLevel) ? prefLevel : LEVELS[0];
+  const hasPickedLevel = LEVELS.includes(prefLevel);
   const byLevel = getMeta('activeSessionsByLevel') || {};
-  const activeSaved = level ? byLevel[level] : getMeta('activeSession');
-  const hasSaved = activeSaved && activeSaved.idx < (activeSaved.items?.length || 0);
+  const activeSaved = hasPickedLevel ? byLevel[level] : null;
+  const hasSaved = !!(activeSaved && activeSaved.idx < (activeSaved.items?.length || 0));
 
   const strk = streakStats();
   const due = levelStats('').due;
   const gNext = nextGrammarTopic();
   const plan = studyPlan();
-  const row = (attrs, main, sub = '') => `<li><${attrs.href ? 'a' : 'button type="button"'} class="list-row linkrow" ${attrs.href ? `href="${attrs.href}"` : `id="${attrs.id}"`}><div class="row-main"><b>${main}</b>${sub ? `<span class="muted small">${sub}</span>` : ''}</div>${ICONS.chev}</${attrs.href ? 'a' : 'button'}></li>`;
-
-  const levelName = level ? (level === 'A2' ? 'Temel' : level === 'B1' ? 'Orta' : 'İleri') : '';
-
-  let ctaHtml = '';
-  if (!level) {
-    ctaHtml = `<button class="btn primary xl block" id="go-pick-level">Öğrenmeye Başla</button>
-      <p class="muted small center">Seviyeni seçerek başla · A2, B1 veya B2</p>`;
-  } else if (hasSaved) {
-    ctaHtml = `<button class="btn primary xl block" id="resume">Kaldığın Yerden Devam Et — ${level}</button>
-      <p class="muted small center">${esc(activeSaved.title)} · ${activeSaved.idx}/${activeSaved.items.length} · <button type="button" class="text-btn" id="change-level">Seviyeyi Değiştir</button> · <button type="button" class="text-btn" id="discard">Vazgeç</button></p>`;
-  } else {
-    ctaHtml = `<button class="btn primary xl block" id="go-learn">Öğrenmeye Devam Et — ${level}</button>
-      <p class="muted small center">${level} — ${levelName} Seviye · <button type="button" class="text-btn" id="change-level">Seviyeyi Değiştir</button></p>`;
-  }
 
   const ahmetBanner = isAhmet() ? `
     <div class="ahmet-preview-banner">
@@ -204,57 +197,107 @@ function renderDashboard(v) {
       <a href="#/surprise?preview=1">Sürprizi Önizle ❤️</a>
     </div>` : '';
 
-  const nbSummary = getUserNotebookSummary();
+  // Kelime Defterim (birinci öncelik) — gerçek liste ve öğrenme kayıtları
+  const userId = getActiveUserId();
+  const nbLists = getUserNotebookLists(userId);
+  const nbSummary = getUserNotebookSummary(userId);
+  const nbList = getPreferredNotebookList(userId);
+  const nbPath = notebookPathSummary(nbList);
+  const nbLearned = nbSummary.completedWords;
+  const nbPicker = nbLists.length > 1
+    ? `<select class="input sm home-list-pick" id="home-list" aria-label="Liste seç">${nbLists.map((l) => `<option value="${esc(l.id)}" ${nbList && l.id === nbList.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select>`
+    : (nbList ? `<span class="home-list-name">${esc(nbList.name)}</span>` : '');
+  const nbBody = nbSummary.totalWords
+    ? `<div class="home-stats">
+        <div><b>${nbSummary.totalWords}</b><span>kişisel kelime</span></div>
+        <div><b>${nbLearned}</b><span>öğrenildi</span></div>
+        <div><b>${nbSummary.masteredWords}</b><span>kalıcı</span></div>
+      </div>
+      <div class="home-path-head">${nbPicker}<span class="muted small">${nbPath.totalStops ? `${nbPath.doneStops}/${nbPath.totalStops} durak` : 'Bu liste boş'}</span></div>
+      ${nbPath.totalStops ? `<a href="#/path" class="mini-link" data-open-path="notebook" aria-label="Kelime Defterim yolunu aç">${miniPathHtml(nbPath, 'notebook')}</a>` : ''}`
+    : `<p class="muted small home-empty">Kendi kelimelerini ekle; VELUNO onları aynı öğrenme akışıyla çalıştırsın ve her 10 kelimeyi bir durağa dönüştürsün.</p>`;
+
+  // Hazır Kelime Havuzu — seçili / son çalışılan seviye
+  const lvStats = levelStats(level);
+  const lvPath = levelPathSummary(level);
+  const learnLabel = hasSaved ? `Kaldığın Yerden Devam Et — ${level}` : 'Öğrenmeye Git';
+
+  const other = (href, ic, title, sub, id = '') => `<${href ? `a href="${href}"` : `button type="button" id="${id}"`} class="home-mini">
+      <span class="home-mini-ic" aria-hidden="true">${ICONS[ic] || ''}</span>
+      <span class="home-mini-t"><b>${title}</b><span class="muted small">${sub}</span></span>
+    </${href ? 'a' : 'button'}>`;
   const irvStats = computeVerbSetStats(BUILTIN_IRREGULAR_VERBS);
 
   v.innerHTML = `<div class="page home">
-  <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div><p class="hero-tagline">Hoş geldin. Bugün kısa bir adım yeterli.</p></div></div></header>
+  <header class="hero"><div class="hero-brand"><div class="hero-copy"><div class="hero-title-row"><h1 class="hero-title" aria-label="VELUNO">VELUNO</h1><span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span></div></div></div></header>
   ${ahmetBanner}
-  <section class="today" aria-label="Bugünkü hedef">
-    <div class="today-row"><div class="today-label">Bugünkü Hedefin: <b>${tWords}/${dailyGoal}</b> Kelime</div><button type="button" class="text-btn" id="edit-goal">Değiştir</button></div>
-    <div class="progress ${reached ? 'goal-reached' : ''}" role="progressbar" aria-valuenow="${goalPct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${goalPct}%"></i></div>
-    <div class="today-sub muted small">Günlük Seri: <b>${strk.current} gün</b>${reached ? ' · Hedef tamamlandı' : ''}</div>
+
+  <section class="home-card home-nb" aria-labelledby="h-nb">
+    <div class="home-card-head"><h2 id="h-nb">Kelime Defterim</h2>${nbLists.length ? `<span class="home-tag">${nbLists.length} liste</span>` : ''}</div>
+    ${nbBody}
+    <div class="home-actions"><a class="btn primary block" href="#/notebook">Defterime Git</a>${nbPath.totalStops ? `<a class="btn ghost" href="#/path" data-open-path="notebook">Yolu Aç</a>` : ''}</div>
   </section>
-  <div class="cta-block">
-    ${ctaHtml}
-  </div>
-  <ul class="list quiet">
-    ${row({ href: '#/notebook' }, 'Kelime Defterim', nbSummary.totalWords ? `${nbSummary.totalWords} kişisel kelime · ${nbSummary.listCount} liste` : 'Kendi çalışma listeni oluştur')}
-    ${row({ href: '#/irregular' }, 'Fiillerin 3 Hali', irvStats.learned ? `${irvStats.learned}/${irvStats.total} hazır fiil öğrenildi` : `${irvStats.total} düzensiz fiil · V1, V2, V3 çalış`)}
-    ${due ? row({ href: '#/review' }, `${due} kelime tekrar bekliyor`, 'Kısa bir tekrar turu') : ''}
-    ${gNext ? row({ id: 'go-grammar' }, 'Grammar', `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}`) : ''}
-    ${plan && !plan.past ? row({ href: '#/statistics' }, `Sınava ${plan.days} gün kaldı`, `Önerilen günlük hedef: ${plan.suggested}`) : ''}
-  </ul>
+
+  <section class="home-card home-lv" aria-labelledby="h-lv">
+    <div class="home-card-head"><h2 id="h-lv">Hazır Kelime Havuzu</h2>
+      <div class="seg sm" role="group" aria-label="Seviye">${LEVELS.map((l) => `<button type="button" class="seg-btn ${l === level ? 'active' : ''}" data-home-level="${l}">${l}</button>`).join('')}</div>
+    </div>
+    <div class="home-path-head"><span class="home-list-name">${level} — ${esc(LEVEL_NAMES[level] || '')}</span><span class="muted small">${lvStats.completed}/${lvStats.total} kelime · ${lvPath.doneStops}/${lvPath.totalStops} durak</span></div>
+    ${lvPath.totalStops ? `<a href="#/path" class="mini-link" data-open-path="builtin" aria-label="${level} yolunu aç">${miniPathHtml(lvPath, 'builtin')}</a>` : ''}
+    ${hasSaved ? `<p class="muted small home-saved">${esc(activeSaved.title)} · ${activeSaved.idx}/${activeSaved.items.length} · <button type="button" class="text-btn" id="discard">Vazgeç</button></p>` : ''}
+    <div class="home-actions"><button type="button" class="btn bronze block" id="go-learn">${learnLabel}</button><a class="btn ghost" href="#/path" data-open-path="builtin">Yolu Aç</a></div>
+  </section>
+
+  <section class="home-card home-rv" aria-labelledby="h-rv">
+    <div class="home-rv-row">
+      <div class="home-rv-main"><h2 id="h-rv">Tekrarlarım</h2>
+        <span class="muted small">${due ? `${due} kelime tekrar bekliyor` : 'Şu an bekleyen tekrar yok'}</span></div>
+      <span class="home-rv-count ${due ? 'has' : ''}" aria-hidden="true">${due}</span>
+    </div>
+    <div class="home-daily muted small">Bugün <b>${tWords}/${dailyGoal}</b> yeni kelime${reached ? ' · Hedef tamamlandı' : ''} · <span class="streak-mark">Seri ${strk.current} gün</span> · <button type="button" class="text-btn" id="edit-goal">Hedefi Değiştir</button></div>
+    <a class="btn block ${due ? 'primary' : ''}" href="#/review">Tekrara Git</a>
+  </section>
+
+  <section class="home-other" aria-labelledby="h-other">
+    <h2 class="group-title" id="h-other">Diğer Çalışmalar</h2>
+    <div class="home-mini-grid">
+      ${other(gNext ? '' : '#/grammar', 'book', 'Grammar Academy', gNext ? `${String(gNext.order).padStart(2, '0')} — ${esc(gNext.title)}` : 'Konular ve alıştırmalar', gNext ? 'go-grammar' : '')}
+      ${other('#/irregular', 'repeat', 'Fiillerin 3 Hali', irvStats.learned ? `${irvStats.learned}/${irvStats.total} fiil öğrenildi` : `${irvStats.total} düzensiz fiil`)}
+      ${other('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları')}
+      ${other('#/statistics', 'chart', 'İstatistikler', plan && !plan.past ? `Sınava ${plan.days} gün · günlük ${plan.suggested}` : 'İlerlemeni takip et')}
+      ${other('#/vocabulary', 'stack', 'Kelime Havuzum', 'Ara, incele, düzenle')}
+      ${other('#/settings', 'gear', 'Ayarlar', 'Tema, hedef, yedekleme')}
+    </div>
+  </section>
   </div>`;
 
-  const onLevelChange = async (newLevel) => {
-    await setMeta('learnLevel', newLevel);
-    const byL = getMeta('activeSessionsByLevel') || {};
-    if (byL[newLevel]) {
-      await setMeta('activeSession', byL[newLevel]);
-    } else {
-      await setMeta('activeSession', null);
-    }
-    renderDashboard(v);
+  // Kalıcı durak kayıtları yoksa bir kez oluştur (idempotent; mevcut kelime/ilerleme verisine dokunmaz)
+  if (nbLists.length) ensureListPaths(nbLists).catch((e) => console.warn('Yol kaydı oluşturulamadı', e));
+
+  $$('[data-open-path]', v).forEach((a) => {
+    a.addEventListener('click', () => { setMeta('pathTab', a.dataset.openPath); });
+  });
+  const hl = $('#home-list', v);
+  if (hl) hl.onchange = async () => { await setPreferredNotebookList(hl.value, userId); renderDashboard(v); };
+  $$('[data-home-level]', v).forEach((b) => {
+    b.onclick = async () => {
+      const newLevel = b.dataset.homeLevel;
+      await setMeta('learnLevel', newLevel);
+      const byL = getMeta('activeSessionsByLevel') || {};
+      await setMeta('activeSession', byL[newLevel] || null);
+      renderDashboard(v);
+    };
+  });
+  $('#go-learn', v).onclick = async () => {
+    if (hasSaved) { if (!(await resumeSaved(level))) toast('Oturum devam ettirilemedi.', 'error'); return; }
+    if (!hasPickedLevel) await setMeta('learnLevel', level);
+    await startLearn(level);
   };
-
-  const gpl = $('#go-pick-level', v);
-  if (gpl) gpl.onclick = () => openLevelSelectorModal(async (lvl) => { await setMeta('learnLevel', lvl); await startLearn(lvl); });
-
-  const gl = $('#go-learn', v);
-  if (gl) gl.onclick = () => startLearn(level);
-
-  const cl = $('#change-level', v);
-  if (cl) cl.onclick = () => openLevelSelectorModal(onLevelChange);
-
   const gg = $('#go-grammar', v); if (gg) gg.onclick = () => gotoGrammarLesson(gNext.id);
   $('#edit-goal', v).onclick = () => openGoalModal(() => renderDashboard(v));
-  const rs = $('#resume', v);
-  if (rs) rs.onclick = async () => { if (!(await resumeSaved(level))) toast('Oturum devam ettirilemedi.', 'error'); };
   const dc = $('#discard', v);
   if (dc) dc.onclick = async () => {
     if (await confirmDialog('Yarım kalan oturum silinsin mi? (Verdiğiniz cevaplar zaten kaydedildi.)', { danger: true })) {
-      const { setMeta } = await import('./storage.js');
       await setMeta('activeSession', null);
       const byL = getMeta('activeSessionsByLevel') || {};
       if (level && byL[level]) {
@@ -266,24 +309,37 @@ function renderDashboard(v) {
   };
 }
 
-/* ---------- Diğer ---------- */
+/* ---------- Menü (eski "Diğer") ---------- */
 function renderMore(v) {
   const item = (href, ic, title, sub) => `<li><a class="list-row linkrow" href="${href}"><span class="row-ic">${ICONS[ic]}</span><div class="row-main"><b>${title}</b><span class="muted small">${sub}</span></div>${ICONS.chev}</a></li>`;
-  v.innerHTML = `<div class="page"><h1>Diğer</h1>
+  const u = getCurrentUser();
+  v.innerHTML = `<div class="page"><h1>Menü</h1>
+  <h2 class="group-title">Çalış</h2>
   <ul class="list">
-    ${item('#/notebook', 'book', 'Kelime Defterim', 'Kişisel kelime listelerin ve çalışmaların')}
+    ${item('#/learn', 'book', 'Kelime Öğren', 'A2, B1 ve B2 hazır kelimeler · 4 aşamalı öğrenme')}
+    ${item('#/review', 'repeat', 'Tekrarlarım', 'Aralıklı tekrar (SRS) kuyruğu')}
+    ${item('#/grammar', 'book', 'Grammar Academy', 'Dilbilgisi konuları ve alıştırmalar')}
     ${item('#/irregular', 'repeat', 'Fiillerin 3 Hali', 'Düzensiz fiiller (V1, V2, V3) ve kişisel listelerin')}
+    ${item('#/notebook', 'book', 'Kelime Defterim', 'Kişisel kelime listelerin ve çalışmaların')}
+    ${item('#/path', 'chart', 'Yolum', 'Kişisel ve hazır öğrenme yolların')}
+  </ul>
+  <h2 class="group-title">Araçlar</h2>
+  <ul class="list">
     ${item('#/vocabulary', 'stack', 'Kelime Havuzum', 'Kelimeleri ara, incele ve düzenle')}
     ${item('#/exams', 'exam', 'Sınavlar', 'Kelime sınavları ve geçmiş sonuçlar')}
     ${item('#/statistics', 'chart', 'İstatistikler', 'İlerlemeni takip et')}
-    ${item('#/settings', 'gear', 'Ayarlar', 'Görünüm, hedef, yedekleme')}
+  </ul>
+  <h2 class="group-title">Hesap ve Ayarlar</h2>
+  <ul class="list">
+    ${item('#/settings', 'gear', 'Ayarlar', 'Tema, hedef, yedekleme')}
+    ${u ? item('#/settings', 'gear', 'Profil', esc(u.email || u.displayName || 'Giriş yapıldı')) : item('#/login', 'gear', 'Özel Giriş (Ahmet & Sude)', 'Profil ve sürpriz hesabı')}
   </ul></div>`;
 }
 
 /* ---------- Ayarlar (iOS tarzı liste) ---------- */
 function renderSettings(v) {
   const s = getSettings();
-  const curTheme = ['light', 'dark', 'auto', 'studio'].includes(s.theme) ? s.theme : 'light';
+  const curTheme = THEME_IDS.includes(s.theme) ? s.theme : 'light';
   const sw = (id, label, on, desc = '') => `<label class="list-row"><span class="row-main"><b>${label}</b>${desc ? `<span class="muted small">${desc}</span>` : ''}</span><input type="checkbox" class="switch" id="${id}" ${on ? 'checked' : ''}></label>`;
   const btnRow = (id, label, cls = '') => `<li><button type="button" class="list-row linkrow ${cls}" id="${id}"><span class="row-main"><b>${label}</b></span>${ICONS.chev}</button></li>`;
   v.innerHTML = `<div class="page settings"><h1>Ayarlar</h1>
@@ -295,8 +351,9 @@ function renderSettings(v) {
       <button type="button" class="theme-card-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark"><span class="theme-preview theme-p-dark" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Koyu</button>
       <button type="button" class="theme-card-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto"><span class="theme-preview theme-p-auto" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Otomatik</button>
       <button type="button" class="theme-card-btn ${curTheme === 'studio' ? 'active' : ''}" data-set-theme="studio"><span class="theme-preview theme-p-studio" aria-hidden="true"><span class="theme-swatch-bar"></span></span>VELUNO Studio</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'ember' ? 'active' : ''}" data-set-theme="ember"><span class="theme-preview theme-p-ember" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Ember Soft</button>
     </div></div></div>
-  <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder. VELUNO Studio, petrol ve lime yeşili özel tasarım sunar.</p>
+  <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder. VELUNO Studio, petrol ve lime yeşili özel tasarım sunar. Ember Soft; koyu antrasit zemin, Midnight Petrol ve Aged Bronze tonlarıyla sakin bir görünüm sunar.</p>
 
   <h2 class="group-title">Günlük Hedef</h2>
   <ul class="list">
@@ -339,7 +396,7 @@ function renderSettings(v) {
 
   <h2 class="group-title">Hakkında</h2>
   <div class="list">
-    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v4.6.1</span></div>
+    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v5.0.0</span></div>
     <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
   </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
@@ -495,7 +552,7 @@ async function resetProgress() {
       $('[data-x]', b).onclick = api.close;
       $('#rc', b).oninput = (e) => { $('#rgo', b).disabled = e.target.value.trim() !== 'SIFIRLA'; };
       $('#rgo', b).onclick = async () => {
-        const keep = ['deletedIds', 'schemaVersion', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'memoryGameStats', 'memoryGameRotation', 'studyGroupRotation'].filter((k) => getMeta(k) != null).map((k) => ({ key: k, value: getMeta(k) }));
+        const keep = ['deletedIds', 'schemaVersion', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'memoryGameStats', 'memoryGameRotation', 'studyGroupRotation', 'notebookPaths', 'pathTab', 'pathListByUser'].filter((k) => getMeta(k) != null).map((k) => ({ key: k, value: getMeta(k) }));
         try { await replaceAll({ words: state.words, progress: [], exams: [], daily: [], meta: keep }); api.close(); toast('İlerleme sıfırlandı.', 'success'); route(); }
         catch (e) { toast('Sıfırlama başarısız: ' + e.message, 'error'); }
       };
@@ -559,6 +616,7 @@ async function boot() {
     const r = await seedBuiltIn();
     if (!state.words.length) throw new Error('Kelime verisi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
     if (r.errors.length) console.warn(r.errors);
+    try { await ensureListPaths(getAllNotebookLists()); } catch (e) { console.warn('Yol senkronizasyonu başarısız', e); }
   } catch (e) {
     console.error(e);
     $('#app').hidden = false; $('#view').innerHTML = `<div class="card"><h2>Başlatılamadı</h2><p>${esc(e.message)}</p><button class="btn primary" onclick="location.reload()">Yeniden Dene</button></div>`;

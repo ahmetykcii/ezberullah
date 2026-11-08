@@ -193,6 +193,11 @@ export async function replaceAll(data) {
     state.exams = sets.exams; state.daily = Object.fromEntries(sets.daily.map((x) => [x.date, x]));
     state.meta = Object.fromEntries(sets.meta.map((x) => [x.key, x.value]));
     state.grammarProgress = { ...gpMap };
+    if (Array.isArray(state.meta.notebookWords)) {
+      for (const nw of state.meta.notebookWords) {
+        if (nw && nw.id) state.wordMap.set(nw.id, nw);
+      }
+    }
   } else await loadData();
 }
 

@@ -5,6 +5,7 @@
   --bd:#E5E9F0;
   --ac:#4F8EF7;--ac2:#3B7BF2;--ac-soft:#EAF2FF;--on-ac:#FFFFFF;
   --ok:#2F9E66;--ok-bg:#E8F7EF;--warn:#D89B2B;--warn-bg:#FFF6E5;--no:#D96B6B;--no-bg:#FDEEEE;
+  --path-petrol:#438A8B;--path-petrol-dark:#245C60;--path-bronze:#AC9160;--path-bronze-dark:#75603C;--special-accent:#FB6A21;
   --r:14px;--dur:200ms;color-scheme:light;
 }
 :root[data-theme=dark]{
@@ -36,6 +37,31 @@
   --bd:#37464F;
   --ac:#92D332;--ac2:#80BC28;--ac-soft:#293D2B;--on-ac:#131F23;
   --ok:#2CE58B;--ok-bg:#153826;--warn:#FFB340;--warn-bg:#382B14;--no:#FF6B6B;--no-bg:#3E1E22;
+  color-scheme:dark;
+}
+:root[data-theme=ember]{
+  /* VELUNO Ember Soft v5.0 — Kesin Renk Paleti */
+  --ember-bg:#181818;
+  --ember-card:#242424;
+  --ember-primary:#245C60;
+  --ember-active:#438A8B;
+  --ember-bronze:#AC9160;
+  --ember-bronze-dark:#75603C;
+  --ember-ok:#3FC877;
+  --ember-ok-bg:#19261C;
+  --ember-no:#57191C;
+  --ember-no-bg:#281819;
+  --ember-special:#FB6A21;
+  --ember-tx:#F5F5F5;
+  --ember-tx-sec:#A5A5A5;
+
+  /* VELUNO merkezi tema değişkenleri */
+  --bg:#181818;--card:#242424;--surf:#2E2E2E;
+  --tx:#F5F5F5;--tx-sec:#A5A5A5;--tx2:#8C8C8C;
+  --bd:#333333;
+  --ac:#245C60;--ac2:#438A8B;--ac-soft:#1D3638;--on-ac:#F5F5F5;
+  --ok:#3FC877;--ok-bg:#19261C;--warn:#AC9160;--warn-bg:#2B251B;--no:#57191C;--no-bg:#281819;--no-tx:#F28B8E;
+  --path-petrol:#438A8B;--path-petrol-dark:#245C60;--path-bronze:#AC9160;--path-bronze-dark:#75603C;--special-accent:#FB6A21;
   color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -194,6 +220,7 @@ input[type=range]{accent-color:var(--ac);width:130px}
 .theme-p-auto{background:#101317;position:relative}.theme-p-auto::before{content:'';position:absolute;top:0;left:0;bottom:0;width:50%;background:#F7F9FC;z-index:0}
 .theme-p-auto .theme-swatch-bar{background:#4F8EF7;position:relative;z-index:1}
 .theme-p-studio{background:#131F23;border-color:#37464F}.theme-p-studio .theme-swatch-bar{background:#92D332}
+.theme-p-ember{background:#181818;border-color:#245C60}.theme-p-ember .theme-swatch-bar{background:#438A8B;box-shadow:6px 0 0 #AC9160}
 
 details.more{border-top:1px solid var(--bd);margin-top:22px}
 details.more>summary{list-style:none;cursor:pointer;padding:15px 0;font-weight:600;color:var(--tx-sec);display:flex;justify-content:space-between;align-items:center;min-height:48px}
@@ -796,3 +823,151 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
   .mg-scope{max-width:100%;margin-left:0;flex-basis:100%}
 }
 @media (max-width:360px){.mg-grid{gap:6px}.mg-card{min-height:60px}.mg-text{font-size:.72rem}.mg-face{padding:4px}}
+
+
+/* ---------- v5.0 — Ember Soft Tema Kuralları, Ana Sayfa & Dinamik Öğrenme Yolları ---------- */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Ember Soft — Aktif Etkileşim (#438A8B), Okunabilir Yanlış Metin ve Özel Vurgu (#FB6A21) */
+:root[data-theme=ember] #sidebar a.active{background:rgba(67,138,139,.18);color:var(--ember-active);font-weight:600}
+:root[data-theme=ember] #bottomnav a.active{color:var(--ember-active);font-weight:600}
+:root[data-theme=ember] a:not(.btn):not(.list-row):not(.home-mini):not(.mini-link),
+:root[data-theme=ember] .text-btn,
+:root[data-theme=ember] .back-link,
+:root[data-theme=ember] .eyebrow,
+:root[data-theme=ember] .sigil,
+:root[data-theme=ember] .row-ic,
+:root[data-theme=ember] .meaning,
+:root[data-theme=ember] .step-cta,
+:root[data-theme=ember] .nb-stage-counter,
+:root[data-theme=ember] .nb-group-badge{color:var(--ember-active)}
+:root[data-theme=ember] .seg-btn.active{background:var(--card);color:var(--ember-active);box-shadow:0 0 0 1px var(--ember-active)}
+:root[data-theme=ember] .theme-card-btn.active,
+:root[data-theme=ember] .nb-size-option.active,
+:root[data-theme=ember] .nb-stage-card.active,
+:root[data-theme=ember] .level-picker-btn.active{border-color:var(--ember-active);background:var(--ac-soft);color:var(--tx)}
+:root[data-theme=ember] .input:focus{border-color:var(--ember-active)}
+:root[data-theme=ember] :focus-visible{outline-color:var(--ember-active)}
+:root[data-theme=ember] .err,
+:root[data-theme=ember] .err-t,
+:root[data-theme=ember] .danger-text,
+:root[data-theme=ember] .btn.danger-text,
+:root[data-theme=ember] .state.draft,
+:root[data-theme=ember] .feedback.no b{color:var(--no-tx)}
+:root[data-theme=ember] .feedback.ok{background:var(--ember-ok-bg);border:1px solid var(--ember-ok)}
+:root[data-theme=ember] .feedback.no{background:var(--ember-no-bg);border:1px solid var(--ember-no)}
+:root[data-theme=ember] .opt.right{background:var(--ember-ok-bg);border-color:var(--ember-ok)}
+:root[data-theme=ember] .opt.bad{background:var(--ember-no-bg);border-color:var(--ember-no)}
+:root[data-theme=ember] .hm.l1{background:#1B3436}:root[data-theme=ember] .hm.l2{background:#245C60}:root[data-theme=ember] .hm.l3{background:#347376}:root[data-theme=ember] .hm.l4{background:#438A8B}
+
+/* Ana Sayfa — Minimalist Düzen (Karşılama metni olmadan, 5 net bölüm) */
+.page.home{display:flex;flex-direction:column;gap:14px}
+.page.home .hero{margin:0 0 2px;padding-bottom:4px}
+.home-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.home-nb{border-color:color-mix(in srgb,var(--path-petrol) 38%,var(--bd))}
+.home-lv{border-color:color-mix(in srgb,var(--path-bronze) 38%,var(--bd))}
+.home-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.home-card-head h2{margin:0;font-size:1.12rem;font-weight:700;letter-spacing:-.01em}
+.home-tag{font-size:.74rem;font-weight:600;color:var(--path-petrol);background:color-mix(in srgb,var(--path-petrol) 14%,var(--surf));padding:3px 9px;border-radius:999px}
+.home-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.home-stats>div{background:var(--surf);border-radius:11px;padding:8px 10px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.home-stats b{font-size:1.1rem;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.home-stats span{font-size:.74rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-path-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.home-list-name{font-size:.88rem;font-weight:600;color:var(--tx)}
+.home-list-pick{max-width:210px;min-height:34px;padding:4px 28px 4px 10px;font-size:.85rem}
+.home-empty{margin:0;line-height:1.45}
+.home-saved{margin:0}
+.home-actions{display:flex;align-items:center;gap:8px}
+.home-actions .btn.block{flex:1}
+.btn.bronze{background:var(--path-bronze-dark);color:#F5F5F5;border-color:var(--path-bronze)}
+.btn.bronze:hover:not(:disabled){background:var(--path-bronze);color:#181818;border-color:var(--path-bronze)}
+
+/* Ana Sayfa — Tekrarlarım & Diğer Çalışmalar */
+.home-rv-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.home-rv-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.home-rv-main h2{margin:0;font-size:1.08rem}
+.home-rv-count{min-width:38px;height:38px;padding:0 10px;border-radius:11px;background:var(--surf);color:var(--tx2);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;font-variant-numeric:tabular-nums;flex-shrink:0}
+.home-rv-count.has{background:color-mix(in srgb,var(--path-petrol) 18%,var(--surf));color:var(--path-petrol);border:1px solid color-mix(in srgb,var(--path-petrol) 45%,transparent)}
+.home-daily{margin:0;line-height:1.45}
+.streak-mark{color:var(--special-accent);font-weight:600}
+.home-other .group-title{margin:8px 2px 10px}
+.home-mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.home-mini{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--bd);border-radius:14px;color:var(--tx);font:inherit;text-align:left;text-decoration:none;cursor:pointer;min-height:60px;min-width:0;transition:border-color var(--dur),background var(--dur)}
+.home-mini:hover{border-color:var(--path-petrol);background:var(--surf)}
+.home-mini-ic{width:34px;height:34px;border-radius:10px;background:var(--surf);color:var(--path-petrol);display:inline-grid;place-items:center;flex-shrink:0}
+.home-mini-t{display:flex;flex-direction:column;gap:1px;min-width:0}
+.home-mini-t b{font-size:.9rem;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-mini-t span{font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Kısa Yol Önizlemesi (Ana Sayfa) */
+.mini-link{display:block;text-decoration:none;border-radius:12px}
+.mini-path{position:relative;height:62px;background:var(--surf);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.mini-path svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.path-notebook{--p-main:var(--path-petrol);--p-dark:var(--path-petrol-dark)}
+.path-builtin{--p-main:var(--path-bronze);--p-dark:var(--path-bronze-dark)}
+.mini-path .path-track,.path-canvas .path-track{fill:none;stroke:var(--bd);stroke-width:3.5;stroke-dasharray:5 5;stroke-linecap:round}
+.mini-path .path-done,.path-canvas .path-done{fill:none;stroke:var(--p-main);stroke-width:4;stroke-linecap:round}
+.mini-stop{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:var(--card);border:2px solid var(--bd);color:var(--tx2);font-size:.72rem;font-weight:700;display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+.mini-stop.is-done{background:var(--p-main);border-color:var(--p-main);color:#181818}
+.mini-stop.is-active{border-color:var(--p-main);color:var(--tx);background:var(--card)}
+.mini-stop.is-current{box-shadow:0 0 0 4px color-mix(in srgb,var(--p-main) 28%,transparent)}
+
+/* Yolum Ekranı — Tam Ekran Kıvrımlı Öğrenme Yolu */
+.path-page{display:flex;flex-direction:column;gap:12px}
+.path-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.path-picker{flex:1;min-width:180px}
+.path-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px}
+.path-summary>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.path-summary b{font-size:1.05rem;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.path-summary span{font-size:.75rem;color:var(--tx2)}
+.path-jump{align-self:flex-end}
+.path-wrap{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:10px 8px;overflow:hidden}
+.path-more{margin:4px 0}
+.path-canvas{position:relative;width:100%;max-width:460px;margin:0 auto;user-select:none}
+.path-svg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.pstop{position:absolute;transform:translate(-50%,-50%);background:none;border:0;padding:0;cursor:pointer;color:var(--tx);font:inherit;display:inline-flex;align-items:center;justify-content:center;min-width:52px;min-height:52px}
+.pstop-core{width:46px;height:46px;border-radius:50%;background:var(--surf);border:2.5px solid var(--bd);color:var(--tx-sec);font-weight:700;font-size:.92rem;display:grid;place-items:center;transition:transform 140ms ease,border-color var(--dur),background var(--dur);font-variant-numeric:tabular-nums}
+.pstop:hover .pstop-core{transform:scale(1.05);border-color:var(--p-main)}
+.pstop:active .pstop-core{transform:scale(.96)}
+.pstop.is-done .pstop-core{background:var(--p-main);border-color:var(--p-main);color:#181818}
+.pstop.is-active .pstop-core{background:var(--card);border-color:var(--p-main);color:var(--tx);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--p-main) 32%,transparent)}
+.pstop.is-current .pstop-core{border-color:var(--p-main);box-shadow:0 0 0 5px color-mix(in srgb,var(--p-main) 26%,transparent)}
+.pstop-label{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1px;background:var(--surf);border:1px solid var(--bd);border-radius:10px;padding:5px 9px;white-space:nowrap;pointer-events:none;max-width:148px;overflow:hidden;text-overflow:ellipsis}
+.pstop-label.right{left:calc(100% + 8px);text-align:left}
+.pstop-label.left{right:calc(100% + 8px);text-align:right}
+.pstop-label b{font-size:.78rem;font-weight:700;color:var(--tx)}
+.pstop-label small{font-size:.68rem;color:var(--tx2);overflow:hidden;text-overflow:ellipsis}
+.pstop-label em{font-style:normal;font-size:.66rem;font-weight:700;color:var(--special-accent)}
+.path-legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:4px 0 0}
+.path-legend .lg.done{color:var(--ok)}
+.path-empty{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:24px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+
+/* Durak Detay Paneli (Modal) */
+.stop-detail{display:flex;flex-direction:column;gap:12px}
+.stop-ctx{margin:0}
+.stop-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stop-stats>div{background:var(--surf);border:1px solid var(--bd);border-radius:11px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
+.stop-stats b{font-size:1.05rem;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.stop-stats span{font-size:.74rem;color:var(--tx2)}
+.stop-bar i{background:var(--p-main,var(--ac))}
+.stop-words{list-style:none;margin:0;padding:0;max-height:260px;overflow-y:auto;border:1px solid var(--bd);border-radius:12px;background:var(--card)}
+.stop-word{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px}
+.stop-word+.stop-word{border-top:1px solid var(--bd)}
+.stop-word-main{display:flex;flex-direction:column;gap:1px;min-width:0}
+.stop-word-main b{font-size:.92rem;font-weight:600;color:var(--tx)}
+.stop-chip{font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--surf);color:var(--tx-sec);white-space:nowrap;flex-shrink:0}
+.stop-chip.ok{background:var(--ok-bg);color:var(--ok)}
+.stop-chip.warn{background:var(--warn-bg);color:var(--warn)}
+.stop-chip.mid{background:var(--ac-soft);color:var(--ac2)}
+.stop-note{margin:0;line-height:1.45}
+
+@media (max-width:480px){
+  .home-mini-grid{grid-template-columns:1fr}
+  .pstop-label{max-width:118px;padding:4px 7px}
+  .pstop-label b{font-size:.73rem}
+  .pstop-label small{font-size:.64rem}
+}
+@media (max-width:360px){
+  .pstop-label small{display:none}
+}

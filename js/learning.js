@@ -343,7 +343,11 @@ handlers.learn = {
     const subText = isCardOnly
       ? `1 aşamayı tamamladın · Kelime kartları incelendi`
       : `${stageCount} aşamayı tamamladın · ${ok}/${q.length} doğru cevap`;
-    const nextGroupBtn = `<button type="button" class="btn primary" id="btn-next-study-group">Sonraki Gruba Geç (${groupSize} Kelime)</button>`;
+    // v5.0: Yolum durağından başlatılan oturumda genel grup rotasyonu yerine yola dönüş sunulur
+    const fromPath = Boolean(sess?.params?.pathStop);
+    const nextGroupBtn = fromPath
+      ? `<a class="btn primary" href="#/path" id="btn-back-to-path">Yoluma Dön</a>`
+      : `<button type="button" class="btn primary" id="btn-next-study-group">Sonraki Gruba Geç (${groupSize} Kelime)</button>`;
     return {
       html: summaryHtml({
         title: 'Oturum Tamamlandı',
@@ -434,6 +438,38 @@ export async function startLearn(level, options = null) {
   }
 
   const words = state.words.filter((w) => w.level === level);
+
+  // v5.0: Yolum → hazır seviye durağı. Havuz YALNIZCA durağın kelimeleridir; öğrenilmiş/kalıcı kelimeler de dahildir.
+  // Genel grup rotasyonu (studyGroupRotation) ve 5/10/15/20 grup seçimi bu akışta kullanılmaz/değiştirilmez.
+  if (options && typeof options === 'object' && Array.isArray(options.explicitWordIds) && options.explicitWordIds.length) {
+    const allowed = new Set(options.explicitWordIds);
+    const byId = new Map(words.filter((w) => allowed.has(w.id) && E.isWordReady(w)).map((w) => [w.id, w]));
+    const batch = options.explicitWordIds.map((id) => byId.get(id)).filter(Boolean);
+    if (!batch.length) {
+      toast('Bu durakta çalışılacak kelime bulunamadı.', 'error');
+      return false;
+    }
+    const groupWordIds = batch.map((w) => w.id);
+    const selectedStages = [1, 2, 3, 4];
+    const pathStop = options.pathStop && typeof options.pathStop === 'object' ? { ...options.pathStop, level } : { level };
+    await setMeta('learnLevel', level);
+    await startSession({
+      kind: 'learn',
+      title: `${level} — Durak ${pathStop.number || ''} (${batch.length} Kelime)`,
+      level,
+      params: {
+        level,
+        groupSize: E.normalizeGroupSize(batch.length),
+        groupWordIds,
+        selectedStages,
+        groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
+        pathStop,
+      },
+      items: E.learnItems(batch, state.progress, Math.random, selectedStages),
+    });
+    return true;
+  }
+
   const availCheck = E.selectStudyGroup(words, state.progress, E.DEFAULT_GROUP_SIZE);
   if (!availCheck.batch.length) {
     toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 4 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);

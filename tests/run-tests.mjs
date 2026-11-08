@@ -17,7 +17,9 @@ import { levelStats, streak, streakStats, today, todayLearnedCount, getMistakeAn
 import { DEFAULT_SETTINGS, getSettings, setSetting, getMeta, setMeta, getGrammarProgress, saveGrammarProgress } from '../js/storage.js';
 import * as G from '../js/grammar.js';
 import '../js/vocab-ui.js';
-import { resolveTheme } from '../js/app.js';
+import { resolveTheme, THEME_IDS, THEME_META_COLORS } from '../js/app.js';
+import * as Paths from '../js/paths.js';
+import * as PathUI from '../js/path-ui.js';
 import * as Auth from '../js/auth.js';
 import * as FbCfg from '../js/firebase-config.js';
 import { renderSurprise } from '../js/surprise.js';
@@ -397,9 +399,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v4.6.1) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v5.0.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.6.1';"), 'SW sürümü veluno-v4.6.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'SW sürümü veluno-v5.0.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -757,14 +759,14 @@ await test('v3.1 Ana sayfa (Learning Home): tek ana eylem, günlük hedef, devam
   const appCode = await readText('js/app.js');
   const css = await readText('css/style.css');
 
-  ok(appCode.includes('Bugünkü Hedefin:'), 'Ana sayfada Günlük Hedef satırı bulunmalı');
+  ok(appCode.includes('dailyGoal') && appCode.includes('edit-goal'), 'Ana sayfada Günlük Hedef satırı bulunmalı');
   ok(appCode.includes('[5, 10, 15, 20]') && appCode.includes('data-set-goal='), 'Günlük hedef seçenekleri (5, 10, 15, 20, Özel) bulunmalı');
-  ok(appCode.includes('Günlük Seri:'), 'Ana sayfada tek satırlık seri bilgisi bulunmalı');
-  ok(appCode.includes('Öğrenmeye Devam Et') && appCode.includes('Kaldığın Yerden Devam Et'), 'Ana sayfada birincil eylem bulunmalı');
+  ok(appCode.includes('Seri ${strk.current} gün'), 'Ana sayfada tek satırlık seri bilgisi bulunmalı');
+  ok(appCode.includes('Öğrenmeye Git') && appCode.includes('Kaldığın Yerden Devam Et'), 'Ana sayfada birincil eylem bulunmalı');
   ok(appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
   ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'Ana sayfada VELUNO başlığı bulunmalı');
   ok(!appCode.includes('class="grid stats"') && !appCode.includes('smart-grid'), 'Ana sayfada dashboard kart ızgarası kalmamalı');
-  ok(css.includes('.today{') && css.includes('.cta-block{'), 'Learning Home CSS kuralları bulunmalı');
+  ok(css.includes('.home-card{') && css.includes('.today{') && css.includes('.cta-block{'), 'Learning Home CSS kuralları bulunmalı');
 });
 
 await test('v3.1 Tasarım sistemi: gradient / cam efekti / büyük gölge yok, altın ton yok, reduced-motion destekli', async () => {
@@ -779,16 +781,16 @@ await test('v3.1 Tasarım sistemi: gradient / cam efekti / büyük gölge yok, a
   ok(css.includes('.page{max-width:680px'), 'Masaüstünde içerik genişliği sınırlı olmalı');
 });
 
-await test('v3.1 Gezinme: mobil alt menüde 5 bölüm, SVG ikonlar, emoji yok, "Diğer" sayfası ile ikincil bölümlere erişim', async () => {
+await test('v3.1 Gezinme: mobil alt menüde 4 sekme (Ana Sayfa, Defterim, Yolum, Menü), SVG ikonlar, emoji yok ve Menü sayfası ile ikincil bölümlere erişim', async () => {
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
   const bottom = html.slice(html.indexOf('<nav id="bottomnav"'), html.indexOf('</nav>', html.indexOf('<nav id="bottomnav"')));
-  eq((bottom.match(/data-nav=/g) || []).length, 5, 'Alt menüde tam 5 bölüm olmalı');
-  ok(bottom.includes('data-nav="more"'), 'Alt menüde Diğer bulunmalı');
+  eq((bottom.match(/data-nav=/g) || []).length, 4, 'Alt menüde tam 4 sekme olmalı');
+  ok(bottom.includes('data-nav="dashboard"') && bottom.includes('data-nav="notebook"') && bottom.includes('data-nav="path"') && bottom.includes('data-nav="more"'), 'Alt menüde Ana Sayfa, Defterim, Yolum ve Menü bulunmalı');
   ok(!/[\u{1F300}-\u{1FAFF}\u2699\u2600-\u27BF]/u.test(html.slice(html.indexOf('<aside'), html.indexOf('<div id="modal-root"'))), 'Navigasyonda emoji kullanılmamalı');
   ok(bottom.includes('<svg viewBox="0 0 24 24"'), 'Alt menü SVG ikon kullanmalı');
-  for (const r of ['dashboard', 'learn', 'review', 'grammar', 'more', 'vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`${r}:`), `Rota korunmalı: ${r}`);
-  for (const r of ['vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`item('#/${r}'`), `Diğer sayfasından erişilebilmeli: ${r}`);
+  for (const r of ['dashboard', 'path', 'learn', 'review', 'grammar', 'more', 'vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`${r}:`), `Rota korunmalı: ${r}`);
+  for (const r of ['vocabulary', 'exams', 'statistics', 'settings']) ok(appCode.includes(`item('#/${r}'`), `Menü sayfasından erişilebilmeli: ${r}`);
 });
 
 await test('v3.1 Ekran sadeleştirmeleri: Kelime odak akışı, Tekrar tek dokunuş, Sınav odak modu, Kelime Havuzu satırları, Ayarlar listesi', async () => {
@@ -1303,7 +1305,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v4.6.1';"), 'SW sürümü veluno-v4.6.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'SW sürümü veluno-v5.0.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1728,7 +1730,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi (v4.5.2)
-  ok(sw.includes("const VERSION = 'veluno-v4.6.1';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2797,7 +2799,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v4.6.1';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3282,6 +3284,389 @@ await test('v4.6.1 [23] Eski v4.6.0 hafıza oyunu verileriyle geriye dönük uyu
   eq(st.bestTimeSec, 85);
   eq(MG.getMemoryRotation('legacy_u', 'list:old16'), ['w1', 'w2', 'w3'], 'Eski tur kaydı silinmeden normalize edilmeli');
   eq(MG.getMemoryRotation('legacy_u', 'all'), ['w4', 'w5']);
+});
+
+/* ---------- 19) v5.0 — Ember Soft Tema, Mobil Ana Sayfa, 4 Sekmeli Navigasyon ve Dinamik Öğrenme Yolları Testleri ---------- */
+out('\n--- 19) v5.0 — Ember Soft Tema, Mobil Ana Sayfa, 4 Sekmeli Navigasyon ve Dinamik Öğrenme Yolları Testleri ---');
+
+await test('v5.0 [1] Ember Soft seçiliyor ve uygulamanın tamamında kesin renk paletiyle doğru çalışıyor', async () => {
+  const css = await readText('css/style.css');
+  const html = await readText('index.html');
+  const appCode = await readText('js/app.js');
+
+  eq(resolveTheme('ember', false), 'ember', 'Ember Soft açık cihaz modunda ember dönmeli');
+  eq(resolveTheme('ember', true), 'ember', 'Ember Soft koyu cihaz modunda ember dönmeli');
+  eq(resolveTheme('ember'), 'ember', 'Ember Soft argümansız ember dönmeli');
+  ok(THEME_IDS.includes('ember'), 'THEME_IDS içinde ember bulunmalı');
+  eq(THEME_META_COLORS.ember, '#181818', 'Ember Soft meta theme-color #181818 olmalı');
+  ok(html.includes("pref === 'ember'") && html.includes("ember: '#181818'"), 'index.html inline scripti ember temasını tanımalı');
+  ok(appCode.includes('data-set-theme="ember"') && appCode.includes('Ember Soft'), 'Ayarlarda 5. tema olarak Ember Soft butonu bulunmalı');
+
+  const requiredHex = [
+    '#181818', '#242424', '#245C60', '#438A8B', '#AC9160', '#75603C',
+    '#3FC877', '#19261C', '#57191C', '#281819', '#FB6A21', '#F5F5F5', '#A5A5A5',
+  ];
+  for (const hex of requiredHex) {
+    ok(css.includes(hex), `Ember Soft palet rengi CSS içinde tanımlı olmalı: ${hex}`);
+  }
+  ok(css.includes(':root[data-theme=ember]') && css.includes('--ac:#245C60') && css.includes('--ac2:#438A8B'), 'Merkezi tema değişkenleri #245C60 ve #438A8B kullanmalı');
+  ok(!css.includes('--ac:#FB6A21'), '#FB6A21 kesinlikle ana renk olmamalı');
+});
+
+await test('v5.0 [2] Mevcut dört tema (light, dark, auto, studio) ve kullanıcı tema tercihi etkilenmeden çalışıyor', async () => {
+  eq(DEFAULT_SETTINGS.theme, 'light', 'Varsayılan tema zorla ember yapılmamalı, light kalmalı');
+  eq(resolveTheme('light'), 'light');
+  eq(resolveTheme('dark'), 'dark');
+  eq(resolveTheme('auto', false), 'light');
+  eq(resolveTheme('auto', true), 'dark');
+  eq(resolveTheme('studio'), 'studio');
+  setSetting('theme', 'studio');
+  eq(getSettings().theme, 'studio', 'Kullanıcının mevcut tema tercihi korunmalı');
+  setSetting('theme', 'ember');
+  eq(getSettings().theme, 'ember', 'Ember Soft seçildiğinde kaydedilmeli');
+  setSetting('theme', 'light');
+});
+
+await test('v5.0 [3] VELUNO başlığı ve mevcut ahmet ❤️ sude imzası aynen korunmuş', async () => {
+  const appCode = await readText('js/app.js');
+  ok(appCode.includes('<h1 class="hero-title" aria-label="VELUNO">VELUNO</h1>'), 'VELUNO başlığı korunmalı');
+  ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Mevcut imza karakteri karakterine korunmalı');
+});
+
+await test('v5.0 [4] "Hoş geldin." ve "Bugün kısa bir adım yeterli." karşılama metinleri ana sayfadan tamamen kaldırılmış', async () => {
+  const appCode = await readText('js/app.js');
+  const dashStart = appCode.indexOf('function renderDashboard(v)');
+  const dashEnd = appCode.indexOf('function renderMore(v)');
+  const dashCode = appCode.slice(dashStart, dashEnd);
+  ok(!dashCode.includes('Hoş geldin.'), 'Ana sayfada "Hoş geldin." metni bulunmamalı');
+  ok(!dashCode.includes('Bugün kısa bir adım yeterli.'), 'Ana sayfada "Bugün kısa bir adım yeterli." metni bulunmamalı');
+  ok(!dashCode.includes('hero-tagline'), 'Ana sayfada karşılama tagline bloğu bulunmamalı');
+});
+
+await test('v5.0 [5] Ana sayfanın 5 bölümü (Üst alan, Kelime Defterim 1. öncelik, Hazır Kelime Havuzu, Tekrarlarım, Diğer Çalışmalar) ve tüm özelliklere erişim', async () => {
+  const appCode = await readText('js/app.js');
+  const dashStart = appCode.indexOf('function renderDashboard(v)');
+  const dashEnd = appCode.indexOf('function renderMore(v)');
+  const dashCode = appCode.slice(dashStart, dashEnd);
+
+  const iHero = dashCode.indexOf('<header class="hero">');
+  const iNb = dashCode.indexOf('home-nb');
+  const iLv = dashCode.indexOf('home-lv');
+  const iRv = dashCode.indexOf('home-rv');
+  const iOther = dashCode.indexOf('home-other');
+  ok(iHero > 0 && iHero < iNb && iNb < iLv && iLv < iRv && iRv < iOther, 'Ana sayfa bölümleri: Üst alan → Kelime Defterim → Hazır Kelime Havuzu → Tekrarlarım → Diğer Çalışmalar sırasıyla dizilmeli');
+  ok(dashCode.includes("miniPathHtml(nbPath, 'notebook')") && dashCode.includes("miniPathHtml(lvPath, 'builtin')"), 'Ana sayfada kişisel (petrol) ve hazır (bronz) kısa yol önizlemeleri bulunmalı');
+  for (const label of ['Defterime Git', 'Öğrenmeye Git', 'Tekrara Git', 'Grammar Academy', 'Fiillerin 3 Hali', 'Sınavlar', 'İstatistikler', 'Kelime Havuzum', 'Ayarlar']) {
+    ok(dashCode.includes(label), `Ana sayfadan "${label}" özelliğine erişilebilmeli`);
+  }
+});
+
+await test('v5.0 [6] Dört mobil navigasyon sekmesi (Ana Sayfa, Defterim, Yolum, Menü) doğru tanımlı ve çalışıyor', async () => {
+  const html = await readText('index.html');
+  const css = await readText('css/style.css');
+  const bottom = html.slice(html.indexOf('<nav id="bottomnav"'), html.indexOf('</nav>', html.indexOf('<nav id="bottomnav"')));
+  const tabs = [...bottom.matchAll(/data-nav="([^"]+)"[\s\S]*?<span class="nav-lb">([^<]+)<\/span>/g)].map((m) => [m[1], m[2]]);
+  eq(tabs, [
+    ['dashboard', 'Ana Sayfa'],
+    ['notebook', 'Defterim'],
+    ['path', 'Yolum'],
+    ['more', 'Menü'],
+  ], 'Mobil alt navigasyon tam olarak Ana Sayfa, Defterim, Yolum, Menü olmalı');
+  ok(css.includes(':root[data-theme=ember] #bottomnav a.active{color:var(--ember-active)'), 'Aktif sekme petrol tonuyla (#438A8B) belirtilmeli');
+  ok(css.includes('env(safe-area-inset-bottom)'), 'iPhone safe-area alt alanı desteklenmeli');
+});
+
+await test('v5.0 [7] Kelime Defterim listelerinin yolları birbirinden bağımsızdır', async () => {
+  const u = 'v5_indep_user';
+  const rA = await createNotebookList('Liste A', u);
+  const rB = await createNotebookList('Liste B', u);
+  for (let i = 0; i < 12; i++) await addWordToNotebook({ word: `alphaword${String.fromCharCode(97 + i)}`, meanings: [`anlamA${i}`], listId: rA.list.id, userId: u });
+  for (let i = 0; i < 5; i++) await addWordToNotebook({ word: `betaword${String.fromCharCode(97 + i)}`, meanings: [`anlamB${i}`], listId: rB.list.id, userId: u });
+
+  const listA = getAllNotebookLists().find((l) => l.id === rA.list.id);
+  const listB = getAllNotebookLists().find((l) => l.id === rB.list.id);
+  const stopsA = Paths.getListPathStops(listA);
+  const stopsB = Paths.getListPathStops(listB);
+  eq(stopsA.length, 2, '12 kelimeli Liste A 2 durağa sahip olmalı');
+  eq(stopsB.length, 1, '5 kelimeli Liste B 1 durağa sahip olmalı');
+
+  const stopB1IdBefore = stopsB[0].id;
+  const stopB1WordsBefore = [...stopsB[0].wordIds];
+  await addWordToNotebook({ word: 'alphaextra', meanings: ['ekstra'], listId: rA.list.id, userId: u });
+  const stopsBAfter = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === rB.list.id));
+  eq(stopsBAfter[0].id, stopB1IdBefore, 'Liste A değiştiğinde Liste B durak kimliği değişmemeli');
+  eq(stopsBAfter[0].wordIds, stopB1WordsBefore, 'Liste A değiştiğinde Liste B durak yerleşimi değişmemeli');
+});
+
+await test('v5.0 [8] 7, 10, 11, 35, 100 ve 2000 kelime sayılarında doğru duraklar (her durak en fazla 10 kelime) oluşuyor', async () => {
+  const cases = [
+    [7, 1, 7],
+    [10, 1, 10],
+    [11, 2, 1],
+    [25, 3, 5],
+    [35, 4, 5],
+    [100, 10, 10],
+    [2000, 200, 10],
+  ];
+  for (const [count, expectedStops, expectedLastLen] of cases) {
+    eq(Paths.stopCountFor(count), expectedStops, `${count} kelime için stopCountFor ${expectedStops} olmalı`);
+    const fakeList = {
+      id: `list_sz_${count}`,
+      userId: 'u_sz',
+      wordIds: Array.from({ length: count }, (_, i) => `w_${i + 1}`),
+    };
+    const { path } = Paths.syncPathRecord(null, fakeList);
+    eq(path.stops.length, expectedStops, `${count} kelime → ${expectedStops} durak oluşmalı`);
+    eq(path.stops[path.stops.length - 1].wordIds.length, expectedLastLen, `${count} kelimede son durakta ${expectedLastLen} kelime olmalı`);
+    ok(path.stops.every((s) => s.wordIds.length >= 1 && s.wordIds.length <= Paths.STOP_SIZE), 'Her durakta 1..10 arası kelime olmalı');
+  }
+});
+
+await test('v5.0 [9] Yeni kelimeler eski durak yerleşimlerini bozmadan son durağın boş kapasitesine veya yeni durağa ekleniyor', async () => {
+  const u = 'v5_append_user';
+  const r = await createNotebookList('Sabit Durak Listesi', u);
+  const lid = r.list.id;
+  const items8 = Array.from({ length: 8 }, (_, i) => ({ word: `keepword${String.fromCharCode(97 + i)}`, meanings: `anlam ${i + 1}`, status: 'valid' }));
+  await bulkAddWordsToNotebook({ items: items8, listId: lid, userId: u });
+
+  let stops = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === lid));
+  eq(stops.length, 1, '8 kelime → 1 durak');
+  const firstStopId = stops[0].id;
+  const first8Ids = [...stops[0].wordIds];
+
+  // 2 kelime daha ekle → 1. durağın boş kapasitesine (8 → 10) yerleşmeli
+  await addWordToNotebook({ word: 'keepwordi', meanings: ['anlam 9'], listId: lid, userId: u });
+  await addWordToNotebook({ word: 'keepwordj', meanings: ['anlam 10'], listId: lid, userId: u });
+  stops = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === lid));
+  eq(stops.length, 1, '10 kelime → hâlâ 1 durak');
+  eq(stops[0].id, firstStopId, '1. durağın kalıcı kimliği korunmalı');
+  eq(stops[0].wordIds.slice(0, 8), first8Ids, 'İlk 8 kelimenin sırası ve durağı değişmemeli');
+
+  // 11. kelimeyi ekle → 1. durak dolu olduğu için 2. durak oluşturulmalı
+  await addWordToNotebook({ word: 'keepwordk', meanings: ['anlam 11'], listId: lid, userId: u });
+  stops = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === lid));
+  eq(stops.length, 2, '11 kelime → 2 durak');
+  eq(stops[0].id, firstStopId, '1. durak kimliği değişmemeli');
+  eq(stops[0].wordIds.length, 10, '1. durak 10 kelimede sabit kalmalı');
+  eq(stops[1].wordIds.length, 1, 'Yeni kelime 2. durağa yerleşmeli');
+});
+
+await test('v5.0 [10] Kelime silme işleminden sonra diğer duraklar geriye kaydırılmaz, kısmi dolu duraklar ve SRS verileri korunur', async () => {
+  const u = 'v5_del_user';
+  const r = await createNotebookList('Silme Test Listesi', u);
+  const lid = r.list.id;
+  const items15 = Array.from({ length: 15 }, (_, i) => ({ word: `deltest${String.fromCharCode(97 + i)}`, meanings: `anlam ${i + 1}`, status: 'valid' }));
+  await bulkAddWordsToNotebook({ items: items15, listId: lid, userId: u });
+
+  let stops = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === lid));
+  eq(stops.length, 2, '15 kelime → 2 durak (10 + 5)');
+  const stop1Id = stops[0].id;
+  const stop2Id = stops[1].id;
+  const stop2IdsBefore = [...stops[1].wordIds];
+  const removedWordId = stops[0].wordIds[2];
+
+  // Silinecek kelimeye SRS ilerlemesi yaz
+  const p = getProgress(removedWordId);
+  p.learningComplete = true;
+  p.currentStatus = 'MASTERED';
+  p.masteryScore = 92;
+  await saveProgress(p);
+
+  await removeWordFromNotebookList(lid, removedWordId, u);
+  stops = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === lid));
+  eq(stops.length, 2, 'Silme sonrası 2 durak korunmalı');
+  eq(stops[0].id, stop1Id, '1. durak kimliği korunmalı');
+  eq(stops[0].wordIds.length, 9, '1. durak 9 kelimeli kısmi dolu kalmalı; 2. duraktan kelime kaydırılmamalı');
+  eq(stops[1].id, stop2Id, '2. durak kimliği korunmalı');
+  eq(stops[1].wordIds, stop2IdsBefore, '2. durağın kelimeleri hiç değişmemeli');
+  eq(getProgress(removedWordId).masteryScore, 92, 'Kelimenin SRS ilerleme geçmişi silinmemeli');
+});
+
+await test('v5.0 [11] Uygulama kapatılıp yeniden açıldığında ve liste yeniden adlandırıldığında durak yerleşimleri idempotent olarak korunuyor', async () => {
+  const u = 'v5_persist_user';
+  const r = await createNotebookList('İlk İsim', u);
+  const lid = r.list.id;
+  const items12 = Array.from({ length: 12 }, (_, i) => ({ word: `persistw${String.fromCharCode(97 + i)}`, meanings: `anlam ${i + 1}`, status: 'valid' }));
+  await bulkAddWordsToNotebook({ items: items12, listId: lid, userId: u });
+
+  const before = JSON.parse(JSON.stringify(Paths.getAllPaths()[lid]));
+  await updateNotebookList(lid, { name: 'Yeni İsim' });
+  await Paths.ensureListPaths(getAllNotebookLists());
+  await Paths.ensureListPaths(getAllNotebookLists()); // tekrar çağrı (idempotent)
+  const after = Paths.getAllPaths()[lid];
+  eq(after.stops, before.stops, 'Yeniden adlandırma ve tekrar açılışta durak kimlikleri ve kelime dizilimi birebir korunmalı');
+});
+
+await test('v5.0 [12] Learned (learningComplete) ve Mastered (MASTERED) değişince durak ilerlemesi gerçek veriden güncelleniyor', async () => {
+  const u = 'v5_prog_user';
+  const r = await createNotebookList('İlerleme Listesi', u);
+  const lid = r.list.id;
+  const items10 = Array.from({ length: 10 }, (_, i) => ({ word: `progw${String.fromCharCode(97 + i)}`, meanings: `anlam ${i + 1}`, status: 'valid' }));
+  await bulkAddWordsToNotebook({ items: items10, listId: lid, userId: u });
+  const list = getAllNotebookLists().find((l) => l.id === lid);
+
+  let sum = PathUI.notebookPathSummary(list);
+  eq(sum.stops[0].progress, { total: 10, done: 0, pct: 0, state: 'todo' }, 'Başlangıçta 0/10 (%0) ve todo olmalı');
+
+  // 6 kelimeyi tamamla (4 tanesi Learned, 2 tanesi Mastered)
+  for (let i = 0; i < 6; i++) {
+    const wid = sum.stops[0].wordIds[i];
+    const pr = getProgress(wid);
+    pr.learningComplete = true;
+    pr.currentStatus = i < 2 ? 'MASTERED' : 'LEARNING';
+    await saveProgress(pr);
+  }
+  sum = PathUI.notebookPathSummary(list);
+  eq(sum.stops[0].progress, { total: 10, done: 6, pct: 60, state: 'active' }, '6/10 = %60 ve active (Devam ediyor) olmalı');
+
+  // Kalan 4 kelimeyi de tamamla
+  for (let i = 6; i < 10; i++) {
+    const wid = sum.stops[0].wordIds[i];
+    const pr = getProgress(wid);
+    pr.learningComplete = true;
+    pr.currentStatus = 'MASTERED';
+    await saveProgress(pr);
+  }
+  sum = PathUI.notebookPathSummary(list);
+  eq(sum.stops[0].progress, { total: 10, done: 10, pct: 100, state: 'done' }, '10/10 = %100 ve done (Tamamlandı) olmalı');
+  eq(sum.allDone, true, 'Tüm duraklar tamamlandığında allDone=true olmalı');
+});
+
+await test('v5.0 [13] Durak detay paneli gerçek kelimeleri gösteriyor ve paneli açmak öğrenme ilerlemesini değiştirmiyor', async () => {
+  const pathUiCode = await readText('js/path-ui.js');
+  ok(pathUiCode.includes('Bu Duraktaki Kelimeleri Çalış'), 'Detay panelinde "Bu Duraktaki Kelimeleri Çalış" butonu bulunmalı');
+  ok(!pathUiCode.includes('saveProgress'), 'path-ui.js hiçbir koşulda saveProgress çağırmamalı (yalnızca okuma)');
+
+  const a2Stops = Paths.getLevelPathStops('A2');
+  ok(a2Stops.length > 50, 'A2 seviyesinde gerçek kelimelerden duraklar oluşmalı');
+  const firstStop = a2Stops[0];
+  const progressSnapshot = JSON.stringify(firstStop.wordIds.map((id) => getProgress(id)));
+  const pr = Paths.computeStopProgress(firstStop.wordIds, state.progress);
+  eq(pr.total, 10, 'İlk A2 durağında 10 gerçek kelime bulunmalı');
+  eq(JSON.stringify(firstStop.wordIds.map((id) => getProgress(id))), progressSnapshot, 'Durak ilerlemesini hesaplamak kelimelerin durumunu değiştirmemeli');
+});
+
+await test('v5.0 [14] "Bu Duraktaki Kelimeleri Çalış" butonu Learned/Mastered dahil SADECE seçilen duraktaki tüm kelimeleri çalıştırıyor', async () => {
+  const u = 'v5_stopstudy_user';
+  const r = await createNotebookList('Durak Çalışma Listesi', u);
+  const lid = r.list.id;
+  const items14 = Array.from({ length: 14 }, (_, i) => ({ word: `stopstudy${String.fromCharCode(97 + i)}`, meanings: `anlam ${i + 1}`, status: 'valid' }));
+  await bulkAddWordsToNotebook({ items: items14, listId: lid, userId: u });
+  const list = getAllNotebookLists().find((l) => l.id === lid);
+  const stops = Paths.getListPathStops(list);
+  const stop1 = stops[0]; // 10 kelime
+
+  // Duraktaki ilk 3 kelimeyi MASTERED yap → yine de durak çalışmasına DAHİL edilmeli!
+  for (let i = 0; i < 3; i++) {
+    const pr = getProgress(stop1.wordIds[i]);
+    pr.learningComplete = true;
+    pr.currentStatus = 'MASTERED';
+    await saveProgress(pr);
+  }
+
+  const started = await startStudyList(lid, {
+    stages: [1, 2, 3, 4],
+    groupSize: 10,
+    explicitWordIds: stop1.wordIds,
+    pathStop: { listId: lid, stopId: stop1.id, number: 1 },
+  });
+  eq(started, true, 'Durak çalışması başlatılabilmeli');
+  const sess = getCurrentSession();
+  eq(sess.params.groupWordIds, stop1.wordIds, 'Oturumdaki kelimeler (Learned/Mastered dahil) tam olarak 1. durağın 10 kelimesi olmalı; 2. duraktan kelime karışmamalı');
+  eq(sess.params.pathStop.stopId, stop1.id, 'Oturumda pathStop bilgisi saklanmalı');
+  abortSession();
+
+  // Hazır seviye (A2) durağı için de doğrula
+  const a2Stop1 = Paths.getLevelPathStops('A2')[0];
+  const prA2 = getProgress(a2Stop1.wordIds[0]);
+  prA2.learningComplete = true;
+  prA2.currentStatus = 'MASTERED';
+  await saveProgress(prA2);
+
+  const startedLv = await startLearn('A2', {
+    skipModal: true,
+    explicitWordIds: a2Stop1.wordIds,
+    pathStop: { stopId: a2Stop1.id, number: 1 },
+  });
+  eq(startedLv, true, 'A2 durak çalışması başlatılabilmeli');
+  const sessLv = getCurrentSession();
+  eq(sessLv.params.groupWordIds, a2Stop1.wordIds, 'A2 durak oturumu yalnızca o durağın 10 kelimesini (MASTERED dahil) içermeli');
+  abortSession();
+});
+
+await test('v5.0 [15] Genel öğrenme (5/10/15/20 grup seçimi) ve SRS tekrar mekanizmaları değişmeden çalışıyor', async () => {
+  eq(E.GROUP_SIZES, [5, 10, 15, 20], 'Genel öğrenmede 5/10/15/20 grup büyüklüğü seçenekleri korunmalı');
+  eq(Paths.STOP_SIZE, 10, 'Yol durak kapasitesi sabit 10 kelime olmalı');
+  const p = E.newProgress('srs_check_v5');
+  for (let s = 1; s <= 4; s++) E.applyAnswer(p, true, { mode: 'learn', stage: s });
+  eq(p.learningComplete, true, '4 aşama tamamlandığında learningComplete=true olmalı');
+  E.applyAnswer(p, true, { mode: 'review' });
+  eq(p.reviewInterval, 3, 'SRS tekrar aralığı (1→3→7→14→30) korunmalı');
+});
+
+await test('v5.0 [16] Eşini Bul hafıza oyunu, Grammar Academy ve Fiillerin 3 Hali bozulmadan çalışıyor', async () => {
+  eq(MG.MEMORY_STAGE, 5, 'Eşini Bul 5. aşama olarak korunmalı');
+  ok(G.GRAMMAR_TOPICS.length >= 10, 'Grammar Academy konuları korunmalı');
+  eq(BUILTIN_IRREGULAR_VERBS.length, 190, 'Fiillerin 3 Hali 190 düzensiz fiil korunmalı');
+});
+
+await test('v5.0 [17] Profil değişiminde ve aynı kelimenin farklı listelerde bulunmasında kişisel yollar birbirine karışmıyor', async () => {
+  const u1 = 'v5_prof_1';
+  const u2 = 'v5_prof_2';
+  const l1 = (await createNotebookList('U1 Liste', u1)).list;
+  const l1b = (await createNotebookList('U1 İkinci Liste', u1)).list;
+  const l2 = (await createNotebookList('U2 Liste', u2)).list;
+
+  await addWordToNotebook({ word: 'sharedword', meanings: ['ortak anlam'], listId: l1.id, userId: u1 });
+  await addWordToNotebook({ word: 'sharedword', meanings: ['ortak anlam'], listId: l1b.id, userId: u1 });
+  await addWordToNotebook({ word: 'secondprofileword', meanings: ['u2 anlam'], listId: l2.id, userId: u2 });
+
+  const s1 = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === l1.id));
+  const s1b = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === l1b.id));
+  const s2 = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === l2.id));
+
+  eq(s1[0].wordIds, s1b[0].wordIds, 'Aynı kullanıcının iki listesindeki ortak kelime aynı kelime kimliğini paylaşmalı');
+  ok(s1[0].id !== s1b[0].id, 'İki farklı listenin durak kimlikleri ayrı olmalı');
+  ok(!s2[0].wordIds.includes(s1[0].wordIds[0]), 'Farklı kullanıcı profillerinin kelimeleri ve yolları birbirine karışmamalı');
+});
+
+await test('v5.0 [18] Yedekleme ve geri yükleme (buildBackup / restoreBackup) kalıcı durak verilerini (notebookPaths) koruyor', async () => {
+  const b = buildBackup();
+  const npEntry = b.meta.find((m) => m.key === 'notebookPaths');
+  ok(npEntry && typeof npEntry.value === 'object', 'Yedek dosyasında notebookPaths yer almalı');
+  const errs = validateBackup(b);
+  eq(errs, [], 'v5.0 yedeği hatasız doğrulanmalı');
+  await restoreBackup(b);
+  ok(Object.keys(Paths.getAllPaths()).length > 0, 'Geri yükleme sonrasında kişisel liste durakları korunmalı');
+});
+
+await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Yere Git ve mobil/masaüstü taşma koruması', async () => {
+  const fake200 = {
+    id: 'list_200stops',
+    userId: 'u_perf',
+    wordIds: Array.from({ length: 2000 }, (_, i) => `perf_w_${i + 1}`),
+  };
+  const { path } = Paths.syncPathRecord(null, fake200);
+  const sum = Paths.summarizePath(path.stops, {});
+  eq(sum.totalStops, 200, '2000 kelime → 200 durak');
+  // Yalnızca 0..30 penceresini çiz
+  const html = PathUI.pathCanvasHtml(sum, 0, 30, 'notebook');
+  const renderedNodes = (html.match(/data-stop-index=/g) || []).length;
+  eq(renderedNodes, 31, '200 durağın tamamı yerine yalnızca görünür penceredeki 31 durak DOM olarak üretilmeli');
+  for (let i = 0; i < 30; i++) {
+    const x = PathUI.stopX(i);
+    ok(x >= 20 && x <= 80, `Durak yatay konumu (%${x.toFixed(1)}) ekran dışına taşmamalı`);
+  }
+  const pathUiCode = await readText('js/path-ui.js');
+  ok(pathUiCode.includes('Kaldığım Yere Git') && pathUiCode.includes('id="path-jump"'), 'Uzun yollarda Kaldığım Yere Git butonu bulunmalı');
+});
+
+await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
+  const sw = await readText('service-worker.js');
+  const html = await readText('index.html');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.0';"), 'Service Worker sürümü veluno-v5.0.0 olmalı');
+  ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
+  ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

@@ -11,6 +11,7 @@ import { getCurrentUser } from './auth.js';
 import { startSession, sessionHooks, getStudyGroupRotation, saveStudyGroupRotation } from './learning.js';
 import { bumpDaily } from './statistics.js';
 import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
+import { syncListPath, removeListPath } from './paths.js';
 
 /* ---------- Kullanıcı Kimlik Kapsamı (User Scoping) ---------- */
 export function getActiveUserId() {
@@ -71,6 +72,7 @@ export async function createNotebookList(name, userId = getActiveUserId()) {
   };
   all.push(newList);
   await saveAllNotebookLists(all);
+  await syncListPath(newList);
   return { ok: true, list: newList };
 }
 
@@ -101,6 +103,8 @@ export async function deleteNotebookList(listId) {
   const userId = target.userId;
   const remaining = all.filter((l) => l.id !== listId);
   await saveAllNotebookLists(remaining);
+  // v5.0: yalnızca bu listenin öğrenme yolu kaldırılır; diğer listelerin durakları etkilenmez
+  await removeListPath(listId);
 
   // Bu kullanıcının kalan listelerinde geçmeyen kelimeleri temizle
   const otherLists = remaining.filter((l) => l.userId === userId);
@@ -227,6 +231,8 @@ export async function addWordToNotebook({ word, meanings, listId, userId = getAc
     await saveAllNotebookWords(allWords);
   }
   await saveAllNotebookLists(allLists);
+  // v5.0: yeni kelime, listenin sabit yolunda son durağın boş kapasitesine veya yeni bir durağa yerleşir
+  await syncListPath(list);
 
   // WordMap'e kaydet (çalıştırıcıların kelimeyi doğrudan bulabilmesi için)
   state.wordMap.set(targetWord.id, targetWord);
@@ -385,6 +391,7 @@ export async function bulkAddWordsToNotebook({ items, listId, userId = getActive
     await saveAllNotebookWords(allWords);
   }
   await saveAllNotebookLists(allLists);
+  await syncListPath(list);
 
   return { ok: true, addedCount: addedWords.length, list };
 }
@@ -398,6 +405,8 @@ export async function removeWordFromNotebookList(listId, wordId, userId = getAct
   list.wordIds = (list.wordIds || []).filter((id) => id !== wordId);
   list.updatedAt = new Date().toISOString();
   await saveAllNotebookLists(allLists);
+  // v5.0: kelime yalnızca kendi durağından çıkarılır; diğer duraklar geriye kaydırılmaz
+  await syncListPath(list);
 
   // Bu kelime kullanıcının başka bir listesinde var mı?
   const otherLists = allLists.filter((l) => l.userId === userId && l.id !== listId);
@@ -639,6 +648,7 @@ export async function startNotebookMemoryGame({
   allStages = [MEMORY_STAGE],
   stageCount = 1,
   fromSession = false,
+  pathStop = null,
 } = {}) {
   const normSize = E.normalizeGroupSize(groupSize);
   const res = await startMemoryGame(
@@ -653,6 +663,8 @@ export async function startNotebookMemoryGame({
         await restartNotebookStudy({ mode, listId, userId, stages: allStages, groupSize: normSize, explicitWordIds: retryIds });
       },
       onNextGroup: async () => {
+        // v5.0: Yolum durağından başlatılan çalışmalarda genel grup rotasyonuna geçilmez; yola dönülür
+        if (pathStop) { if (typeof location !== 'undefined') location.hash = '#/path'; return; }
         await restartNotebookStudy({ mode, listId, userId, stages: allStages, groupSize: normSize });
       },
     })
@@ -681,6 +693,7 @@ sessionHooks.afterLearn = async (sess) => {
     allStages: m.allStages || [...(sess.params?.selectedStages || []), MEMORY_STAGE],
     stageCount: m.stageCount || ((sess.params?.selectedStages?.length || 0) + 1),
     fromSession: true,
+    pathStop: m.pathStop || sess.params?.pathStop || null,
   });
 };
 
@@ -694,7 +707,7 @@ sessionHooks.startNextNotebookGroup = async (params = {}) => {
   });
 };
 
-function matchAfterParam(stageCheck, mode, listId, userId) {
+function matchAfterParam(stageCheck, mode, listId, userId, pathStop = null) {
   return stageCheck.includeMatch
     ? {
         mode,
@@ -703,6 +716,7 @@ function matchAfterParam(stageCheck, mode, listId, userId) {
         groupSize: stageCheck.groupSize,
         allStages: stageCheck.all,
         stageCount: stageCheck.all.length,
+        pathStop,
       }
     : null;
 }
@@ -736,6 +750,12 @@ export async function startStudyList(listId, options = null) {
     explicitWordIds: options?.explicitWordIds || null,
   });
   const groupWordIds = group.batch.map((w) => w.id);
+  // v5.0: Yolum durağından gelindiyse kelime havuzu yalnızca o durağın kelimeleridir (explicitWordIds)
+  const pathStop = options?.pathStop && typeof options.pathStop === 'object' ? { ...options.pathStop } : null;
+  if (!groupWordIds.length) {
+    toast('Bu çalışma için kelime bulunamadı.', 'error');
+    return false;
+  }
 
   // Yalnızca Eşini Bul (5. aşama) seçildiyse: değerlendirme aşaması yoktur; seçilen çalışma grubundaki kelimelerle doğrudan oyun başlar
   if (!selectedStages.length) {
@@ -750,6 +770,7 @@ export async function startStudyList(listId, options = null) {
       allStages: [MEMORY_STAGE],
       stageCount: 1,
       fromSession: false,
+      pathStop,
     });
   }
 
@@ -761,7 +782,9 @@ export async function startStudyList(listId, options = null) {
 
   await startSession({
     kind: 'learn',
-    title: `${list.name} — Kelime Öğren (${group.batch.length} Kelime)`,
+    title: pathStop
+      ? `${list.name} — Durak ${pathStop.number || ''} (${group.batch.length} Kelime)`
+      : `${list.name} — Kelime Öğren (${group.batch.length} Kelime)`,
     items,
     params: {
       isNotebook: true,
@@ -772,7 +795,8 @@ export async function startStudyList(listId, options = null) {
       groupWordIds,
       selectedStages,
       groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
-      matchAfter: matchAfterParam(stageCheck, 'list', list.id, userId),
+      matchAfter: matchAfterParam(stageCheck, 'list', list.id, userId, pathStop),
+      ...(pathStop ? { pathStop } : {}),
     },
   });
   return true;
@@ -931,9 +955,18 @@ export async function startStudyDue(userId = getActiveUserId()) {
 /* ---------- Arayüz Modalları (UI Modals) ---------- */
 
 /** Çalışma Aşamalarını ve Grup Büyüklüğünü Seç Modalı (Kelime Defterim v4.6.1) */
-export function openStageSelectionModal({ listId = null, mode = 'list', userId = getActiveUserId(), defaultGroupSize = E.DEFAULT_GROUP_SIZE, onStart = null } = {}) {
+export function openStageSelectionModal({ listId = null, mode = 'list', userId = getActiveUserId(), defaultGroupSize = E.DEFAULT_GROUP_SIZE, onStart = null, pathStop = null } = {}) {
   let contextLabel = 'Seçili kelimelerin';
-  if (mode === 'list' && listId) {
+  // v5.0: Yolum durağı modu — grup büyüklüğü sorulmaz; durağın TÜM kelimeleri çalışılır (10 kelimelik durak kapasitesi ≠ 5/10/15/20 grup seçimi)
+  const stopIds = pathStop && Array.isArray(pathStop.wordIds) ? pathStop.wordIds.filter((id) => state.wordMap.has(id)) : null;
+  if (pathStop && mode === 'list' && listId) {
+    const list = getAllNotebookLists().find((l) => l.id === listId);
+    if (!list || !stopIds || !stopIds.length) {
+      toast('Bu durakta çalışılacak kelime bulunamadı.');
+      return false;
+    }
+    contextLabel = `<b>${esc(list.name)} · Durak ${esc(pathStop.number || '')}</b> (${stopIds.length} kelimenin tamamı)`;
+  } else if (mode === 'list' && listId) {
     const stats = getListStats(listId);
     const list = getAllNotebookLists().find((l) => l.id === listId);
     if (!list || !stats.words.length) {
@@ -997,7 +1030,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
       <div class="nb-stage-modal">
         <p class="muted small nb-stage-sub">${contextLabel} için çalışma grubunu ve uygulanacak aşamaları seçin.</p>
 
-        <div class="nb-group-section">
+        <div class="nb-group-section" ${stopIds ? 'hidden' : ''}>
           <div class="nb-group-head">
             <span class="nb-group-question"><b>Kaç kelimelik gruplarla çalışmak istiyorsun?</b></span>
             <span class="nb-group-badge" id="nb-group-size-label">Grup Büyüklüğü: ${chosenGroupSize} kelime</span>
@@ -1092,6 +1125,15 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
         const stages = check.all; // 1–4 öğrenme aşamaları + (seçildiyse) 5. aşama Eşini Bul
         const groupSize = check.groupSize;
         api.close();
+        if (stopIds) {
+          await startStudyList(listId, {
+            stages,
+            groupSize: E.normalizeGroupSize(stopIds.length),
+            explicitWordIds: stopIds,
+            pathStop: { listId, stopId: pathStop.stopId || null, number: pathStop.number || null },
+          });
+          return;
+        }
         if (typeof onStart === 'function') {
           await onStart(stages, groupSize);
           return;
