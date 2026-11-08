@@ -55,6 +55,11 @@
   --ember-tx:#F5F5F5;
   --ember-tx-sec:#A5A5A5;
 
+  /* Carbon Petrol Cevap Kutusu & Liste Buton Değişkenleri */
+  --answer-surface:#193037;
+  --answer-border:#37606A;
+  --answer-number-bg:#24444C;
+
   /* VELUNO merkezi tema değişkenleri */
   --bg:#101820;--card:#242424;--surf:#18222C;
   --tx:#F5F5F5;--tx-sec:#A5A5A5;--tx2:#8C8C8C;
@@ -861,8 +866,17 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 :root[data-theme=ember] .feedback.no b{color:var(--no-tx)}
 :root[data-theme=ember] .feedback.ok{background:var(--ember-ok-bg);border:1px solid var(--ember-ok)}
 :root[data-theme=ember] .feedback.no{background:var(--ember-no-bg);border:1px solid var(--ember-no)}
-:root[data-theme=ember] .opt.right{background:var(--ember-ok-bg);border-color:var(--ember-ok)}
-:root[data-theme=ember] .opt.bad{background:var(--ember-no-bg);border-color:var(--ember-no)}
+:root[data-theme=ember] .opt{background:#193037;border-color:#37606A;color:var(--ember-tx,#F5F5F5)}
+:root[data-theme=ember] .opt:hover:not(:disabled){border-color:var(--ember-active,#438A8B)}
+:root[data-theme=ember] .opt .opt-n{background:#24444C;color:var(--ember-tx,#F5F5F5)}
+:root[data-theme=ember] .opt.right{background:var(--ember-ok-bg,#19261C);border-color:var(--ember-ok,#3FC877);color:var(--ember-tx,#F5F5F5)}
+:root[data-theme=ember] .opt.right .opt-n{background:var(--ember-ok,#3FC877);color:#101820}
+:root[data-theme=ember] .opt.bad{background:var(--ember-no-bg,#281819);border-color:var(--ember-no,#57191C);color:var(--ember-tx,#F5F5F5)}
+:root[data-theme=ember] .opt.bad .opt-n{background:var(--ember-no,#57191C);color:var(--no-tx,#F28B8E)}
+:root[data-theme=ember] .nb-list-btn.nb-list-edit{background:#1D333B;border:1.5px solid #37606A;color:#7FC5C5}
+:root[data-theme=ember] .nb-list-btn.nb-list-edit:hover:not(:disabled){border-color:#7FC5C5}
+:root[data-theme=ember] .nb-list-btn.nb-list-del{background:#281E24;border:1.5px solid #643D45;color:#F28B8E}
+:root[data-theme=ember] .nb-list-btn.nb-list-del:hover:not(:disabled){border-color:#F28B8E}
 :root[data-theme=ember] .hm.l1{background:#1B3436}:root[data-theme=ember] .hm.l2{background:#245C60}:root[data-theme=ember] .hm.l3{background:#347376}:root[data-theme=ember] .hm.l4{background:#438A8B}
 
 /* Ana Sayfa — Minimalist Düzen (Karşılama metni olmadan, 5 net bölüm) */
@@ -927,8 +941,13 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .nb-top-bar,.learn-top-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .nb-title,.learn-top-bar h1{margin:0;font-size:clamp(1.25rem,4.4vw,1.55rem);font-weight:700;letter-spacing:-.02em}
 .nb-top-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.nb-list-bar{display:flex;align-items:center;gap:6px;width:100%}
-.nb-list-select{flex:1;min-width:0;min-height:36px;padding:6px 30px 6px 10px;font-size:.88rem;font-weight:600}
+.nb-list-bar{display:flex;align-items:center;gap:8px;width:100%}
+.nb-list-select{flex:1;min-width:0;min-height:48px;height:48px;padding:6px 30px 6px 12px;font-size:.92rem;font-weight:600}
+.nb-list-btn{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;border:1px solid var(--bd);background:var(--surf);color:var(--tx-sec);flex-shrink:0;transition:border-color var(--dur),background-color var(--dur),transform 140ms ease;touch-action:manipulation}
+.nb-list-btn:hover:not(:disabled){border-color:var(--ac)}
+.nb-list-btn:active:not(:disabled){transform:scale(.96)}
+.nb-list-btn.nb-list-del{color:var(--no)}
+.nb-list-btn svg,.nb-list-btn .ic{width:21px;height:21px;display:block}
 .nb-list-tools{display:inline-flex;align-items:center;gap:2px;flex-shrink:0}
 .nb-list-tools .icon-btn{min-width:34px;min-height:34px;font-size:.9rem}
 .nb-progress-strip{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:6px 10px;background:var(--card);border:1px solid var(--bd);border-radius:11px;font-size:.82rem}

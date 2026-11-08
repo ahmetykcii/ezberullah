@@ -165,5 +165,7 @@ export const ICONS = {
   exam: svg('<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M9 12l2 2 4-4"/><path d="M8 7h8"/>'),
   chart: svg('<path d="M4 20V11M10 20V5M16 20v-7M22 20V8"/>'),
   gear: svg('<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.3" fill="var(--card)"/><circle cx="15" cy="17" r="2.3" fill="var(--card)"/>'),
+  edit: svg('<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>'),
+  trash: svg('<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>'),
 };
 export const successMark = () => `<svg class="success-mark" viewBox="0 0 52 52" aria-hidden="true"><circle class="sm-c" cx="26" cy="26" r="23"/><path class="sm-t" d="M15 27l8 8 14-16"/></svg>`;

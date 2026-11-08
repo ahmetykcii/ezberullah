@@ -399,9 +399,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v5.0.2) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v5.0.3) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'SW sürümü veluno-v5.0.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'SW sürümü veluno-v5.0.3 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1308,7 +1308,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'SW sürümü veluno-v5.0.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'SW sürümü veluno-v5.0.3 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1733,7 +1733,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2802,7 +2802,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.2';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3674,7 +3674,7 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'Service Worker sürümü veluno-v5.0.2 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker sürümü veluno-v5.0.3 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
@@ -3717,6 +3717,64 @@ await test('v5.0.2 [5] Ayarlar grup boyutu (#batch) üst sınırı 20 ile uyumlu
   const vocabUi = await readText('js/vocab-ui.js');
   ok(app.includes('max="20" id="batch"') && app.includes("num('#batch', 'batchSize', 1, 20)"), 'Ayarlar #batch üst sınırı 20 olmalı');
   ok(!vocabUi.includes('5. aşama'), 'vocab-ui.js içinde eski 5. aşama boşluk doldurma metni kalmamalı');
+});
+
+/* ---------- 21) v5.0.3 — Ember Soft Carbon Petrol Cevap Kutuları ve 48px Liste Butonları ---------- */
+out('\n--- 21) v5.0.3 — Ember Soft Carbon Petrol Cevap Kutuları ve 48px Liste Butonları ---');
+
+await test('v5.0.3 [1] Carbon Petrol cevap kutuları (.opt) ve numara rozetleri (.opt-n) yalnızca Ember Soft temasında tanımlı, diğer temaları bozmuyor', async () => {
+  const css = await readText('css/style.css');
+
+  // Ember Soft özel değişkenleri ve .opt stilleri
+  ok(css.includes('--answer-surface:#193037;'), 'Ember Soft --answer-surface tanımlı olmalı');
+  ok(css.includes('--answer-border:#37606A;'), 'Ember Soft --answer-border tanımlı olmalı');
+  ok(css.includes('--answer-number-bg:#24444C;'), 'Ember Soft --answer-number-bg tanımlı olmalı');
+
+  ok(css.includes(':root[data-theme=ember] .opt{background:#193037;border-color:#37606A;color:var(--ember-tx,#F5F5F5)}'), 'Ember Soft normal cevap kutusu #193037 zemin ve #37606A çerçeveye sahip olmalı');
+  ok(css.includes(':root[data-theme=ember] .opt:hover:not(:disabled){border-color:var(--ember-active,#438A8B)}'), 'Ember Soft hover durumu var(--ember-active) ile uyumlu olmalı');
+  ok(css.includes(':root[data-theme=ember] .opt .opt-n{background:#24444C;color:var(--ember-tx,#F5F5F5)}'), 'Ember Soft cevap numarası rozeti #24444C olmalı');
+
+  // Doğru (#3FC877) ve Yanlış (#57191C / #281819) durumlarının korunması
+  ok(css.includes(':root[data-theme=ember] .opt.right{background:var(--ember-ok-bg,#19261C);border-color:var(--ember-ok,#3FC877);color:var(--ember-tx,#F5F5F5)}'), 'Doğru cevap yeşil (#3FC877) zemin ve çerçeveye sahip olmalı');
+  ok(css.includes(':root[data-theme=ember] .opt.right .opt-n{background:var(--ember-ok,#3FC877);color:#101820}'), 'Doğru cevap numarası yeşil rozet ve #101820 koyu metin kullanmalı');
+  ok(css.includes(':root[data-theme=ember] .opt.bad{background:var(--ember-no-bg,#281819);border-color:var(--ember-no,#57191C);color:var(--ember-tx,#F5F5F5)}'), 'Yanlış cevap vişne/kızıl zemin ve çerçeveye sahip olmalı');
+  ok(css.includes(':root[data-theme=ember] .opt.bad .opt-n{background:var(--ember-no,#57191C);color:var(--no-tx,#F28B8E)}'), 'Yanlış cevap numarası #57191C rozet ve #F28B8E hata metni kullanmalı');
+
+  // Temel (default) .opt stillerinin diğer temalar (light, dark, auto, studio) için korunduğu doğrulanmalı
+  ok(css.includes('.opt{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;background:var(--card);border:1.5px solid var(--bd);color:var(--tx);'), 'Genel .opt tanımı var(--card) ve var(--bd) ile diğer temaları korumalı');
+});
+
+await test('v5.0.3 [2] Kelime Defterim liste yönetim butonları (Düzenle ve Sil) 48x48px boyutunda, SVG ikonlu ve Ember Soft petrol/vişne renklerine sahip', async () => {
+  const css = await readText('css/style.css');
+  const nb = await readText('js/notebook.js');
+  const ui = await readText('js/ui.js');
+
+  // ICONS içinde edit (kalem) ve trash (çöp kutusu) SVG ikonları
+  ok(ui.includes('edit: svg(') && ui.includes('trash: svg('), 'ICONS nesnesinde edit ve trash SVG ikonları tanımlı olmalı');
+
+  // js/notebook.js içinde Düzenle ve Sil butonlarının oluşturulması
+  ok(nb.includes('class="icon-btn nb-list-btn nb-list-edit"'), 'Düzenle butonu nb-list-btn nb-list-edit sınıfına sahip olmalı');
+  ok(nb.includes('class="icon-btn nb-list-btn nb-list-del"'), 'Sil butonu nb-list-btn nb-list-del sınıfına sahip olmalı');
+  ok(nb.includes('aria-label="Listeyi düzenle"') && nb.includes('title="Listeyi Düzenle"'), 'Düzenle butonunun erişilebilirlik etiketleri doğru olmalı');
+  ok(nb.includes('aria-label="Listeyi sil"') && nb.includes('title="Listeyi Sil"'), 'Sil butonunun erişilebilirlik etiketleri doğru olmalı');
+  ok(nb.includes('${ICONS.edit}') && nb.includes('${ICONS.trash}'), 'Butonlar SVG ikonları kullanmalı');
+
+  // Silme onay diyaloğu (confirmDialog + danger: true) korunmalı
+  ok(nb.includes('confirmDialog(`"${targetList.name}" listesi silinsin mi? (Bu listedeki kelimeler başka listelerde bulunmuyorsa silinecektir.)`, { danger: true })'), 'Silme onay modalı liste adını içermeli ve danger: true olmalı');
+
+  // CSS buton boyutları: 48x48px ve 21px ikon
+  ok(css.includes('.nb-list-btn{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:12px;'), '.nb-list-btn 48x48px görsel kutu ve 12px yuvarlak köşelere sahip olmalı');
+  ok(css.includes('.nb-list-btn svg,.nb-list-btn .ic{width:21px;height:21px;display:block}'), '.nb-list-btn içindeki SVG ikonlar 21x21px olmalı');
+  ok(css.includes('.nb-list-select{flex:1;min-width:0;min-height:48px;height:48px;'), '.nb-list-select 48px yükseklikle butonlarla aynı hizada olmalı');
+
+  // Ember Soft renk kuralları
+  ok(css.includes(':root[data-theme=ember] .nb-list-btn.nb-list-edit{background:#1D333B;border:1.5px solid #37606A;color:#7FC5C5}'), 'Ember Soft Düzenle butonu #1D333B zemin, #37606A kenarlık ve #7FC5C5 ikona sahip olmalı');
+  ok(css.includes(':root[data-theme=ember] .nb-list-btn.nb-list-del{background:#281E24;border:1.5px solid #643D45;color:#F28B8E}'), 'Ember Soft Sil butonu #281E24 zemin, #643D45 kenarlık ve #F28B8E ikona sahip olmalı');
+});
+
+await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.0.3 olarak güncellendi', async () => {
+  const sw = await readText('service-worker.js');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker sürümü veluno-v5.0.3 olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

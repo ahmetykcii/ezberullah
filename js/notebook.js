@@ -1686,9 +1686,8 @@ export function renderNotebook(v) {
             ${lists.map((l) => `<option value="${esc(l.id)}" ${activeList && l.id === activeList.id ? 'selected' : ''}>${esc(l.name)} (${(l.wordIds || []).length})</option>`).join('')}
           </select>
           ${activeList ? `
-            <button type="button" class="icon-btn sm" data-act="view-list" data-id="${activeList.id}" aria-label="Listedeki kelimeleri gör" title="Kelimeleri Gör">${ICONS.stack}</button>
-            <button type="button" class="icon-btn sm" data-act="edit-list" data-id="${activeList.id}" aria-label="Listeyi düzenle" title="Listeyi Düzenle">✎</button>
-            <button type="button" class="icon-btn sm danger-text" data-act="del-list" data-id="${activeList.id}" aria-label="Listeyi sil" title="Listeyi Sil">✕</button>
+            <button type="button" class="icon-btn nb-list-btn nb-list-edit" data-act="edit-list" data-id="${activeList.id}" aria-label="Listeyi düzenle" title="Listeyi Düzenle">${ICONS.edit}</button>
+            <button type="button" class="icon-btn nb-list-btn nb-list-del" data-act="del-list" data-id="${activeList.id}" aria-label="Listeyi sil" title="Listeyi Sil">${ICONS.trash}</button>
           ` : ''}
         </div>`
       : '';
