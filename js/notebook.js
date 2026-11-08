@@ -8,7 +8,7 @@ import { $, $$, esc, openModal, toast, confirmDialog, speak, ICONS } from './ui.
 import { prepareWordInfo } from './vocabulary.js';
 import { blankSentence, isWordReady } from './engine.js';
 import { getCurrentUser } from './auth.js';
-import { startSession, sessionHooks } from './learning.js';
+import { startSession, sessionHooks, getStudyGroupRotation, saveStudyGroupRotation } from './learning.js';
 import { bumpDaily } from './statistics.js';
 import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
 
@@ -527,21 +527,39 @@ export const NOTEBOOK_STAGE_OPTIONS = [
 export const NOTEBOOK_DEFAULT_STAGES = NOTEBOOK_STAGE_OPTIONS.filter((o) => o.defaultSelected).map((o) => o.stage);
 
 /**
- * Kelime Defterim aşama seçimini doğrular.
- * Dönüş: { ok, stages (yalnızca 1–4 öğrenme aşamaları), includeMatch (5. aşama seçili mi), all (tüm seçim), error }
+ * Kelime Defterim aşama ve grup büyüklüğü seçimini doğrular.
+ * Dönüş: { ok, stages (1–4 öğrenme aşamaları), includeMatch (5. aşama seçili mi), all (tüm seçim), groupSize, error }
  */
 export function resolveNotebookStages(options) {
   let raw;
-  if (options === undefined || options === null) raw = [1, 2, 3, 4];
-  else raw = Array.isArray(options) ? options : options.stages;
-  if (raw === undefined || raw === null) raw = [1, 2, 3, 4];
-  if (!Array.isArray(raw)) return { ok: false, stages: [], includeMatch: false, all: [], error: 'En az bir çalışma aşaması seçmelisiniz.' };
+  let rawGroupSize = E.DEFAULT_GROUP_SIZE;
+  if (options === undefined || options === null) {
+    raw = [1, 2, 3, 4];
+  } else if (Array.isArray(options)) {
+    raw = options;
+  } else {
+    raw = options.stages !== undefined && options.stages !== null ? options.stages : [1, 2, 3, 4];
+    if (options.groupSize !== undefined && options.groupSize !== null) {
+      rawGroupSize = options.groupSize;
+    }
+  }
+  const groupSize = E.normalizeGroupSize(rawGroupSize);
+  if (!Array.isArray(raw)) {
+    return { ok: false, stages: [], includeMatch: false, all: [], groupSize, error: 'En az bir çalışma aşaması seçmelisiniz.' };
+  }
   const includeMatch = raw.map(Number).includes(MEMORY_STAGE);
   const learnStages = E.normalizeSelectedStages(raw);
   if (!learnStages.length && !includeMatch) {
-    return { ok: false, stages: [], includeMatch: false, all: [], error: 'En az bir çalışma aşaması seçmelisiniz.' };
+    return { ok: false, stages: [], includeMatch: false, all: [], groupSize, error: 'En az bir çalışma aşaması seçmelisiniz.' };
   }
-  return { ok: true, stages: learnStages, includeMatch, all: includeMatch ? [...learnStages, MEMORY_STAGE] : learnStages, error: null };
+  return {
+    ok: true,
+    stages: learnStages,
+    includeMatch,
+    all: includeMatch ? [...learnStages, MEMORY_STAGE] : learnStages,
+    groupSize,
+    error: null,
+  };
 }
 const resolveRequestedStages = resolveNotebookStages;
 
@@ -557,7 +575,38 @@ export function memoryWordsGetter(mode, listId, userId = getActiveUserId()) {
   return () => getUserNotebookWords(userId);
 }
 
-function memoryContext(mode, listId, userId, stageCount, fromSession) {
+function notebookScopeKey(mode, listId, userId) {
+  return `nb:${userId}:${mode === 'list' ? `list:${listId}` : mode}`;
+}
+
+export async function selectNotebookStudyGroup(words, { userId = getActiveUserId(), mode = 'list', listId = null, groupSize = E.DEFAULT_GROUP_SIZE, explicitWordIds = null } = {}) {
+  const normSize = E.normalizeGroupSize(groupSize);
+  const scopeKey = notebookScopeKey(mode, listId, userId);
+  if (Array.isArray(explicitWordIds) && explicitWordIds.length) {
+    const allowed = new Set(explicitWordIds);
+    const byId = new Map((Array.isArray(words) ? words : []).filter((w) => w && allowed.has(w.id)).map((w) => [w.id, w]));
+    const batch = explicitWordIds.map((id) => byId.get(id)).filter(Boolean);
+    return { batch, groupSize: normSize, scopeKey };
+  }
+  const seenWordIds = getStudyGroupRotation(scopeKey);
+  const group = E.selectStudyGroup(words, state.progress, normSize, {
+    seenWordIds,
+    allowCompletedFallback: true,
+  });
+  if (group.batch.length) {
+    await saveStudyGroupRotation(scopeKey, group.nextSeenIds);
+  }
+  return { ...group, groupSize: normSize, scopeKey };
+}
+
+function restartNotebookStudy({ mode = 'list', listId = null, userId = getActiveUserId(), stages = [1, 2, 3, 4], groupSize = E.DEFAULT_GROUP_SIZE, explicitWordIds = null } = {}) {
+  const opts = { stages, groupSize, explicitWordIds };
+  if (mode === 'all') return startStudyAll(userId, opts);
+  if (mode === 'unknown') return startStudyUnknown(userId, opts);
+  return startStudyList(listId, opts);
+}
+
+function memoryContext(mode, listId, userId, stageCount, fromSession, extra = {}) {
   const list = mode === 'list' ? getAllNotebookLists().find((l) => l.id === listId) : null;
   const title = list ? list.name : mode === 'unknown' ? 'Zorlandığım Kelimeler' : 'Tüm Kelimelerim';
   return {
@@ -567,24 +616,95 @@ function memoryContext(mode, listId, userId, stageCount, fromSession) {
     title,
     stageCount,
     fromSession,
+    ...extra,
   };
 }
 
-/** Yalnızca 5. aşama (Eşini Bul) seçildiğinde doğrudan hafıza oyunu başlar. SRS ilerlemesi değişmez. */
-export async function startNotebookMemoryGame({ mode = 'list', listId = null, userId = getActiveUserId(), priorityIds = [], stageCount = 1, fromSession = false } = {}) {
-  const res = await startMemoryGame({ ...memoryContext(mode, listId, userId, stageCount, fromSession), priorityIds });
+/**
+ * Kelime Defterim Hafıza Oyununu başlatır.
+ * - Değerlendirme aşamalı bir oturumdan gelindiyse (hasEvalStages: true), yalnızca o grupta tüm seçili değerlendirme
+ *   aşamalarını hatasız tamamlayan kelimeler (eligibleWordIds) kullanılır.
+ * - Yalnızca Eşini Bul (veya Kelimeyi Öğren + Eşini Bul) seçildiyse seçilen çalışma grubunun kelimeleri kullanılır.
+ * - SRS ilerlemesi hiçbir koşulda değişmez.
+ */
+export async function startNotebookMemoryGame({
+  mode = 'list',
+  listId = null,
+  userId = getActiveUserId(),
+  priorityIds = [],
+  eligibleWordIds = null,
+  failedWordIds = [],
+  hasEvalStages = false,
+  groupSize = E.DEFAULT_GROUP_SIZE,
+  allStages = [MEMORY_STAGE],
+  stageCount = 1,
+  fromSession = false,
+} = {}) {
+  const normSize = E.normalizeGroupSize(groupSize);
+  const res = await startMemoryGame(
+    memoryContext(mode, listId, userId, stageCount, fromSession, {
+      priorityIds,
+      eligibleWordIds,
+      failedWordIds,
+      hasEvalStages,
+      groupSize: normSize,
+      onRetryFailed: async (fIds) => {
+        const retryIds = Array.isArray(fIds) && fIds.length ? fIds : failedWordIds;
+        await restartNotebookStudy({ mode, listId, userId, stages: allStages, groupSize: normSize, explicitWordIds: retryIds });
+      },
+      onNextGroup: async () => {
+        await restartNotebookStudy({ mode, listId, userId, stages: allStages, groupSize: normSize });
+      },
+    })
+  );
   return res.ok;
 }
 
-// Diğer aşamalarla birlikte seçildiyse: öğrenme oturumu bittiğinde aynı kelimelerle (öncelikli) oyun başlar.
+// Diğer aşamalarla birlikte seçildiyse: öğrenme oturumu bittiğinde yalnızca o grupta hatasız bilinen kelimelerle oyun başlar.
 sessionHooks.afterLearn = async (sess) => {
-  const m = sess.params.matchAfter || {};
-  const priorityIds = [...new Set((sess.items || []).map((it) => it.wordId))];
-  await startNotebookMemoryGame({ mode: m.mode, listId: m.listId, userId: m.userId, priorityIds, stageCount: m.stageCount, fromSession: true });
+  const m = sess.params?.matchAfter || {};
+  const evalSummary = E.computeGroupEvalSummary({
+    groupWordIds: sess.params?.groupWordIds || [...new Set((sess.items || []).map((it) => it.wordId))],
+    selectedStages: sess.params?.selectedStages || [],
+    results: sess.results || [],
+    evalState: sess.params?.groupEval || null,
+  });
+  await startNotebookMemoryGame({
+    mode: m.mode || sess.params?.mode || 'list',
+    listId: m.listId ?? sess.params?.listId ?? null,
+    userId: m.userId || sess.params?.userId || getActiveUserId(),
+    priorityIds: evalSummary.eligibleWordIds,
+    eligibleWordIds: evalSummary.eligibleWordIds,
+    failedWordIds: evalSummary.failedWordIds,
+    hasEvalStages: evalSummary.hasEvalStages,
+    groupSize: m.groupSize || sess.params?.groupSize || E.DEFAULT_GROUP_SIZE,
+    allStages: m.allStages || [...(sess.params?.selectedStages || []), MEMORY_STAGE],
+    stageCount: m.stageCount || ((sess.params?.selectedStages?.length || 0) + 1),
+    fromSession: true,
+  });
+};
+
+sessionHooks.startNextNotebookGroup = async (params = {}) => {
+  await restartNotebookStudy({
+    mode: params.mode || 'list',
+    listId: params.listId || null,
+    userId: params.userId || getActiveUserId(),
+    stages: params.selectedStages || [1, 2, 3, 4],
+    groupSize: params.groupSize || E.DEFAULT_GROUP_SIZE,
+  });
 };
 
 function matchAfterParam(stageCheck, mode, listId, userId) {
-  return stageCheck.includeMatch ? { mode, listId, userId, stageCount: stageCheck.all.length } : null;
+  return stageCheck.includeMatch
+    ? {
+        mode,
+        listId,
+        userId,
+        groupSize: stageCheck.groupSize,
+        allStages: stageCheck.all,
+        stageCount: stageCheck.all.length,
+      }
+    : null;
 }
 
 /* ---------- Çalışma Seçenekleri (Study Options) ---------- */
@@ -597,6 +717,7 @@ export async function startStudyList(listId, options = null) {
     return false;
   }
   const selectedStages = stageCheck.stages;
+  const groupSize = stageCheck.groupSize;
 
   const stats = getListStats(listId);
   const allLists = getAllNotebookLists();
@@ -607,17 +728,32 @@ export async function startStudyList(listId, options = null) {
   }
 
   const userId = list.userId;
+  const group = await selectNotebookStudyGroup(stats.words, {
+    userId,
+    mode: 'list',
+    listId: list.id,
+    groupSize,
+    explicitWordIds: options?.explicitWordIds || null,
+  });
+  const groupWordIds = group.batch.map((w) => w.id);
+
+  // Yalnızca Eşini Bul (5. aşama) seçildiyse: değerlendirme aşaması yoktur; seçilen çalışma grubundaki kelimelerle doğrudan oyun başlar
   if (!selectedStages.length) {
-    return startNotebookMemoryGame({ mode: 'list', listId, userId });
+    return startNotebookMemoryGame({
+      mode: 'list',
+      listId: list.id,
+      userId,
+      priorityIds: groupWordIds,
+      eligibleWordIds: groupWordIds,
+      hasEvalStages: false,
+      groupSize,
+      allStages: [MEMORY_STAGE],
+      stageCount: 1,
+      fromSession: false,
+    });
   }
 
-  const batchSize = +getSettings().batchSize || 5;
-  const unlearned = stats.words.filter((w) => !state.progress[w.id]?.learningComplete);
-  const batch = unlearned.length > 0
-    ? E.learnBatch(stats.words, state.progress, batchSize)
-    : E.shuffle(stats.words).slice(0, batchSize);
-
-  const items = E.learnItems(batch, state.progress, Math.random, selectedStages);
+  const items = E.learnItems(group.batch, state.progress, Math.random, selectedStages);
   if (!items.length) {
     toast('Seçilen aşamalar için çalışma öğesi oluşturulamadı.', 'error');
     return false;
@@ -625,9 +761,19 @@ export async function startStudyList(listId, options = null) {
 
   await startSession({
     kind: 'learn',
-    title: `${list.name} — Kelime Öğren`,
+    title: `${list.name} — Kelime Öğren (${group.batch.length} Kelime)`,
     items,
-    params: { isNotebook: true, listId: list.id, mode: 'list', selectedStages, matchAfter: matchAfterParam(stageCheck, 'list', list.id, userId) },
+    params: {
+      isNotebook: true,
+      listId: list.id,
+      mode: 'list',
+      userId,
+      groupSize,
+      groupWordIds,
+      selectedStages,
+      groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
+      matchAfter: matchAfterParam(stageCheck, 'list', list.id, userId),
+    },
   });
   return true;
 }
@@ -640,6 +786,7 @@ export async function startStudyAll(userId = getActiveUserId(), options = null) 
     return false;
   }
   const selectedStages = stageCheck.stages;
+  const groupSize = stageCheck.groupSize;
 
   const words = getUserNotebookWords(userId);
   if (!words.length) {
@@ -647,21 +794,42 @@ export async function startStudyAll(userId = getActiveUserId(), options = null) 
     return false;
   }
 
-  if (!selectedStages.length) {
-    return startNotebookMemoryGame({ mode: 'all', userId });
-  }
+  const group = await selectNotebookStudyGroup(words, {
+    userId,
+    mode: 'all',
+    groupSize,
+    explicitWordIds: options?.explicitWordIds || null,
+  });
+  const groupWordIds = group.batch.map((w) => w.id);
 
-  const batchSize = +getSettings().batchSize || 5;
-  const unlearned = words.filter((w) => !state.progress[w.id]?.learningComplete);
-  const batch = unlearned.length > 0
-    ? E.learnBatch(words, state.progress, batchSize)
-    : E.shuffle(words).slice(0, batchSize);
+  if (!selectedStages.length) {
+    return startNotebookMemoryGame({
+      mode: 'all',
+      userId,
+      priorityIds: groupWordIds,
+      eligibleWordIds: groupWordIds,
+      hasEvalStages: false,
+      groupSize,
+      allStages: [MEMORY_STAGE],
+      stageCount: 1,
+      fromSession: false,
+    });
+  }
 
   await startSession({
     kind: 'learn',
-    title: 'Tüm Kelimelerim — Kelime Öğren',
-    items: E.learnItems(batch, state.progress, Math.random, selectedStages),
-    params: { isNotebook: true, mode: 'all', selectedStages, matchAfter: matchAfterParam(stageCheck, 'all', null, userId) },
+    title: `Tüm Kelimelerim — Kelime Öğren (${group.batch.length} Kelime)`,
+    items: E.learnItems(group.batch, state.progress, Math.random, selectedStages),
+    params: {
+      isNotebook: true,
+      mode: 'all',
+      userId,
+      groupSize,
+      groupWordIds,
+      selectedStages,
+      groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
+      matchAfter: matchAfterParam(stageCheck, 'all', null, userId),
+    },
   });
   return true;
 }
@@ -674,6 +842,7 @@ export async function startStudyUnknown(userId = getActiveUserId(), options = nu
     return false;
   }
   const selectedStages = stageCheck.stages;
+  const groupSize = stageCheck.groupSize;
 
   const words = getUserNotebookWords(userId);
   if (!words.length) {
@@ -689,21 +858,42 @@ export async function startStudyUnknown(userId = getActiveUserId(), options = nu
     return false;
   }
 
-  if (!selectedStages.length) {
-    return startNotebookMemoryGame({ mode: 'unknown', userId });
-  }
+  const group = await selectNotebookStudyGroup(candidates, {
+    userId,
+    mode: 'unknown',
+    groupSize,
+    explicitWordIds: options?.explicitWordIds || null,
+  });
+  const groupWordIds = group.batch.map((w) => w.id);
 
-  const batchSize = +getSettings().batchSize || 5;
-  const unlearned = candidates.filter((w) => !state.progress[w.id]?.learningComplete);
-  const batch = unlearned.length > 0
-    ? E.learnBatch(candidates, state.progress, batchSize)
-    : E.shuffle(candidates).slice(0, batchSize);
+  if (!selectedStages.length) {
+    return startNotebookMemoryGame({
+      mode: 'unknown',
+      userId,
+      priorityIds: groupWordIds,
+      eligibleWordIds: groupWordIds,
+      hasEvalStages: false,
+      groupSize,
+      allStages: [MEMORY_STAGE],
+      stageCount: 1,
+      fromSession: false,
+    });
+  }
 
   await startSession({
     kind: 'learn',
-    title: `Zorlandığım Kelimeler — ${stageCheck.all.length} Aşama`,
-    items: E.learnItems(batch, state.progress, Math.random, selectedStages),
-    params: { isNotebook: true, mode: 'unknown', selectedStages, matchAfter: matchAfterParam(stageCheck, 'unknown', null, userId) },
+    title: `Zorlandığım Kelimeler — ${stageCheck.all.length} Aşama (${group.batch.length} Kelime)`,
+    items: E.learnItems(group.batch, state.progress, Math.random, selectedStages),
+    params: {
+      isNotebook: true,
+      mode: 'unknown',
+      userId,
+      groupSize,
+      groupWordIds,
+      selectedStages,
+      groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
+      matchAfter: matchAfterParam(stageCheck, 'unknown', null, userId),
+    },
   });
   return true;
 }
@@ -740,8 +930,8 @@ export async function startStudyDue(userId = getActiveUserId()) {
 
 /* ---------- Arayüz Modalları (UI Modals) ---------- */
 
-/** Çalışma Aşamalarını Seç Modalı (Kelime Defterim Kişiselleştirilebilir Aşama Seçimi) */
-export function openStageSelectionModal({ listId = null, mode = 'list', userId = getActiveUserId(), onStart = null } = {}) {
+/** Çalışma Aşamalarını ve Grup Büyüklüğünü Seç Modalı (Kelime Defterim v4.6.1) */
+export function openStageSelectionModal({ listId = null, mode = 'list', userId = getActiveUserId(), defaultGroupSize = E.DEFAULT_GROUP_SIZE, onStart = null } = {}) {
   let contextLabel = 'Seçili kelimelerin';
   if (mode === 'list' && listId) {
     const stats = getListStats(listId);
@@ -775,9 +965,16 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
     contextLabel = `<b>Yalnızca Bilmediklerim</b> (${candidates.length} kelime)`;
   }
 
-  // Varsayılan: ilk 4 aşama seçili; 5. aşama (Eşini Bul) seçili DEĞİL
+  // Varsayılan: 5 kelime grup büyüklüğü; ilk 4 aşama seçili; 5. aşama (Eşini Bul) seçili DEĞİL
+  let chosenGroupSize = E.normalizeGroupSize(defaultGroupSize);
   const selected = new Set(NOTEBOOK_DEFAULT_STAGES);
   const TOTAL_OPTIONS = NOTEBOOK_STAGE_OPTIONS.length;
+
+  const sizeButtonsHtml = E.GROUP_SIZES.map((sz) => `
+    <button type="button" class="nb-size-option ${sz === chosenGroupSize ? 'active' : ''}" data-group-size="${sz}" aria-pressed="${sz === chosenGroupSize}">
+      <b>${sz} kelime</b>
+    </button>
+  `).join('');
 
   const cardsHtml = NOTEBOOK_STAGE_OPTIONS.map((opt) => `
     <label class="nb-stage-card ${opt.defaultSelected ? 'active' : ''} ${opt.stage === MEMORY_STAGE ? 'nb-stage-game' : ''}" data-stage-card="${opt.stage}">
@@ -798,7 +995,18 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
     title: 'Çalışma Aşamalarını Seç',
     html: `
       <div class="nb-stage-modal">
-        <p class="muted small nb-stage-sub">${contextLabel} için bu oturumda uygulanacak çalışma aşamalarını seçin.</p>
+        <p class="muted small nb-stage-sub">${contextLabel} için çalışma grubunu ve uygulanacak aşamaları seçin.</p>
+
+        <div class="nb-group-section">
+          <div class="nb-group-head">
+            <span class="nb-group-question"><b>Kaç kelimelik gruplarla çalışmak istiyorsun?</b></span>
+            <span class="nb-group-badge" id="nb-group-size-label">Grup Büyüklüğü: ${chosenGroupSize} kelime</span>
+          </div>
+          <div class="nb-size-grid compact" role="radiogroup" aria-label="Grup Büyüklüğü">
+            ${sizeButtonsHtml}
+          </div>
+        </div>
+
         <div class="nb-stage-toolbar">
           <span class="nb-stage-counter" id="nb-stage-counter" aria-live="polite">${selected.size} / ${TOTAL_OPTIONS} aşama seçili</span>
           <button type="button" class="text-btn" id="nb-stage-select-all">Tümünü Seç</button>
@@ -806,7 +1014,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
         <div class="nb-stage-grid" role="group" aria-label="Çalışma Aşamaları">
           ${cardsHtml}
         </div>
-        <p class="muted small nb-stage-hint">🧠 Eşini Bul yalnızca Kelime Defterim'e özeldir. Tek başına seçilirse doğrudan oyun başlar; diğer aşamalarla seçilirse oturumun sonunda oynanır. Oyun SRS ilerlemeni değiştirmez.</p>
+        <p class="muted small nb-stage-hint">🧠 Eşini Bul yalnızca Kelime Defterim'e özeldir. Diğer aşamalarla seçilirse o grupta hatasız tamamladığın kelimelerle oynanır; tek başına seçilirse doğrudan seçilen kelime grubuyla başlar.</p>
         <div class="err small" id="nb-stage-err" role="alert"></div>
         <div class="nb-stage-actions">
           <button type="button" class="btn ghost" data-x>Vazgeç</button>
@@ -817,10 +1025,28 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
     onMount(b, api) {
       $('[data-x]', b).onclick = api.close;
       const counterEl = $('#nb-stage-counter', b);
+      const sizeLabelEl = $('#nb-group-size-label', b);
       const selectAllBtn = $('#nb-stage-select-all', b);
       const errEl = $('#nb-stage-err', b);
       const startBtn = $('#nb-stage-start', b);
       const inputs = $$('[data-stage-input]', b);
+      const sizeBtns = $$('[data-group-size]', b);
+
+      const syncSizeUI = () => {
+        if (sizeLabelEl) sizeLabelEl.textContent = `Grup Büyüklüğü: ${chosenGroupSize} kelime`;
+        sizeBtns.forEach((btn) => {
+          const on = Number(btn.dataset.groupSize) === chosenGroupSize;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+      };
+
+      sizeBtns.forEach((btn) => {
+        btn.onclick = () => {
+          chosenGroupSize = E.normalizeGroupSize(btn.dataset.groupSize);
+          syncSizeUI();
+        };
+      });
 
       const syncUI = () => {
         const count = selected.size;
@@ -857,27 +1083,29 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
       };
 
       startBtn.onclick = async () => {
-        const check = resolveNotebookStages([...selected]);
+        const check = resolveNotebookStages({ stages: [...selected], groupSize: chosenGroupSize });
         if (!check.ok) {
           errEl.textContent = check.error;
           startBtn.disabled = true;
           return;
         }
         const stages = check.all; // 1–4 öğrenme aşamaları + (seçildiyse) 5. aşama Eşini Bul
+        const groupSize = check.groupSize;
         api.close();
         if (typeof onStart === 'function') {
-          await onStart(stages);
+          await onStart(stages, groupSize);
           return;
         }
         if (mode === 'all') {
-          await startStudyAll(userId, { stages });
+          await startStudyAll(userId, { stages, groupSize });
         } else if (mode === 'unknown') {
-          await startStudyUnknown(userId, { stages });
+          await startStudyUnknown(userId, { stages, groupSize });
         } else {
-          await startStudyList(listId, { stages });
+          await startStudyList(listId, { stages, groupSize });
         }
       };
 
+      syncSizeUI();
       syncUI();
     },
   });

@@ -2,7 +2,7 @@
 // Tüm modlar (learn, review, exam) bu çalıştırıcıyı kullanır; oturum her cevapta kaydedilir ve yenilemede devam eder.
 import { state, getMeta, setMeta, getSettings, getProgress, saveProgress } from './storage.js';
 import * as E from './engine.js';
-import { $, $$, esc, toast, speak, sfx, hasModal, closeTopModal, confirmDialog, ICONS, successMark } from './ui.js';
+import { $, $$, esc, toast, speak, sfx, openModal, hasModal, closeTopModal, confirmDialog, ICONS, successMark } from './ui.js';
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { bumpDaily, levelStats } from './statistics.js';
 
@@ -19,6 +19,18 @@ const setFocusMode = (on) => { if (typeof document !== 'undefined') document.bod
 let lastPct = 0;
 export function abortSession() { cur = null; if (typeof document !== 'undefined') document.body.classList.remove('focus', 'kb-open'); }
 
+export function getStudyGroupRotation(scopeKey) {
+  const all = getMeta('studyGroupRotation') || {};
+  const list = all[scopeKey];
+  return Array.isArray(list) ? list : [];
+}
+
+export async function saveStudyGroupRotation(scopeKey, wordIds) {
+  const all = { ...(getMeta('studyGroupRotation') || {}) };
+  all[scopeKey] = [...new Set(Array.isArray(wordIds) ? wordIds : [])];
+  await setMeta('studyGroupRotation', all);
+}
+
 export async function startSession(s) {
   const isLearn = s.kind === 'learn';
   const cleanItems = Array.isArray(s.items)
@@ -29,7 +41,30 @@ export async function startSession(s) {
       })
     : [];
   const safeIdx = Math.min(s.idx || 0, cleanItems.length);
-  cur = { feedback: true, params: {}, idx: safeIdx, results: [], level: s.level || s.params?.level || getMeta('learnLevel') || 'A2', ...s, items: cleanItems, idx: safeIdx };
+  const rawParams = { ...(s.params || {}) };
+  if (isLearn) {
+    const inferredWordIds = Array.isArray(rawParams.groupWordIds) && rawParams.groupWordIds.length
+      ? [...new Set(rawParams.groupWordIds)]
+      : [...new Set(cleanItems.map((it) => it.wordId))];
+    const normStages = Array.isArray(rawParams.selectedStages) && rawParams.selectedStages.length
+      ? E.normalizeSelectedStages(rawParams.selectedStages)
+      : [1, 2, 3, 4];
+    rawParams.groupSize = E.normalizeGroupSize(rawParams.groupSize || s.groupSize || inferredWordIds.length || E.DEFAULT_GROUP_SIZE);
+    rawParams.groupWordIds = inferredWordIds;
+    rawParams.selectedStages = normStages;
+    const summary = E.computeGroupEvalSummary({
+      groupWordIds: inferredWordIds,
+      selectedStages: normStages,
+      results: Array.isArray(s.results) ? s.results : [],
+      evalState: rawParams.groupEval || null,
+    });
+    rawParams.groupEval = {
+      groupWordIds: summary.groupWordIds,
+      evalStages: summary.evalStages,
+      byWord: summary.byWord,
+    };
+  }
+  cur = { feedback: true, idx: safeIdx, results: [], level: s.level || rawParams.level || getMeta('learnLevel') || 'A2', ...s, params: rawParams, items: cleanItems, idx: safeIdx };
   lastPct = cur.items.length ? (cur.idx / cur.items.length) * 100 : 0;
   setFocusMode(true); // oturum boyunca tek soruya odaklanan, menüsüz ekran
   await persist();
@@ -262,6 +297,14 @@ handlers.learn = {
   async onAnswer(item, ok, { elapsed, customStages = null } = {}) {
     const p = getProgress(item.wordId);
     const activeCustomStages = customStages || cur?.params?.selectedStages || null;
+    if (cur?.params?.groupEval) {
+      E.recordGroupEvalAnswer(cur.params.groupEval, {
+        wordId: item.wordId,
+        stage: item.stage,
+        type: item.type,
+        correct: Boolean(ok),
+      });
+    }
     if (item.type === 'card') { E.markSeen(p); await saveProgress(p); return {}; }
     const was = p.learningComplete;
     E.applyAnswer(p, ok, { mode: 'learn', stage: item.stage, qtype: item.type, customStages: activeCustomStages });
@@ -281,32 +324,158 @@ handlers.learn = {
     const q = results.filter((r) => !r.card);
     const ok = q.filter((r) => r.correct).length;
     const isCardOnly = stageCount === 1 && customStages[0] === 1;
+    const evalSummary = E.computeGroupEvalSummary({
+      groupWordIds: sess?.params?.groupWordIds || [],
+      selectedStages: customStages,
+      results,
+      evalState: sess?.params?.groupEval || null,
+    });
     const done = isCardOnly
       ? new Set(results.filter((r) => r.card).map((r) => r.wordId)).size
-      : new Set(q.filter((r) => r.stage === lastStage && r.correct).map((r) => r.wordId)).size;
+      : evalSummary.hasEvalStages
+        ? evalSummary.passedWordIds.length
+        : new Set(q.filter((r) => r.stage === lastStage && r.correct).map((r) => r.wordId)).size;
     const failed = [...new Set(q.filter((r) => !r.correct).map((r) => state.wordMap.get(r.wordId)?.word))].filter(Boolean);
-    const returnUrl = sess?.params?.isNotebook ? '#/notebook' : '#/learn';
-    const returnLabel = sess?.params?.isNotebook ? 'Defterime Dön' : 'Yeni Grup Başlat';
+    const isNb = Boolean(sess?.params?.isNotebook);
+    const returnUrl = isNb ? '#/notebook' : '#/learn';
+    const returnLabel = isNb ? 'Defterime Dön' : 'Kelime Öğren\'e Dön';
+    const groupSize = E.normalizeGroupSize(sess?.params?.groupSize || E.DEFAULT_GROUP_SIZE);
     const subText = isCardOnly
       ? `1 aşamayı tamamladın · Kelime kartları incelendi`
       : `${stageCount} aşamayı tamamladın · ${ok}/${q.length} doğru cevap`;
-    return { html: summaryHtml({ title: 'Oturum Tamamlandı', big: `${done} kelime`, sub: subText,
-      extra: failed.length ? `<p>Tekrar Edilecek havuzuna alınanlar: <b>${esc(failed.join(', '))}</b></p>` : '', actions: `<a class="btn primary" href="${returnUrl}">${returnLabel}</a>` }) };
+    const nextGroupBtn = `<button type="button" class="btn primary" id="btn-next-study-group">Sonraki Gruba Geç (${groupSize} Kelime)</button>`;
+    return {
+      html: summaryHtml({
+        title: 'Oturum Tamamlandı',
+        big: `${done} kelime`,
+        sub: subText,
+        extra: failed.length ? `<p>Tekrar Edilecek havuzuna alınanlar: <b>${esc(failed.join(', '))}</b></p>` : '',
+        actions: `${nextGroupBtn}<a class="btn ghost" href="${returnUrl}">${returnLabel}</a>`,
+      }),
+      mount(v) {
+        const nxt = $('#btn-next-study-group', v);
+        if (nxt) {
+          nxt.onclick = async () => {
+            if (isNb && typeof sessionHooks.startNextNotebookGroup === 'function') {
+              await sessionHooks.startNextNotebookGroup(sess.params);
+            } else {
+              const lv = sess?.level || sess?.params?.level || getMeta('learnLevel') || 'A2';
+              await startLearn(lv, { groupSize, skipModal: true });
+            }
+          };
+        }
+      },
+    };
   },
 };
 
-export async function startLearn(level, focus = false) {
+export function openGroupSizeModal({ level = 'A2', defaultSize = E.DEFAULT_GROUP_SIZE, onStart = null } = {}) {
+  let chosenSize = E.normalizeGroupSize(defaultSize);
+  const sizeButtonsHtml = E.GROUP_SIZES.map((sz) => `
+    <button type="button" class="nb-size-option ${sz === chosenSize ? 'active' : ''}" data-group-size="${sz}" aria-pressed="${sz === chosenSize}">
+      <b>${sz} kelime</b>
+      <span class="muted small">${sz === 5 ? 'Varsayılan · Hızlı tur' : sz === 10 ? 'Dengeli çalışma' : sz === 15 ? 'Yoğun pratik' : 'Kapsamlı grup'}</span>
+    </button>
+  `).join('');
+
+  openModal({
+    title: `${level} — Çalışma Grubu Büyüklüğü`,
+    html: `
+      <div class="nb-stage-modal">
+        <p class="nb-group-question"><b>Kaç kelimelik gruplarla çalışmak istiyorsun?</b></p>
+        <p class="muted small nb-stage-sub">${level} (${LEVEL_NAMES[level] || ''}) seviyesinde 4 aşamalı standart öğrenme oturumu seçtiğin kelime sayısıyla başlatılacak.</p>
+        <div class="nb-size-grid" role="radiogroup" aria-label="Kaç kelimelik gruplarla çalışmak istiyorsun?">
+          ${sizeButtonsHtml}
+        </div>
+        <div class="nb-stage-actions">
+          <button type="button" class="btn ghost" data-x>Vazgeç</button>
+          <button type="button" class="btn primary xl" id="group-size-start">Çalışmaya Başla</button>
+        </div>
+      </div>
+    `,
+    onMount(b, api) {
+      $('[data-x]', b).onclick = api.close;
+      const sizeBtns = $$('[data-group-size]', b);
+      const syncSize = () => {
+        sizeBtns.forEach((btn) => {
+          const on = Number(btn.dataset.groupSize) === chosenSize;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+      };
+      sizeBtns.forEach((btn) => {
+        btn.onclick = () => {
+          chosenSize = E.normalizeGroupSize(btn.dataset.groupSize);
+          syncSize();
+        };
+      });
+      $('#group-size-start', b).onclick = async () => {
+        const finalSize = E.normalizeGroupSize(chosenSize);
+        api.close();
+        if (typeof onStart === 'function') {
+          await onStart(finalSize);
+        } else {
+          await startLearn(level, { groupSize: finalSize, skipModal: true });
+        }
+      };
+    },
+  });
+  return true;
+}
+
+export async function startLearn(level, options = null) {
   const byLevel = getMeta('activeSessionsByLevel') || {};
-  const savedSame = byLevel[level] || (getMeta('activeSession')?.level === level ? getMeta('activeSession') : null);
-  if (savedSame && savedSame.idx < (savedSame.items?.length || 0)) {
+  const savedSame = byLevel[level] || (getMeta('activeSession')?.level === level && !getMeta('activeSession')?.params?.isNotebook ? getMeta('activeSession') : null);
+  const hasExplicitSize = typeof options === 'number' || (options && typeof options === 'object' && (options.groupSize != null || options.skipModal));
+
+  if (!hasExplicitSize && savedSame && savedSame.idx < (savedSame.items?.length || 0)) {
     const ok = await confirmDialog(`"${level}" seviyesinde yarım kalan bir oturumun var (${savedSame.idx}/${savedSame.items.length}). Yeni bir öğrenme oturumu başlatılsın mı?`, { okLabel: 'Yeni Oturumu Başlat', cancelLabel: 'Vazgeç', danger: true });
-    if (!ok) return;
+    if (!ok) return false;
   }
+
   const words = state.words.filter((w) => w.level === level);
-  const batch = E.learnBatch(words, state.progress, +getSettings().batchSize || 5);
-  if (!batch.length) return toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 4 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
+  const availCheck = E.selectStudyGroup(words, state.progress, E.DEFAULT_GROUP_SIZE);
+  if (!availCheck.batch.length) {
+    toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 4 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
+    return false;
+  }
+
+  if (!hasExplicitSize && typeof document !== 'undefined' && document.getElementById('modal-root')) {
+    return openGroupSizeModal({
+      level,
+      defaultSize: E.DEFAULT_GROUP_SIZE,
+      onStart: async (chosenSize) => {
+        await startLearn(level, { groupSize: chosenSize, skipModal: true });
+      },
+    });
+  }
+
+  const groupSize = E.normalizeGroupSize(typeof options === 'number' ? options : options?.groupSize || E.DEFAULT_GROUP_SIZE);
+  const scopeKey = `level:${level}`;
+  const seenWordIds = getStudyGroupRotation(scopeKey);
+  const group = E.selectStudyGroup(words, state.progress, groupSize, { seenWordIds });
+  if (!group.batch.length) {
+    toast(`${level} seviyesindeki öğrenmeye hazır tüm kelimeler 4 aşamayı tamamladı. Akıllı Tekrar bölümüne geçebilirsiniz.`);
+    return false;
+  }
+  await saveStudyGroupRotation(scopeKey, group.nextSeenIds);
+  const groupWordIds = group.batch.map((w) => w.id);
+  const selectedStages = [1, 2, 3, 4];
   await setMeta('learnLevel', level);
-  await startSession({ kind: 'learn', title: `${level} Kelime Öğren`, level, params: { level }, items: E.learnItems(batch, state.progress) });
+  await startSession({
+    kind: 'learn',
+    title: `${level} Kelime Öğren (${group.batch.length} Kelime)`,
+    level,
+    params: {
+      level,
+      groupSize,
+      groupWordIds,
+      selectedStages,
+      groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
+    },
+    items: E.learnItems(group.batch, state.progress, Math.random, selectedStages),
+  });
+  return true;
 }
 
 export function renderLearn(v) {

@@ -10,6 +10,14 @@ export const STAGES = [
   'Eksik Harfleri Tamamla',
 ];
 export const STAGE_TYPES = [null, 'card', 'mc', 'typing', 'missing'];
+export const EVAL_STAGES = [2, 3, 4];
+export const GROUP_SIZES = [5, 10, 15, 20];
+export const DEFAULT_GROUP_SIZE = 5;
+
+export function normalizeGroupSize(size) {
+  const n = Number(size);
+  return GROUP_SIZES.includes(n) ? n : DEFAULT_GROUP_SIZE;
+}
 
 export function normalizeSelectedStages(selectedStages) {
   if (!Array.isArray(selectedStages)) return [1, 2, 3, 4];
@@ -18,6 +26,130 @@ export function normalizeSelectedStages(selectedStages) {
       .map((s) => Number(s))
       .filter((s) => Number.isInteger(s) && s >= 1 && s <= 4)
   )].sort((a, b) => a - b);
+}
+
+export function getSelectedEvalStages(selectedStages) {
+  const stages = Array.isArray(selectedStages) ? normalizeSelectedStages(selectedStages) : [1, 2, 3, 4];
+  return stages.filter((s) => EVAL_STAGES.includes(s));
+}
+
+function stageFromItem({ stage = 0, type = '' } = {}) {
+  const st = Number(stage);
+  if (st >= 1 && st <= 4) return st;
+  if (type === 'card') return 1;
+  if (type === 'mc') return 2;
+  if (type === 'typing') return 3;
+  if (type === 'missing') return 4;
+  return 0;
+}
+
+/**
+ * Oturum bazlı değerlendirme takipçisi (SRS ve geçmiş doğru sayılarından bağımsız).
+ * Bir kelime o grupta seçilen bütün değerlendirme aşamalarını (mc, typing, missing) hatasız tamamlarsa
+ * Eşini Bul oyununa katılmaya hak kazanır. İlk yanlış cevap sonradan gelen doğru cevapla silinmez.
+ */
+export function createGroupEvaluation(groupWordIds = [], selectedStages = [1, 2, 3, 4]) {
+  const uniqueIds = [...new Set((Array.isArray(groupWordIds) ? groupWordIds : []).filter(Boolean))];
+  const evalStages = getSelectedEvalStages(selectedStages);
+  const byWord = {};
+  for (const wid of uniqueIds) {
+    byWord[wid] = { passedStages: [], failedStages: [], failed: false };
+  }
+  return {
+    groupWordIds: uniqueIds,
+    evalStages,
+    byWord,
+  };
+}
+
+export function recordGroupEvalAnswer(evalState, { wordId, stage = 0, type = '', correct = false } = {}) {
+  if (!evalState || !wordId) return evalState;
+  const st = stageFromItem({ stage, type });
+  if (!EVAL_STAGES.includes(st)) return evalState; // 1. aşama (card) değerlendirme aşaması değildir
+  if (!evalState.byWord) evalState.byWord = {};
+  if (!evalState.byWord[wordId]) {
+    evalState.byWord[wordId] = { passedStages: [], failedStages: [], failed: false };
+  }
+  if (Array.isArray(evalState.groupWordIds) && !evalState.groupWordIds.includes(wordId)) {
+    evalState.groupWordIds.push(wordId);
+  }
+  const entry = evalState.byWord[wordId];
+  if (!correct) {
+    entry.failed = true;
+    if (!entry.failedStages.includes(st)) entry.failedStages.push(st);
+    entry.passedStages = (entry.passedStages || []).filter((x) => x !== st);
+  } else if (!entry.failed && !entry.failedStages.includes(st)) {
+    if (!entry.passedStages.includes(st)) entry.passedStages.push(st);
+  }
+  return evalState;
+}
+
+export function computeGroupEvalSummary({ groupWordIds = [], selectedStages = [1, 2, 3, 4], results = [], evalState = null } = {}) {
+  const inferredIds = groupWordIds?.length
+    ? groupWordIds
+    : evalState?.groupWordIds?.length
+      ? evalState.groupWordIds
+      : (Array.isArray(results) ? results.map((r) => r?.wordId).filter(Boolean) : []);
+  const stateObj = createGroupEvaluation(inferredIds, selectedStages);
+
+  if (evalState?.byWord && typeof evalState.byWord === 'object') {
+    for (const [wid, raw] of Object.entries(evalState.byWord)) {
+      if (!stateObj.byWord[wid]) {
+        stateObj.byWord[wid] = { passedStages: [], failedStages: [], failed: false };
+        if (!stateObj.groupWordIds.includes(wid)) stateObj.groupWordIds.push(wid);
+      }
+      const dst = stateObj.byWord[wid];
+      if (raw?.failed || (Array.isArray(raw?.failedStages) && raw.failedStages.length)) {
+        dst.failed = true;
+        for (const fs of raw.failedStages || []) {
+          const n = Number(fs);
+          if (EVAL_STAGES.includes(n) && !dst.failedStages.includes(n)) dst.failedStages.push(n);
+        }
+      }
+      if (Array.isArray(raw?.passedStages)) {
+        for (const ps of raw.passedStages) {
+          const n = Number(ps);
+          if (EVAL_STAGES.includes(n) && !dst.failed && !dst.failedStages.includes(n) && !dst.passedStages.includes(n)) {
+            dst.passedStages.push(n);
+          }
+        }
+      }
+    }
+  }
+
+  for (const r of Array.isArray(results) ? results : []) {
+    if (!r || !r.wordId) continue;
+    recordGroupEvalAnswer(stateObj, {
+      wordId: r.wordId,
+      stage: r.stage,
+      type: r.type,
+      correct: Boolean(r.correct),
+    });
+  }
+
+  const evalStages = stateObj.evalStages;
+  const hasEvalStages = evalStages.length > 0;
+  const passedWordIds = [];
+  const failedWordIds = [];
+
+  if (hasEvalStages) {
+    for (const wid of stateObj.groupWordIds) {
+      const w = stateObj.byWord[wid];
+      const flawless = Boolean(w && !w.failed && evalStages.every((s) => w.passedStages.includes(s)));
+      if (flawless) passedWordIds.push(wid);
+      else failedWordIds.push(wid);
+    }
+  }
+
+  return {
+    hasEvalStages,
+    evalStages,
+    groupWordIds: stateObj.groupWordIds,
+    passedWordIds,
+    failedWordIds,
+    eligibleWordIds: hasEvalStages ? passedWordIds : [...stateObj.groupWordIds],
+    byWord: stateObj.byWord,
+  };
 }
 
 export function validateStageSelection(selectedStages) {
@@ -627,26 +759,78 @@ export function learnBatch(words, progress, size = 5, rnd = Math.random) {
   return [...failing, ...inprog, ...fresh].slice(0, size);
 }
 
+/**
+ * Akıllı Çalışma Grubu Seçici (v4.6.1):
+ * - Kullanıcının seçtiği grup büyüklüğüne (5 / 10 / 15 / 20) göre grup oluşturur.
+ * - Önceki gruplarda çalışılan kelimeleri (seenWordIds) havuz bitene kadar tekrar etmez.
+ * - Havuzda kalan kelime sayısı grup büyüklüğünden azsa, önceki kelimeleri tekrarlamak yerine mevcut kalan kelimelerle grup kurar.
+ */
+export function selectStudyGroup(words, progress = {}, size = DEFAULT_GROUP_SIZE, { seenWordIds = [], rnd = Math.random, allowCompletedFallback = false } = {}) {
+  const targetSize = normalizeGroupSize(size);
+  const ready = (Array.isArray(words) ? words : []).filter((w) => {
+    if (!w || !w.id || w.isDraft) return false;
+    if (isWordReady(w)) return true;
+    return Boolean(allowCompletedFallback && String(w.word || '').trim() && Array.isArray(w.meanings) && w.meanings.length > 0);
+  });
+  const unlearned = ready.filter((w) => !progress[w.id]?.learningComplete);
+  const pool = unlearned.length > 0 ? unlearned : (allowCompletedFallback ? ready : []);
+  if (!pool.length) {
+    return { batch: [], groupSize: targetSize, nextSeenIds: [], resetPool: false, hasNextGroup: false, remainingCount: 0 };
+  }
+
+  const poolIds = new Set(pool.map((w) => w.id));
+  let seenSet = new Set((Array.isArray(seenWordIds) ? seenWordIds : []).filter((id) => poolIds.has(id)));
+  let unseen = pool.filter((w) => !seenSet.has(w.id));
+  let resetPool = false;
+
+  if (!unseen.length) {
+    seenSet = new Set();
+    unseen = pool;
+    resetPool = true;
+  }
+
+  let batch = [];
+  if (unlearned.length > 0) {
+    const primary = learnBatch(unseen, progress, targetSize, rnd);
+    const pickedIds = new Set(primary.map((w) => w.id));
+    if (primary.length < Math.min(targetSize, unseen.length)) {
+      const extra = shuffle(unseen.filter((w) => !pickedIds.has(w.id)), rnd).slice(0, targetSize - primary.length);
+      batch = [...primary, ...extra];
+    } else {
+      batch = primary.slice(0, targetSize);
+    }
+  } else {
+    batch = shuffle(unseen, rnd).slice(0, targetSize);
+  }
+
+  const nextSeenIds = [...new Set([...seenSet, ...batch.map((w) => w.id)])];
+  return {
+    batch,
+    groupSize: targetSize,
+    nextSeenIds,
+    resetPool,
+    hasNextGroup: pool.length > batch.length,
+    remainingCount: Math.max(0, unseen.length - batch.length),
+  };
+}
+
 export function learnItems(batch, progress, rnd = Math.random, selectedStages = null) {
   const isCustom = Array.isArray(selectedStages);
   const stages = isCustom ? normalizeSelectedStages(selectedStages) : [1, 2, 3, 4];
-  if (!stages.length) return [];
+  if (!stages.length || !Array.isArray(batch) || !batch.length) return [];
   const totalSteps = stages.length;
   const items = [];
   for (let idx = 0; idx < totalSteps; idx++) {
     const s = stages[idx];
-    const order = idx === 0 ? batch : shuffle(batch, rnd);
+    const order = idx === 0 ? [...batch] : shuffle(batch, rnd);
     for (const w of order) {
-      const cs = progress[w.id]?.currentStage || 0;
-      if (isCustom || s === 1 || cs < s) {
-        items.push({
-          wordId: w.id,
-          stage: s,
-          type: STAGE_TYPES[s],
-          stepIndex: idx + 1,
-          totalSteps,
-        });
-      }
+      items.push({
+        wordId: w.id,
+        stage: s,
+        type: STAGE_TYPES[s],
+        stepIndex: idx + 1,
+        totalSteps,
+      });
     }
   }
   return items;

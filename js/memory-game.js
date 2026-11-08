@@ -1,19 +1,25 @@
-// LEXORA (VELUNO) — Eşini Bul (Hafıza ve Eşleştirme Oyunu)
+// LEXORA (VELUNO) — Eşini Bul (Dinamik Hafıza ve Eşleştirme Oyunu · v4.6.1)
 // Yalnızca Kelime Defterim'de kullanılır. Hazır A2/B1/B2 4 aşamalı öğrenme sistemine dahil DEĞİLDİR.
 //
-// Tasarım ilkeleri:
+// Tasarım ilkeleri (v4.6.1):
+// - Sabit 16 kelime sınırı kaldırılmıştır. Oyun kartı sayısı = Doğru bilinen (veya seçilen gruptaki) kelime sayısı × 2.
+// - Değerlendirme aşamaları (mc, typing, missing) seçildiyse yalnızca o gruptaki tüm seçili değerlendirme aşamalarını
+//   hatasız tamamlayan kelimeler oyuna alınır.
+// - Yalnızca Eşini Bul (veya Kelimeyi Öğren + Eşini Bul) seçildiyse seçilen çalışma grubundaki kelimelerle oyun kurulur.
+// - Sıfır doğru kelime durumunda 0 kartlık oyun açılmaz; kullanıcıya bilgilendirme ve aksiyon seçenekleri sunulur.
 // - Eşleştirme, ekrandaki metinler üzerinden DEĞİL, benzersiz kelime kayıt kimliği (pairId = word.id) üzerinden yapılır.
 // - Oyun SRS ilerlemesini (state.progress) hiçbir koşulda değiştirmez; performans ayrı "memoryGameStats" meta kaydında tutulur.
-// - Saf (DOM'suz) mantık fonksiyonları dışa aktarılır ve tests/run-tests.mjs içinde test edilir.
 
 import { getMeta, setMeta } from './storage.js';
+import * as E from './engine.js';
 import { $, $$, esc, toast, sfx } from './ui.js';
 import { bumpDaily } from './statistics.js';
 
 export const MEMORY_STAGE = 5;
-export const MEMORY_ROUND_SIZE = 16;      // 16 kelime → 32 kart
-export const MEMORY_MIN_PAIRS = 2;        // daha azıyla anlamlı bir oyun kurulamaz
-export const MISMATCH_DELAY_MS = 1200;    // yanlış eşleşmede kartların otomatik kapanma süresi (1–1,5 sn)
+export const MEMORY_MIN_PAIRS = 1;        // 1 doğru kelime = 2 karttan 20 doğru kelime = 40 karta kadar dinamik
+export const MISMATCH_DELAY_MS = 1200;    // yanlış eşleşmede kartların otomatik kapanma süresi (1,2 sn)
+export const ZERO_CORRECT_MESSAGE =
+  'Bu grupta bütün aşamaları doğru tamamladığın bir kelime bulunamadı. Yanlış yaptığın kelimeleri tekrar çalışarak yeniden deneyebilirsin.';
 
 /* ---------- Yardımcılar ---------- */
 const textKey = (s) => String(s ?? '').toLocaleLowerCase('tr-TR').replace(/\s+/g, ' ').trim();
@@ -68,14 +74,15 @@ export function prepareMemoryPairs(words) {
 }
 
 /**
- * Bir tur için en çok 16 çift seçer.
+ * Bir tur için uygun çiftleri seçer (sabit 16 sınırı yoktur; size verilmezse tüm uygun çiftleri kullanır).
  * Öncelik: (1) oturumdaki kelimeler (priorityIds) → (2) henüz oynanmamışlar → (3) daha önce oynananlar.
  * Tüm kelimeler oynanmışsa havuz sıfırlanır (resetPool: true).
  * Aynı görünen İngilizce veya Türkçe metne sahip çiftler aynı tura konmaz (oyuncunun ayırt edemeyeceği durum
  * oluşmaz); çakışanlar sonraki turlara bırakılır (deferred).
  */
-export function selectRoundPairs(pairs, { played = [], size = MEMORY_ROUND_SIZE, priorityIds = [], rnd = Math.random } = {}) {
+export function selectRoundPairs(pairs, { played = [], size = null, priorityIds = [], rnd = Math.random } = {}) {
   const all = Array.isArray(pairs) ? pairs : [];
+  const limit = size != null && Number(size) > 0 ? Number(size) : all.length;
   const validIds = new Set(all.map((p) => p.id));
   let playedSet = new Set((played || []).filter((id) => validIds.has(id)));
   let resetPool = false;
@@ -94,7 +101,7 @@ export function selectRoundPairs(pairs, { played = [], size = MEMORY_ROUND_SIZE,
   const usedEn = new Set();
   const usedTr = new Set();
   for (const p of ordered) {
-    if (selected.length >= size) break;
+    if (selected.length >= limit) break;
     if (usedEn.has(p.enKey) || usedTr.has(p.trKey)) { deferred.push(p); continue; }
     usedEn.add(p.enKey);
     usedTr.add(p.trKey);
@@ -115,17 +122,34 @@ export function buildMemoryCards(pairs, rnd = Math.random) {
 }
 
 export function createMemoryGame(pairs, { rnd = Math.random, now = Date.now() } = {}) {
+  const safePairs = Array.isArray(pairs) ? [...pairs] : [];
   return {
-    pairs: [...pairs],
-    cards: buildMemoryCards(pairs, rnd),
+    pairs: safePairs,
+    cards: buildMemoryCards(safePairs, rnd),
     open: [],
     locked: false,
     attempts: 0,
     matches: 0,
-    total: pairs.length,
+    total: safePairs.length,
     startedAt: now,
     finishedAt: null,
   };
+}
+
+/**
+ * 2 ile 40 kart arasında ekran boyutuna göre ideal sütun sayısını hesaplar.
+ * Özellikle iPhone/mobil ekranlarda 40 kartın küçülüp okunamaz olmasını önlemek için en fazla 4 sütun + dikey kaydırma kullanır.
+ */
+export function computeGridColumns(cardCount) {
+  const n = Math.max(2, Number(cardCount) || 2);
+  if (n <= 4) return { desktop: 2, tablet: 2, mobile: 2 };
+  if (n <= 8) return { desktop: 4, tablet: 4, mobile: 2 };
+  if (n <= 12) return { desktop: 6, tablet: 4, mobile: 3 };
+  if (n <= 16) return { desktop: 4, tablet: 4, mobile: 4 };
+  if (n <= 20) return { desktop: 5, tablet: 5, mobile: 4 };
+  if (n <= 24) return { desktop: 6, tablet: 6, mobile: 4 };
+  if (n <= 30) return { desktop: 6, tablet: 5, mobile: 4 };
+  return { desktop: 8, tablet: 5, mobile: 4 };
 }
 
 /**
@@ -183,25 +207,77 @@ export const fmtClock = (sec) => {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 };
 
-/* ---------- Ayrı istatistik ve tur havuzu kaydı (SRS'ten bağımsız) ---------- */
+/* ---------- Ayrı istatistik, tur havuzu ve eski v4.6.0 veri uyumluluğu (SRS'ten bağımsız) ---------- */
 // meta.memoryGameStats    = { [userId]: { gamesStarted, gamesCompleted, totalMatches, totalAttempts, bestTimeSec, bestAttempts, lastPlayedAt } }
 // meta.memoryGameRotation = { [`${userId}::${scopeKey}`]: [wordId, ...] }  — oynanan kelimeler (tur havuzu)
+
+/**
+ * Eski v4.6.0 hafıza oyunu kayıtlarını (sabit 16 kelimelik tur rotasyonu ve istatistikleri)
+ * hiçbir veriyi silmeden v4.6.1 dinamik grup sistemine uyarlar.
+ */
+export async function adaptLegacyMemoryData() {
+  let changed = false;
+  const rawStats = getMeta('memoryGameStats');
+  if (rawStats && typeof rawStats === 'object') {
+    const cleanStats = {};
+    for (const [uid, st] of Object.entries(rawStats)) {
+      if (!st || typeof st !== 'object') continue;
+      cleanStats[uid] = {
+        gamesStarted: Math.max(0, Number(st.gamesStarted) || 0),
+        gamesCompleted: Math.max(0, Number(st.gamesCompleted) || 0),
+        totalMatches: Math.max(0, Number(st.totalMatches) || 0),
+        totalAttempts: Math.max(0, Number(st.totalAttempts) || 0),
+        bestTimeSec: st.bestTimeSec != null && Number.isFinite(Number(st.bestTimeSec)) ? Number(st.bestTimeSec) : null,
+        bestAttempts: st.bestAttempts != null && Number.isFinite(Number(st.bestAttempts)) ? Number(st.bestAttempts) : null,
+        lastPlayedAt: st.lastPlayedAt || null,
+      };
+    }
+    await setMeta('memoryGameStats', cleanStats);
+    changed = true;
+  }
+
+  const rawRot = getMeta('memoryGameRotation');
+  if (rawRot && typeof rawRot === 'object') {
+    const cleanRot = {};
+    for (const [k, val] of Object.entries(rawRot)) {
+      if (Array.isArray(val)) {
+        cleanRot[k] = [...new Set(val.filter((id) => typeof id === 'string' && id.trim()))];
+      } else if (val && typeof val === 'object' && Array.isArray(val.played)) {
+        cleanRot[k] = [...new Set(val.played.filter((id) => typeof id === 'string' && id.trim()))];
+      }
+    }
+    await setMeta('memoryGameRotation', cleanRot);
+    changed = true;
+  }
+  return { changed };
+}
 
 export function getMemoryRotation(userId, scopeKey) {
   const all = getMeta('memoryGameRotation') || {};
   const v = all[`${userId}::${scopeKey}`];
-  return Array.isArray(v) ? v : [];
+  if (Array.isArray(v)) return v;
+  if (v && typeof v === 'object' && Array.isArray(v.played)) return v.played;
+  return [];
 }
 
 export async function saveMemoryRotation(userId, scopeKey, ids) {
   const all = { ...(getMeta('memoryGameRotation') || {}) };
-  all[`${userId}::${scopeKey}`] = [...new Set(ids)];
+  all[`${userId}::${scopeKey}`] = [...new Set((Array.isArray(ids) ? ids : []).filter(Boolean))];
   await setMeta('memoryGameRotation', all);
 }
 
 export function getMemoryStats(userId) {
   const all = getMeta('memoryGameStats') || {};
-  return { gamesStarted: 0, gamesCompleted: 0, totalMatches: 0, totalAttempts: 0, bestTimeSec: null, bestAttempts: null, lastPlayedAt: null, ...(all[userId] || {}) };
+  const raw = all[userId] || {};
+  return {
+    gamesStarted: Math.max(0, Number(raw.gamesStarted) || 0),
+    gamesCompleted: Math.max(0, Number(raw.gamesCompleted) || 0),
+    totalMatches: Math.max(0, Number(raw.totalMatches) || 0),
+    totalAttempts: Math.max(0, Number(raw.totalAttempts) || 0),
+    bestTimeSec: raw.bestTimeSec != null ? Number(raw.bestTimeSec) : null,
+    bestAttempts: raw.bestAttempts != null ? Number(raw.bestAttempts) : null,
+    lastPlayedAt: raw.lastPlayedAt || null,
+  };
 }
 
 export async function recordMemoryGame(userId, { completed = false, matches = 0, attempts = 0, seconds = 0, started = false } = {}) {
@@ -222,36 +298,107 @@ export async function recordMemoryGame(userId, { completed = false, matches = 0,
 }
 
 /**
- * Bir tur hazırlar (UI'den bağımsız; testlerde de kullanılır).
- * getWords() her çağrıda GÜNCEL Kelime Defterim kayıtlarını döndürmelidir (ekleme/düzenleme/silme anında yansır).
+ * Bir oyun turu hazırlar (UI'den bağımsız; testlerde de kullanılır).
+ * - eligibleWordIds verildiyse (oturum sonu veya grup bazlı oyun): YALNIZCA bu gruptaki kelimeler kullanılır;
+ *   grup dışından kelime eklenmez.
+ * - hasEvalStages === true ve eligibleWordIds boşsa: Sıfır doğru kelime durumu (zeroCorrect: true) döner.
+ * - groupSize verildiyse (yalnızca Eşini Bul seçildiğinde): seçilen grup büyüklüğü kadar kelime kullanılır.
  */
-export async function prepareMemoryRound({ getWords, userId = 'guest', scopeKey = 'all', priorityIds = [], rnd = Math.random, repeatIds = null } = {}) {
-  const words = typeof getWords === 'function' ? getWords() : [];
-  const { pairs, skipped } = prepareMemoryPairs(words);
-  if (pairs.length < MEMORY_MIN_PAIRS) {
-    return { ok: false, pairs, skipped, error: `Eşini Bul oyunu için en az ${MEMORY_MIN_PAIRS} geçerli kelime (İngilizce + Türkçe anlam) gerekir.` };
+export async function prepareMemoryRound({
+  getWords,
+  userId = 'guest',
+  scopeKey = 'all',
+  priorityIds = [],
+  eligibleWordIds = null,
+  hasEvalStages = false,
+  groupSize = null,
+  minPairs = null,
+  rnd = Math.random,
+  repeatIds = null,
+} = {}) {
+  const allWords = typeof getWords === 'function' ? getWords() : (Array.isArray(getWords) ? getWords : []);
+  const { pairs: allPoolPairs, skipped: allSkipped } = prepareMemoryPairs(allWords);
+
+  // 1) Değerlendirme aşamalı bir oturum sonunda hiçbir kelime tam doğru cevaplanamadıysa:
+  if (hasEvalStages && Array.isArray(eligibleWordIds) && eligibleWordIds.length === 0) {
+    return {
+      ok: true,
+      zeroCorrect: true,
+      pairs: allPoolPairs,
+      skipped: allSkipped,
+      selected: [],
+      deferred: [],
+      resetPool: false,
+      poolSize: allPoolPairs.length,
+      hasNextRound: allPoolPairs.length > 0,
+      message: ZERO_CORRECT_MESSAGE,
+    };
   }
-  let selected, deferred = [], resetPool = false;
+
+  // 2) Grup bazlı filtreleme: eligibleWordIds verildiyse yalnızca o grubun kelimeleri kullanılır
+  const hasExplicitGroup = Array.isArray(eligibleWordIds) && eligibleWordIds.length > 0;
+  const effectiveMinPairs = minPairs != null ? minPairs : (hasExplicitGroup ? 1 : 2);
+
+  let sourceWords = allWords;
+  if (hasExplicitGroup) {
+    const allowed = new Set(eligibleWordIds);
+    const byId = new Map(allWords.filter((w) => w && allowed.has(w.id)).map((w) => [w.id, w]));
+    sourceWords = eligibleWordIds.map((id) => byId.get(id)).filter(Boolean);
+  }
+
+  const { pairs, skipped } = prepareMemoryPairs(sourceWords);
+  if (pairs.length < effectiveMinPairs) {
+    return {
+      ok: false,
+      zeroCorrect: false,
+      pairs,
+      skipped,
+      error: `Eşini Bul oyunu için en az ${effectiveMinPairs} geçerli kelime (İngilizce + Türkçe anlam) gerekir.`,
+    };
+  }
+
+  let selected = [];
+  let deferred = [];
+  let resetPool = false;
+
   if (Array.isArray(repeatIds) && repeatIds.length) {
     // Yeniden Oyna: aynı kelimeler (güncel verilerle), yeni karıştırma
     const byId = new Map(pairs.map((p) => [p.id, p]));
-    selected = repeatIds.map((id) => byId.get(id)).filter(Boolean);
-    if (selected.length < MEMORY_MIN_PAIRS) return prepareMemoryRound({ getWords, userId, scopeKey, priorityIds, rnd });
-  } else {
+    const repPairs = repeatIds.map((id) => byId.get(id)).filter(Boolean);
+    const r = selectRoundPairs(repPairs, { size: repPairs.length, rnd });
+    selected = r.selected;
+    deferred = r.deferred;
+    if (selected.length < effectiveMinPairs) {
+      return prepareMemoryRound({ getWords, userId, scopeKey, priorityIds, eligibleWordIds, hasEvalStages, groupSize, minPairs, rnd });
+    }
+  } else if (hasExplicitGroup) {
+    // Oturumdan gelen grup kelimeleri: tamamı (çakışmayanlar) kullanılır, dışarıdan kelime alınmaz
+    const r = selectRoundPairs(pairs, { size: pairs.length, priorityIds: eligibleWordIds, rnd });
+    selected = r.selected;
+    deferred = r.deferred;
     const played = getMemoryRotation(userId, scopeKey);
-    const r = selectRoundPairs(pairs, { played, priorityIds, rnd });
-    selected = r.selected; deferred = r.deferred; resetPool = r.resetPool;
+    await saveMemoryRotation(userId, scopeKey, [...played, ...selected.map((p) => p.id)]);
+  } else {
+    // Doğrudan Eşini Bul seçimi: seçilen grup büyüklüğü (5 / 10 / 15 / 20) veya mevcut kelime sayısı kadar
+    const targetSize = groupSize != null ? E.normalizeGroupSize(groupSize) : pairs.length;
+    const played = getMemoryRotation(userId, scopeKey);
+    const r = selectRoundPairs(pairs, { played, size: targetSize, priorityIds, rnd });
+    selected = r.selected;
+    deferred = r.deferred;
+    resetPool = r.resetPool;
     await saveMemoryRotation(userId, scopeKey, r.nextPlayed);
   }
+
   return {
     ok: true,
+    zeroCorrect: false,
     pairs,
     skipped,
     selected,
     deferred,
     resetPool,
-    poolSize: pairs.length,
-    hasNextRound: pairs.length > selected.length,
+    poolSize: allPoolPairs.length,
+    hasNextRound: allPoolPairs.length > selected.length,
   };
 }
 
@@ -276,34 +423,131 @@ function leaveGame(returnHash = '#/notebook') {
 
 /**
  * Eşini Bul oyununu başlatır.
- * @param {object} opts
- *  - getWords: () => güncel kelime kayıtları (Kelime Defterim listesi / tüm kelimeler / bilinmeyenler)
- *  - userId, scopeKey, title
- *  - priorityIds: aynı oturumda önceki aşamalarda çalışılan kelimeler (önce bunlar kullanılır)
- *  - fromSession: diğer aşamalarla birlikte seçildiyse true (oturum sayacı tekrar artırılmaz)
- *  - stageCount: seçilen toplam aşama sayısı (sonuç ekranında gösterilir)
  */
 export async function startMemoryGame(opts = {}) {
-  const { userId = 'guest', scopeKey = 'all', title = 'Eşini Bul', priorityIds = [], fromSession = false, stageCount = 1, rnd = Math.random } = opts;
-  const round = await prepareMemoryRound({ ...opts, userId, scopeKey, priorityIds, rnd });
+  const {
+    userId = 'guest',
+    scopeKey = 'all',
+    title = 'Eşini Bul',
+    priorityIds = [],
+    eligibleWordIds = null,
+    failedWordIds = [],
+    hasEvalStages = false,
+    groupSize = null,
+    fromSession = false,
+    stageCount = 1,
+    onRetryFailed = null,
+    onNextGroup = null,
+    rnd = Math.random,
+  } = opts;
+
+  const round = await prepareMemoryRound({
+    ...opts,
+    userId,
+    scopeKey,
+    priorityIds,
+    eligibleWordIds,
+    hasEvalStages,
+    groupSize,
+    rnd,
+  });
+
   if (!round.ok) {
     toast(round.error, 'error');
     if (view()) leaveGame();
     return { ok: false, error: round.error };
   }
+
+  const ctx = {
+    ...opts,
+    userId,
+    scopeKey,
+    title,
+    eligibleWordIds,
+    failedWordIds,
+    hasEvalStages,
+    groupSize,
+    fromSession,
+    stageCount,
+    onRetryFailed,
+    onNextGroup,
+  };
+
+  if (round.zeroCorrect) {
+    if (view()) renderZeroCorrect(round, ctx);
+    return {
+      ok: true,
+      zeroCorrect: true,
+      game: null,
+      round,
+      message: ZERO_CORRECT_MESSAGE,
+    };
+  }
+
   const game = createMemoryGame(round.selected, { rnd });
   await recordMemoryGame(userId, { started: true });
-  if (view()) renderGame(game, round, { ...opts, userId, scopeKey, title, fromSession, stageCount });
-  return { ok: true, game, round };
+  if (view()) renderGame(game, round, ctx);
+  return { ok: true, zeroCorrect: false, game, round };
 }
 
-function infoNote(round) {
+function renderZeroCorrect(round, ctx) {
+  clearTimers();
+  const v = view();
+  if (!v) return;
+  if (typeof document !== 'undefined') document.body.classList.add('focus');
+
+  v.innerHTML = `<div class="summary mg-result mg-zero-state" data-memory-zero>
+    <div class="mg-trophy" aria-hidden="true">🎯</div>
+    <h2>Eşini Bul — Hafıza Oyunu</h2>
+    <p class="mg-zero-msg">${esc(ZERO_CORRECT_MESSAGE)}</p>
+    <div class="sum-actions">
+      <button type="button" class="btn primary" id="mg-retry-failed">Yanlış Kelimeleri Tekrar Çalış</button>
+      <button type="button" class="btn primary" id="mg-next-group">Sonraki Gruba Geç</button>
+      <button type="button" class="btn ghost" id="mg-back">Kelime Defterim'e Dön</button>
+    </div>
+  </div>`;
+
+  const retryBtn = $('#mg-retry-failed', v);
+  if (retryBtn) {
+    retryBtn.onclick = async () => {
+      clearTimers();
+      if (typeof ctx.onRetryFailed === 'function') {
+        await ctx.onRetryFailed(ctx.failedWordIds);
+      } else {
+        leaveGame();
+      }
+    };
+  }
+
+  const nextBtn = $('#mg-next-group', v);
+  if (nextBtn) {
+    nextBtn.onclick = async () => {
+      clearTimers();
+      if (typeof ctx.onNextGroup === 'function') {
+        await ctx.onNextGroup();
+      } else {
+        await startMemoryGame({ ...ctx, eligibleWordIds: null, hasEvalStages: false, fromSession: false });
+      }
+    };
+  }
+
+  const backBtn = $('#mg-back', v);
+  if (backBtn) backBtn.onclick = () => leaveGame();
+}
+
+function infoNote(round, ctx) {
   const notes = [];
+  if (ctx?.hasEvalStages && Array.isArray(ctx?.eligibleWordIds)) {
+    const totalGroup = (ctx.eligibleWordIds.length || 0) + (ctx.failedWordIds?.length || 0);
+    if (ctx.failedWordIds?.length > 0 && round.selected.length > 0) {
+      notes.push(`Bu gruptaki ${totalGroup} kelimeden tüm değerlendirme aşamalarını hatasız tamamladığın ${round.selected.length} kelime (${round.selected.length * 2} kart) oyuna alındı.`);
+    }
+  }
   const missing = round.skipped.filter((s) => s.reason === 'missing').length;
   const dup = round.skipped.filter((s) => s.reason === 'duplicate').length;
   if (missing) notes.push(`${missing} kelime İngilizce veya Türkçe bilgisi eksik olduğu için oyuna alınmadı.`);
   if (dup) notes.push(`${dup} tekrarlanan kelime çifti yalnızca bir kez kullanıldı.`);
-  if (round.deferred.length) notes.push(`Aynı görünen anlama sahip ${round.deferred.length} kelime karışıklık olmaması için sonraki tura bırakıldı.`);
+  if (round.deferred.length) notes.push(`Aynı görünen anlama sahip ${round.deferred.length} kelime karışıklık olmaması için bu tur dışında tutuldu (oyunda ${round.selected.length} uygun çift gösteriliyor).`);
   if (round.resetPool) notes.push('Listedeki bütün kelimeler oynandı; kelime havuzu yeniden başlatıldı.');
   return notes.length ? `<p class="mg-note muted small" role="note">${notes.map(esc).join(' ')}</p>` : '';
 }
@@ -314,12 +558,12 @@ function renderGame(game, round, ctx) {
   if (!v) return;
   if (typeof document !== 'undefined') document.body.classList.add('focus');
   const n = game.cards.length;
-  const cols = n >= 32 ? 8 : n >= 24 ? 6 : n >= 12 ? 4 : Math.max(2, Math.ceil(n / 2));
+  const gridCols = computeGridColumns(n);
 
-  v.innerHTML = `<div class="mg" data-memory-game>
+  v.innerHTML = `<div class="mg" data-memory-game data-card-count="${n}">
     <div class="run-top mg-top">
       <button class="icon-btn" id="mg-exit" aria-label="Oyundan çık">✕</button>
-      <h2 class="mg-title">🧠 Eşini Bul</h2>
+      <h2 class="mg-title">🧠 Eşini Bul (${game.total} Kelime · ${n} Kart)</h2>
       <span class="mg-scope muted small">${esc(ctx.title)}</span>
     </div>
     <div class="mg-stats" role="status" aria-live="polite">
@@ -328,8 +572,8 @@ function renderGame(game, round, ctx) {
       <div class="mg-stat"><span>Süre</span><b id="mg-time">00:00</b></div>
       <div class="mg-stat"><span>Kalan</span><b id="mg-left">${game.total}</b></div>
     </div>
-    ${infoNote(round)}
-    <div class="mg-grid" id="mg-grid" data-cols="${cols}" style="--mg-cols:${cols}" role="grid" aria-label="Hafıza kartları">
+    ${infoNote(round, ctx)}
+    <div class="mg-grid" id="mg-grid" data-cols="${gridCols.desktop}" style="--mg-cols:${gridCols.desktop};--mg-cols-tablet:${gridCols.tablet};--mg-cols-mobile:${gridCols.mobile}" role="grid" aria-label="Hafıza kartları">
       ${game.cards.map((c, i) => `
         <button type="button" class="mg-card" data-uid="${esc(c.uid)}" data-side="${c.side}" aria-label="Kapalı kart ${i + 1}">
           <span class="mg-inner">
@@ -397,6 +641,7 @@ async function finishGame(game, round, ctx) {
   const v = view();
   if (!v) return;
   const sessionNote = ctx.fromSession ? `<p class="muted small">Seçtiğin ${ctx.stageCount} aşamanın tamamı bitti. Çalışma oturumu tamamlandı.</p>` : '';
+  const showNextBtn = Boolean(round.hasNextRound || typeof ctx.onNextGroup === 'function');
   v.innerHTML = `<div class="summary mg-result">
     <div class="mg-trophy" aria-hidden="true">🎉</div>
     <h2>Tebrikler! Bütün eşleşmeleri tamamladın!</h2>
@@ -408,12 +653,20 @@ async function finishGame(game, round, ctx) {
     ${sessionNote}
     <div class="sum-actions">
       <button type="button" class="btn primary" id="mg-replay">Yeniden Oyna</button>
-      ${round.hasNextRound ? '<button type="button" class="btn primary" id="mg-next">Sonraki 16 Kelime</button>' : ''}
+      ${showNextBtn ? '<button type="button" class="btn primary" id="mg-next">Sonraki Kelime Grubu</button>' : ''}
       <button type="button" class="btn ghost" id="mg-back">Kelime Defterim'e Dön</button>
     </div>
   </div>`;
   $('#mg-replay', v).onclick = () => startMemoryGame({ ...ctx, repeatIds: game.pairs.map((p) => p.id), fromSession: false });
   const nx = $('#mg-next', v);
-  if (nx) nx.onclick = () => startMemoryGame({ ...ctx, priorityIds: [], repeatIds: null, fromSession: false });
+  if (nx) {
+    nx.onclick = async () => {
+      if (typeof ctx.onNextGroup === 'function') {
+        await ctx.onNextGroup();
+      } else {
+        await startMemoryGame({ ...ctx, eligibleWordIds: null, hasEvalStages: false, priorityIds: [], repeatIds: null, fromSession: false });
+      }
+    };
+  }
   $('#mg-back', v).onclick = () => leaveGame();
 }
