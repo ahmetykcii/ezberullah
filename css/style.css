@@ -737,6 +737,8 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .irv-meaning-val{font-size:1.2rem;font-weight:700;color:var(--tx)}
 
 /* Fiil Tablosu */
+.irv-page{min-width:0;max-width:100%}
+.irv-table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .irv-verb-table{width:100%;border-collapse:collapse;font-size:.9rem}
 .irv-verb-table th{text-align:left;padding:10px 8px;border-bottom:1.5px solid var(--bd);color:var(--mut);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em}
 .irv-verb-table td{padding:10px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
@@ -751,6 +753,9 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 }
 @media(max-width:420px){
   .irv-modes-grid{grid-template-columns:1fr}
+  .irv-verb-table{font-size:.78rem}
+  .irv-verb-table th,.irv-verb-table td{padding:7px 4px}
+  .seg.full .seg-btn{padding:0 6px;font-size:.76rem;min-width:0}
 }
 
 
@@ -930,9 +935,12 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .nb-progress-text{display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:var(--tx-sec)}
 .nb-progress-text b{color:var(--tx)}
 .nb-due-badge{color:var(--special-accent);font-weight:600}
-.path-bar-strip{height:4px;background:var(--surf);border-radius:99px;overflow:hidden}
-.path-bar-strip i{display:block;height:100%;background:var(--path-petrol);border-radius:99px;transition:width .4s ease}
+.path-bar-strip{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:6px 10px;background:var(--card);border:1px solid var(--bd);border-radius:11px;font-size:.82rem;color:var(--tx-sec)}
+.path-bar-text b{color:var(--tx)}
+.path-bar-strip i{display:block;height:4px;background:var(--path-petrol);border-radius:99px;transition:width .4s ease}
 .path-bar-strip.bronze i{background:var(--path-bronze)}
+.nb-resume-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nb-resume-row .btn.block{flex:1}
 .learn-cta-row{display:flex;align-items:center;gap:8px}
 .learn-cta-row .btn.block{flex:1}
 
@@ -964,7 +972,7 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 /* Durak Detay Paneli (Modal) */
 .stop-detail{display:flex;flex-direction:column;gap:12px}
 .stop-ctx{margin:0}
-.stop-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stop-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .stop-stats>div{background:var(--surf);border:1px solid var(--bd);border-radius:11px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
 .stop-stats b{font-size:1.05rem;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
 .stop-stats span{font-size:.74rem;color:var(--tx2)}

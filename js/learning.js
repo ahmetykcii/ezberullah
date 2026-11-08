@@ -184,9 +184,15 @@ function renderItem() {
   lastPct = pct;
   $('#q-exit').onclick = () => {
     const isNotebook = cur?.params?.isNotebook;
+    const originHash = cur?.params?.pathStop?.originHash;
     abortSession();
-    if (isNotebook) {
-      location.hash = '#/notebook';
+    if (originHash === '#/path') {
+      if (location.hash === '#/path') window.dispatchEvent(new HashChangeEvent('hashchange'));
+      else location.hash = '#/path';
+      toast(isNotebook ? 'Oturum kaydedildi; Defterim ekranından devam edebilirsiniz.' : 'Oturum kaydedildi; Hazır Kelime Havuzu ekranından kaldığınız yerden devam edebilirsiniz.');
+    } else if (isNotebook) {
+      if (location.hash === '#/notebook') window.dispatchEvent(new HashChangeEvent('hashchange'));
+      else location.hash = '#/notebook';
       toast('Oturum kaydedildi; Defterim ekranından devam edebilirsiniz.');
     } else {
       if (location.hash === '#/learn') window.dispatchEvent(new HashChangeEvent('hashchange'));

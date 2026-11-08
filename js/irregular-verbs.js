@@ -1835,7 +1835,7 @@ export function renderIrregularVerbs(v) {
         <input class="input sm" id="irv-search-inp" placeholder="Fiil veya Türkçe anlam ara…" value="${esc(searchQuery)}" style="max-width:260px">
       </div>
 
-      <div class="irv-table-wrap" style="background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+      <div class="irv-table-wrap" style="background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow-x:auto">
         <table class="irv-verb-table">
           <thead>
             <tr>

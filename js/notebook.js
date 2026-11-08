@@ -8,7 +8,7 @@ import { $, $$, esc, openModal, toast, confirmDialog, speak, ICONS } from './ui.
 import { prepareWordInfo } from './vocabulary.js';
 import { blankSentence, isWordReady } from './engine.js';
 import { getCurrentUser } from './auth.js';
-import { startSession, sessionHooks, getStudyGroupRotation, saveStudyGroupRotation } from './learning.js';
+import { startSession, resumeSaved, sessionHooks, getStudyGroupRotation, saveStudyGroupRotation } from './learning.js';
 import { bumpDaily } from './statistics.js';
 import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
 import { syncListPath, removeListPath, ensureListPaths, STOP_SIZE } from './paths.js';
@@ -1134,7 +1134,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
             stages,
             groupSize: E.normalizeGroupSize(stopIds.length),
             explicitWordIds: stopIds,
-            pathStop: { listId, stopId: pathStop.stopId || null, number: pathStop.number || null },
+            pathStop: { listId, stopId: pathStop.stopId || null, number: pathStop.number || null, originHash: pathStop.originHash || '' },
           });
           return;
         }
@@ -1701,6 +1701,12 @@ export function renderNotebook(v) {
         </div>`
       : '';
 
+    const activeSaved = state.meta?.activeSession;
+    const hasSaved = !!(activeSaved && activeSaved.params?.isNotebook && (activeSaved.params?.userId || 'guest') === userId && activeSaved.idx < (activeSaved.items?.length || 0));
+    const savedStripHtml = hasSaved
+      ? `<div class="nb-resume-row"><button type="button" class="btn sm primary block" id="nb-resume">Kaldığın Yerden Devam Et (${activeSaved.idx}/${activeSaved.items.length})</button><button type="button" class="btn sm ghost" id="nb-discard">Vazgeç</button></div>`
+      : '';
+
     let bodyHtml = '';
     if (!lists.length) {
       bodyHtml = `
@@ -1746,12 +1752,18 @@ export function renderNotebook(v) {
           </div>
           ${listSelectHtml}
           ${progressStripHtml}
+          ${savedStripHtml}
         </header>
         ${bodyHtml}
       </div>
     `;
 
     const refresh = () => { win = null; draw(); };
+
+    const nbResume = $('#nb-resume', v);
+    if (nbResume) nbResume.onclick = () => resumeSaved();
+    const nbDiscard = $('#nb-discard', v);
+    if (nbDiscard) nbDiscard.onclick = async () => { await setMeta('activeSession', null); draw(); };
 
     const topNewList = $('#btn-top-new-list', v);
     if (topNewList) topNewList.onclick = () => openListModal(null, async (created) => {

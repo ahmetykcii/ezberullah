@@ -46,7 +46,7 @@ function wordForm(w, expandDetails = false) {
     <div class="span2 grid form" id="wf-adv" ${hasDetails ? '' : 'hidden'} style="margin-bottom:0;padding-top:6px;border-top:1px solid var(--bd)">
       <label>Kelime türü<select class="input" name="partOfSpeech" id="wf-pos">${posOpts}</select></label>
       <label>Alternatif doğru cevaplar (İngilizce) <small class="muted">(; ile)</small><input class="input" name="alternativeAnswers" id="wf-alt" placeholder="Örn: analyze" value="${esc((item.alternativeAnswers || []).join('; '))}"></label>
-      <label class="span2">İngilizce örnek cümle <small class="muted">(5. aşama boşluk doldurma için kelimenin cümlede geçmesi gerekir)</small><input class="input" name="exampleSentence" id="wf-ex" placeholder="Örn: She worked hard to achieve her goals." value="${esc(item.exampleSentence || '')}"></label>
+      <label class="span2">İngilizce örnek cümle <small class="muted">(4 aşamalı öğrenme ve sınavlar için kelimenin cümlede geçmesi gerekir)</small><input class="input" name="exampleSentence" id="wf-ex" placeholder="Örn: She worked hard to achieve her goals." value="${esc(item.exampleSentence || '')}"></label>
       <label class="span2">Örnek cümlenin Türkçe çevirisi<input class="input" name="exampleTranslation" id="wf-tr" placeholder="Örn: Hedeflerine ulaşmak için çok çalıştı." value="${esc(item.exampleTranslation || '')}"></label>
       <label>Eş anlamlılar <small class="muted">(; ile)</small><input class="input" name="synonyms" id="wf-syn" placeholder="Örn: accomplish; attain" value="${esc((item.synonyms || []).join('; '))}"></label>
       <label>Kelime ailesi <small class="muted">(; ile)</small><input class="input" name="wordFamily" id="wf-fam" placeholder="Örn: achievement" value="${esc((item.wordFamily || []).join('; '))}"></label>
@@ -136,7 +136,7 @@ export function openWordModal(w = null, done = () => {}, expandDetails = false) 
           // Kullanıcı normal "Kaydet"e bastı; örnek cümle girilmiş ama kelimeyi içermiyorsa uyar, hiç girilmemişse otomatik taslak olarak kaydet
           if (f.exampleSentence && f.exampleSentence.trim()) {
             showAdv();
-            errBox.textContent = `5. aşama (boşluk doldurma) için örnek cümle "${preview.word}" kelimesini içermelidir. Cümleyi düzeltin veya "Taslak Olarak Kaydet" butonunu kullanın.`;
+            errBox.textContent = `4 aşamalı öğrenme ve sınavlar için örnek cümle "${preview.word}" kelimesini içermelidir. Cümleyi düzeltin veya "Taslak Olarak Kaydet" butonunu kullanın.`;
             return;
           }
           f.isDraft = true;

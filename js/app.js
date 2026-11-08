@@ -254,7 +254,7 @@ function renderSettings(v) {
   <h2 class="group-title">Günlük Hedef</h2>
   <ul class="list">
     <li><button type="button" class="list-row linkrow" id="goal-row"><span class="row-main"><b>Günlük kelime hedefi</b></span><span class="row-value">${s.dailyGoal} kelime</span>${ICONS.chev}</button></li>
-    <li><label class="list-row"><span class="row-main"><b>Grup boyutu</b><span class="muted small">Bir oturumdaki kelime sayısı</span></span><input class="input sm num" type="number" min="1" max="15" id="batch" value="${s.batchSize}"></label></li>
+    <li><label class="list-row"><span class="row-main"><b>Grup boyutu</b><span class="muted small">Bir oturumdaki kelime sayısı</span></span><input class="input sm num" type="number" min="1" max="20" id="batch" value="${s.batchSize}"></label></li>
     <li><label class="list-row"><span class="row-main"><b>Hedef sınav tarihi</b></span><input class="input sm" type="date" id="exam" value="${s.examDate}"></label></li>
   </ul>
 
@@ -292,12 +292,12 @@ function renderSettings(v) {
 
   <h2 class="group-title">Hakkında</h2>
   <div class="list">
-    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v5.0.0</span></div>
+    <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v5.0.2</span></div>
     <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
   </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
   const num = (id, key, min, max) => on(id, (e) => { const n = Math.max(min, Math.min(max, parseInt(e.target.value, 10) || DEFAULT_SETTINGS[key])); e.target.value = n; setSetting(key, n); toast('Ayarlar kaydedildi.'); });
-  num('#batch', 'batchSize', 1, 15);
+  num('#batch', 'batchSize', 1, 20);
   $('#goal-row', v).onclick = () => openGoalModal(() => renderSettings(v));
   on('#exam', (e) => { setSetting('examDate', e.target.value); toast('Sınav tarihi kaydedildi.'); });
   const updateThemeUI = (val) => {
@@ -448,7 +448,7 @@ async function resetProgress() {
       $('[data-x]', b).onclick = api.close;
       $('#rc', b).oninput = (e) => { $('#rgo', b).disabled = e.target.value.trim() !== 'SIFIRLA'; };
       $('#rgo', b).onclick = async () => {
-        const keep = ['deletedIds', 'schemaVersion', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'memoryGameStats', 'memoryGameRotation', 'studyGroupRotation', 'notebookPaths', 'pathTab', 'pathListByUser'].filter((k) => getMeta(k) != null).map((k) => ({ key: k, value: getMeta(k) }));
+        const keep = ['deletedIds', 'schemaVersion', 'notebookLists', 'notebookWords', 'irregularLists', 'irregularCustomVerbs', 'memoryGameStats', 'memoryGameRotation', 'notebookPaths', 'pathTab', 'pathListByUser'].filter((k) => getMeta(k) != null).map((k) => ({ key: k, value: getMeta(k) }));
         try { await replaceAll({ words: state.words, progress: [], exams: [], daily: [], meta: keep }); api.close(); toast('İlerleme sıfırlandı.', 'success'); route(); }
         catch (e) { toast('Sıfırlama başarısız: ' + e.message, 'error'); }
       };

@@ -399,9 +399,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v5.0.1) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v5.0.2) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'SW sürümü veluno-v5.0.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'SW sürümü veluno-v5.0.2 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1308,7 +1308,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'SW sürümü veluno-v5.0.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'SW sürümü veluno-v5.0.2 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1733,7 +1733,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2802,7 +2802,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.1';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.2';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3674,9 +3674,49 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.1';"), 'Service Worker sürümü veluno-v5.0.1 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.0.2';"), 'Service Worker sürümü veluno-v5.0.2 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
+});
+
+/* ---------- 20) v5.0.2 — Stability & Quality Update Denetim ve Regresyon Testleri ---------- */
+out('\n--- 20) v5.0.2 — Stability & Quality Update Denetim ve Regresyon Testleri ---');
+
+await test('v5.0.2 [1] Yolum (#/path) üst ilerleme şeridi (.path-bar-strip) ve Kaldığım Yere Git (#path-jump) kırpılmadan görünür stil kurallarına sahip', async () => {
+  const css = await readText('css/style.css');
+  ok(!css.includes('.path-bar-strip{height:4px;'), '.path-bar-strip artık 4px yüksekliğe sıkıştırılmamalı');
+  ok(css.includes('.path-bar-strip{display:flex;align-items:center;justify-content:space-between;'), '.path-bar-strip esnek ilerleme şeridi olarak tanımlanmalı');
+  ok(css.includes('.stop-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}'), 'Durak detay modalındaki .stop-stats 2 sütunlu olmalı');
+});
+
+await test('v5.0.2 [2] Fiillerin 3 Hali (320px dar ekran) tablo sarmalayıcısı yatay taşmayı önlemek için overflow-x:auto ve mobil kurallara sahip', async () => {
+  const css = await readText('css/style.css');
+  const irv = await readText('js/irregular-verbs.js');
+  ok(css.includes('.irv-page{min-width:0;max-width:100%}') && css.includes('.irv-table-wrap{width:100%;max-width:100%;overflow-x:auto;'), '.irv-page ve .irv-table-wrap dar ekran taşmasını önlemeli');
+  ok(irv.includes('class="irv-table-wrap"') && irv.includes('overflow-x:auto'), 'Hazır Fiiller tablosu inline overflow:hidden yerine overflow-x:auto kullanmalı');
+});
+
+await test('v5.0.2 [3] Defterim (#/notebook) yarıda kalan oturumu devam ettirme (#nb-resume) ve vazgeçme (#nb-discard) kontrollerine sahip', async () => {
+  const nb = await readText('js/notebook.js');
+  ok(nb.includes('id="nb-resume"') && nb.includes('Kaldığın Yerden Devam Et'), 'Defterim üst alanında yarıda kalan oturumu devam ettirme butonu bulunmalı');
+  ok(nb.includes('id="nb-discard"'), 'Defterim üst alanında yarıda kalan oturumdan vazgeçme butonu bulunmalı');
+  ok(nb.includes("(activeSaved.params?.userId || 'guest') === userId"), 'Yarıda kalan Defterim oturumu aktif kullanıcı profiliyle eşleşmeli');
+});
+
+await test('v5.0.2 [4] Yolum (#/path) üzerinden başlatılan durak çalışmalarında originHash korunur ve çıkışta doğru ekrana dönülür', async () => {
+  const pathUi = await readText('js/path-ui.js');
+  const nb = await readText('js/notebook.js');
+  const learn = await readText('js/learning.js');
+  ok(pathUi.includes('originHash'), 'openStopDetail içinde originHash kaydedilmeli');
+  ok(nb.includes('originHash: pathStop.originHash'), 'openStageSelectionModal içinde pathStop.originHash korunmalı');
+  ok(learn.includes("if (originHash === '#/path')"), 'learning.js #q-exit çıkışında originHash === "#/path" ise Yolum ekranına dönmeli');
+});
+
+await test('v5.0.2 [5] Ayarlar grup boyutu (#batch) üst sınırı 20 ile uyumlu, sıfırlama işlemi grup rotasyonunu temizler ve 5. aşama eski metin kalıntısı giderildi', async () => {
+  const app = await readText('js/app.js');
+  const vocabUi = await readText('js/vocab-ui.js');
+  ok(app.includes('max="20" id="batch"') && app.includes("num('#batch', 'batchSize', 1, 20)"), 'Ayarlar #batch üst sınırı 20 olmalı');
+  ok(!vocabUi.includes('5. aşama'), 'vocab-ui.js içinde eski 5. aşama boşluk doldurma metni kalmamalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

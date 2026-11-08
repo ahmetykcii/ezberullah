@@ -186,14 +186,15 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
     onMount(b, api) {
       $('[data-x]', b).onclick = api.close;
       $('#stop-study', b).onclick = async () => {
+        const originHash = typeof location !== 'undefined' ? location.hash : '';
         api.close();
         if (kind === 'notebook') {
           await setPreferredNotebookList(list.id, list.userId);
           const { openStageSelectionModal } = await import('./notebook.js');
-          openStageSelectionModal({ listId: list.id, mode: 'list', userId: list.userId, pathStop: { wordIds: ids, stopId: stop.id, number: stop.number } });
+          openStageSelectionModal({ listId: list.id, mode: 'list', userId: list.userId, pathStop: { wordIds: ids, stopId: stop.id, number: stop.number, originHash } });
         } else {
           const { startLearn } = await import('./learning.js');
-          await startLearn(level, { skipModal: true, explicitWordIds: ids, pathStop: { stopId: stop.id, number: stop.number } });
+          await startLearn(level, { skipModal: true, explicitWordIds: ids, pathStop: { stopId: stop.id, number: stop.number, originHash } });
         }
         if (typeof onChanged === 'function') onChanged();
       };
