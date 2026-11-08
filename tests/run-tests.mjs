@@ -49,6 +49,7 @@ import {
   buildIrregularQuestion, checkIrregularQuestionAnswer,
   startIrregularStudySession, renderIrregularVerbs, resetIrregularView,
 } from '../js/irregular-verbs.js';
+import { SIYAMI_ASSETS, SIYAMI_STATE_NAMES, getMascotSrc, mascotHtml } from '../js/mascot.js';
 
 const out = typeof print === 'function' ? print : console.log;
 if (typeof console === 'undefined') globalThis.console = { log: out, warn: () => {}, error: out };
@@ -399,9 +400,9 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
   ok(res.added >= 1, 'Taslaktan aktife geçen yerleşik kelime güncellenmeli');
   ok(state.wordMap.get('a2-oxref-0031').isDraft === false && isWordReady(state.wordMap.get('a2-oxref-0031')));
 });
-await test('Service Worker önbellek sürümü (veluno-v5.0.3) ve önbellek dosya listesi güncellendi', async () => {
+await test('Service Worker önbellek sürümü (veluno-v5.1.0) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'SW sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.1.0';"), 'SW sürümü veluno-v5.1.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1308,7 +1309,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'SW sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.1.0';"), 'SW sürümü veluno-v5.1.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1733,7 +1734,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.1.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2802,7 +2803,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.1.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3674,7 +3675,7 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.1.0';"), 'Service Worker sürümü veluno-v5.1.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
@@ -3772,9 +3773,91 @@ await test('v5.0.3 [2] Kelime Defterim liste yönetim butonları (Düzenle ve Si
   ok(css.includes(':root[data-theme=ember] .nb-list-btn.nb-list-del{background:#281E24;border:1.5px solid #643D45;color:#F28B8E}'), 'Ember Soft Sil butonu #281E24 zemin, #643D45 kenarlık ve #F28B8E ikona sahip olmalı');
 });
 
-await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.0.3 olarak güncellendi', async () => {
+await test('v5.0.3 [3] Service Worker ve önbellek sürümü güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.1.0';"), 'Service Worker sürümü veluno-v5.1.0 olmalı');
+});
+
+/* ---------- 22) v5.1.0 — Siyami Maskot Entegrasyonu Testleri ---------- */
+out('\n--- 22) v5.1.0 — Siyami Maskot Entegrasyonu Testleri ---');
+
+await test('v5.1.0 [1] 13 Siyami maskot durumu tanımlı ve görsel varlıkları eksiksiz', async () => {
+  const expectedStates = [
+    'idle', 'correct', 'wrong', 'complete', 'sleep',
+    'excited', 'curious', 'thinking', 'focused', 'celebrate',
+    'hello', 'surprised', 'love',
+  ];
+  eq(SIYAMI_STATE_NAMES.length, 13, 'Tam 13 maskot durumu tanımlı olmalı');
+  for (const st of expectedStates) {
+    ok(SIYAMI_ASSETS[st], `SIYAMI_ASSETS.${st} tanımlı olmalı`);
+    ok(getMascotSrc(st).endsWith(`siyami-${st}.png`), `getMascotSrc(${st}) doğru dosya yolunu dönmeli`);
+  }
+  // Varsayılan durum kontrolü
+  eq(getMascotSrc('non_existent'), SIYAMI_ASSETS.idle, 'Tanımsız durumlarda varsayılan idle dönmeli');
+
+  // mascotHtml bileşeni testi
+  const html = mascotHtml({ state: 'correct', size: 'md', alt: 'Test Siyami', id: 'test-siyami' });
+  ok(html.includes('class="siyami-wrap siyami-md"'), 'Doğru wrapper sınıfları üretilmeli');
+  ok(html.includes('id="test-siyami"'), 'ID özniteliği aktarılmalı');
+  ok(html.includes('data-siyami-state="correct"'), 'Veri durumu doğru işlenmeli');
+  ok(html.includes('onerror="this.style.display=\'none\'"'), 'Görsel yüklenemediğinde hata yönetimi korumalı olmalı');
+});
+
+await test('v5.1.0 [2] PWA uygulama simgesi Siyami ile güncellendi ve manifest ile uyumlu', async () => {
+  const manifest = JSON.parse(await readText('manifest.webmanifest'));
+  const manifestJson = JSON.parse(await readText('manifest.json'));
+  const sw = await readText('service-worker.js');
+
+  const requiredIcons = ['icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
+  for (const icon of requiredIcons) {
+    const p = `assets/icons/${icon}`;
+    ok(sw.includes(`'${p}'`), `SW FILES içinde ${p} bulunmalı`);
+    ok(manifest.icons.some((i) => i.src === p), `manifest.webmanifest içinde ${p} bulunmalı`);
+    ok(manifestJson.icons.some((i) => i.src === p), `manifest.json içinde ${p} bulunmalı`);
+  }
+});
+
+await test('v5.1.0 [3] Öğrenme ekranında Siyami rozeti (#siyami-learning-slot), doğru/yanlış tepkisi ve sonuç özeti entegrasyonu sağlandı', async () => {
+  const learningSrc = await readText('js/learning.js');
+  ok(learningSrc.includes('id="siyami-learning-slot"'), 'Öğrenme kartı başlığında Siyami yuvası bulunmalı');
+  ok(learningSrc.includes("reactLearningMascot(ok ? 'correct' : 'wrong')"), 'Cevap verildiğinde gerçek sonuca göre maskot tepkisi tetiklenmeli');
+  ok(learningSrc.includes('siyami-summary-badge') && learningSrc.includes('siyami-complete.png'), 'Oturum tamamlandığında sonuç özetinde kupa kaldıran Siyami gösterilmeli');
+});
+
+await test('v5.1.0 [4] Öğrenme yollarında tekil aktif durak Siyami maskotu (.pstop-mascot) ve durak modalı entegrasyonu sağlandı', async () => {
+  const pathUiSrc = await readText('js/path-ui.js');
+  ok(pathUiSrc.includes('pstop-mascot'), 'path-ui.js içinde aktif durak maskot sınıfı bulunmalı');
+  ok(pathUiSrc.includes('siyami-curious.png'), 'Aktif durakta meraklı Siyami gösterilmeli');
+  ok(pathUiSrc.includes('siyami-modal-badge'), 'Durak detay modalında Siyami rozeti bulunmalı');
+  ok(pathUiSrc.includes('siyami-complete.png') && pathUiSrc.includes('siyami-focused.png'), 'Tamamlanan durakta kupa, aktif durakta odaklanan Siyami gösterilmeli');
+});
+
+await test('v5.1.0 [5] Defterim ve Yolum boş durumlarda Siyami selam/merak görselleri bağlandı ve minimalist düzen korundu', async () => {
+  const nbSrc = await readText('js/notebook.js');
+  const pathUiSrc = await readText('js/path-ui.js');
+  ok(nbSrc.includes('siyami-empty-cat') && nbSrc.includes('siyami-hello.png'), 'Defterim boş liste durumunda selamlayan Siyami gösterilmeli');
+  ok(nbSrc.includes('siyami-curious.png'), 'Kelimeleri olmayan listede meraklı Siyami gösterilmeli');
+  ok(pathUiSrc.includes('siyami-empty-cat'), 'Yolum boş ekranında Siyami görseli gösterilmeli');
+});
+
+await test('v5.1.0 [6] Siyami CSS animasyonları, prefers-reduced-motion ve :root.reduce erişilebilirlik kuralları tanımlandı', async () => {
+  const css = await readText('css/style.css');
+  ok(css.includes('@keyframes siyami-pop'), 'Pop animasyonu tanımlı olmalı');
+  ok(css.includes('@keyframes siyami-tilt'), 'Tilt animasyonu tanımlı olmalı');
+  ok(css.includes('@keyframes siyami-breathe'), 'Nefes animasyonu tanımlı olmalı');
+  ok(css.includes('.siyami-wrap img.siyami-img'), 'Siyami görsel taban stili tanımlı olmalı');
+  ok(css.includes('--ember-mascot-surface:#3B2028;'), 'Ember Soft temasında maskot yüzey rengi tanımlı olmalı');
+  ok(css.includes('@media (prefers-reduced-motion:reduce)') && css.includes('.siyami-anim-pop'), 'prefers-reduced-motion modunda animasyonlar sıfırlanmalı');
+  ok(css.includes(':root.reduce .siyami-anim-pop'), ':root.reduce modunda animasyonlar sıfırlanmalı');
+});
+
+await test('v5.1.0 [7] Service Worker sürümü (veluno-v5.1.0) ve 13 Siyami görseli önbellek listesinde mevcut', async () => {
+  const sw = await readText('service-worker.js');
+  ok(sw.includes("const VERSION = 'veluno-v5.1.0';"), 'Service Worker sürümü veluno-v5.1.0 olmalı');
+  ok(sw.includes("'js/mascot.js'"), 'Service Worker js/mascot.js modülünü önbelleğe almalı');
+  for (const st of SIYAMI_STATE_NAMES) {
+    ok(sw.includes(`'assets/mascot/siyami-${st}.png'`), `SW FILES içinde assets/mascot/siyami-${st}.png bulunmalı`);
+  }
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

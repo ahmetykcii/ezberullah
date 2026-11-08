@@ -59,6 +59,7 @@
   --answer-surface:#193037;
   --answer-border:#37606A;
   --answer-number-bg:#24444C;
+  --ember-mascot-surface:#3B2028;
 
   /* VELUNO merkezi tema değişkenleri */
   --bg:#101820;--card:#242424;--surf:#18222C;
@@ -1017,3 +1018,65 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
   .pstop-label{max-width:94px;padding:3px 6px}
   .pstop-label small{display:none}
 }
+
+/* ---------- VELUNO Siyami Maskot Stilleri ve Hafif CSS Animasyonları ---------- */
+.siyami-wrap{display:inline-flex;align-items:center;justify-content:center;position:relative;user-select:none;pointer-events:none;flex-shrink:0}
+.siyami-wrap img.siyami-img{display:block;max-width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.22));transition:transform .24s ease}
+
+/* Maskot Boyutları */
+.siyami-xs{width:28px;height:28px}
+.siyami-sm{width:38px;height:38px}
+.siyami-md{width:50px;height:50px}
+.siyami-lg{width:72px;height:72px}
+.siyami-xl{width:96px;height:96px}
+
+/* Öğrenme Ekranı Siyami Rozeti */
+.siyami-run-slot{display:inline-flex;align-items:center;margin-left:auto;padding-left:8px;vertical-align:middle}
+.siyami-run-avatar{width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--surf) 70%,transparent);border:1px solid var(--bd);padding:2px}
+.siyami-run-avatar img{max-height:36px;width:auto}
+
+/* Özet Ekranı Siyami */
+.siyami-summary-badge{display:flex;justify-content:center;margin:0 auto 12px;width:96px;height:96px}
+.siyami-summary-badge img{max-height:96px;width:auto}
+
+/* Yol Üzerindeki Aktif Durak Siyami */
+.pstop-mascot{position:absolute;top:-26px;z-index:3;pointer-events:none;transform:translate(-50%,0);transition:transform .2s ease}
+.pstop-mascot-left{left:25%}
+.pstop-mascot-right{left:75%}
+.pstop-mascot img{width:34px;height:auto;display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+
+/* Defterim / Yolum Boş Durum Siyami */
+.siyami-empty-cat{width:84px;height:auto;max-height:90px;display:block;margin:0 auto 6px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.28))}
+
+/* Durak Detay Modalı Siyami */
+.siyami-modal-badge{display:flex;align-items:center;justify-content:center;margin:0 auto 4px;width:76px;height:76px}
+.siyami-modal-badge img{max-height:76px;width:auto}
+
+/* Animasyonlar (Hafif ve Kontrollü) */
+@keyframes siyami-pop{
+  0%{transform:scale(.86)}
+  50%{transform:scale(1.08) translateY(-2px)}
+  100%{transform:scale(1)}
+}
+@keyframes siyami-tilt{
+  0%{transform:rotate(0deg)}
+  35%{transform:rotate(-6deg) translateY(-1px)}
+  70%{transform:rotate(4deg)}
+  100%{transform:rotate(0deg)}
+}
+@keyframes siyami-breathe{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.02) translateY(-1px)}
+}
+
+.siyami-anim-pop{animation:siyami-pop .34s ease-out}
+.siyami-anim-tilt{animation:siyami-tilt .42s ease-out}
+.siyami-wrap[data-siyami-state=sleep] img{animation:siyami-breathe 3.6s ease-in-out infinite}
+
+/* Erişilebilirlik ve Hareket Azaltma */
+@media (prefers-reduced-motion:reduce){
+  .siyami-anim-pop,.siyami-anim-tilt,.siyami-wrap[data-siyami-state=sleep] img{animation:none !important;transform:none !important;transition:none !important}
+}
+:root.reduce .siyami-anim-pop,
+:root.reduce .siyami-anim-tilt,
+:root.reduce .siyami-wrap[data-siyami-state=sleep] img{animation:none !important;transform:none !important;transition:none !important}

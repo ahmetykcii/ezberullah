@@ -6,6 +6,7 @@ import { $, $$, esc, toast, speak, sfx, openModal, hasModal, closeTopModal, conf
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { bumpDaily, levelStats } from './statistics.js';
 import { pathCanvasHtml, levelPathSummary, openStopDetail, WINDOW_RADIUS, WINDOW_STEP, reduceMotion } from './path-ui.js';
+import { mascotHtml, reactLearningMascot } from './mascot.js';
 
 export const handlers = {}; // kind -> { onAnswer(item, ok, info), onDone(results, sess) }
 let cur = null;
@@ -128,7 +129,9 @@ async function finish() {
 /** Oturum sonrası kancalar (ör. Kelime Defterim → Eşini Bul). Döngüsel içe aktarmayı önlemek için kayıt usulü. */
 export const sessionHooks = {};
 export const summaryHtml = ({ title, big, sub, extra = '', actions = '', verdict = '', mark = true }) =>
-  `<div class="summary">${mark ? successMark() : ''}<h2>${esc(title)}</h2><div class="big-num">${big}</div>${verdict ? `<p class="verdict">${verdict}</p>` : ''}<p class="muted">${sub}</p>${extra ? `<details class="more"><summary>Ayrıntılar</summary><div class="more-body">${extra}</div></details>` : ''}<div class="sum-actions">${actions}<a class="btn ghost" href="#/notebook">Defterim</a></div></div>`;
+  `<div class="summary">
+    <div class="siyami-summary-badge" aria-hidden="true"><img class="siyami-img" src="assets/mascot/siyami-complete.png" alt="" loading="lazy"/></div>
+    ${mark ? successMark() : ''}<h2>${esc(title)}</h2><div class="big-num">${big}</div>${verdict ? `<p class="verdict">${verdict}</p>` : ''}<p class="muted">${sub}</p>${extra ? `<details class="more"><summary>Ayrıntılar</summary><div class="more-body">${extra}</div></details>` : ''}<div class="sum-actions">${actions}<a class="btn ghost" href="#/notebook">Defterim</a></div></div>`;
 
 const TYPE_LABEL = {
   card: 'Kelimeyi Öğren',
@@ -174,7 +177,10 @@ function renderItem() {
       <span class="run-count">${cur.idx + 1}/${n}</span>
     </div>
     <div class="run-body" id="qcard">
-      <div class="run-label">${dots}${stageText ? `<span class="stage-step-text">${stageText}</span>` : ''}<span>${esc(label)}</span></div>
+      <div class="run-label">
+        <span class="run-label-main">${dots}${stageText ? `<span class="stage-step-text">${stageText}</span>` : ''}<span>${esc(label)}</span></span>
+        <span class="siyami-run-slot" id="siyami-learning-slot" aria-hidden="true" title="Siyami"><span class="siyami-run-avatar"><img class="siyami-img" src="assets/mascot/siyami-idle.png" alt="" loading="lazy"/></span></span>
+      </div>
       <div id="qbody">${bodyHtml(item, word)}</div>
       <div id="fb"></div>
     </div>
@@ -268,6 +274,7 @@ function showFeedback(ok, word, item, r) {
   const qc = $('#qcard');
   qc.classList.add(ok ? 'correct' : 'wrong');
   sfx(ok ? 'ok' : 'bad');
+  try { reactLearningMascot(ok ? 'correct' : 'wrong'); } catch (_) {}
   if (item.type === 'mc') $$('.opt').forEach((b, i) => { b.disabled = true; if (i === curQ.answerIndex) b.classList.add('right'); else if (!ok && b.classList.contains('picked')) b.classList.add('bad'); });
   $$('#qbody input,#qbody form button').forEach((e) => (e.disabled = true));
   const ans = `Doğru cevap: ${curQ.display}`;
