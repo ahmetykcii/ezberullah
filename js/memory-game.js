@@ -111,14 +111,116 @@ export function selectRoundPairs(pairs, { played = [], size = null, priorityIds 
   return { selected, deferred, resetPool, nextPlayed };
 }
 
-/** 2 × N kart oluşturur ve karıştırır. Her kart, ait olduğu kelimenin kimliğini (pairId) taşır. */
-export function buildMemoryCards(pairs, rnd = Math.random) {
-  const cards = [];
-  for (const p of pairs) {
-    cards.push({ uid: `${p.id}::en`, pairId: p.id, side: 'en', text: p.en, state: 'hidden' });
-    cards.push({ uid: `${p.id}::tr`, pairId: p.id, side: 'tr', text: p.tr, state: 'hidden' });
+/**
+ * Verilen kart dizisi ve sütun sayısı için eşler arası mesafe ve komşuluk istatistiklerini hesaplar.
+ * - orthogonalAdjacent: yatay veya dikey komşu (Manhattan mesafesi === 1) çift sayısı
+ * - diagonalAdjacent: çapraz komşu (|dr| === 1 && |dc| === 1) çift sayısı
+ * - minManhattan / avgManhattan: eşler arası minimum ve ortalama Manhattan mesafesi
+ * - penalty: yerleşim maliyeti (düşük = daha uzak ve zor yerleşim)
+ */
+export function scoreMemoryLayout(cards, cols) {
+  const C = Math.max(2, Number(cols) || 2);
+  const pos = new Map();
+  let orthogonalAdjacent = 0;
+  let diagonalAdjacent = 0;
+  let totalManhattan = 0;
+  let minManhattan = Infinity;
+  let pairCount = 0;
+  let penalty = 0;
+
+  for (let i = 0; i < cards.length; i++) {
+    const pid = cards[i]?.pairId;
+    if (!pid) continue;
+    if (!pos.has(pid)) {
+      pos.set(pid, i);
+    } else {
+      const a = pos.get(pid);
+      const b = i;
+      const dr = Math.abs(Math.floor(a / C) - Math.floor(b / C));
+      const dc = Math.abs((a % C) - (b % C));
+      const manhattan = dr + dc;
+      pairCount++;
+      totalManhattan += manhattan;
+      if (manhattan < minManhattan) minManhattan = manhattan;
+      if (manhattan === 1) {
+        orthogonalAdjacent++;
+        penalty += 1000; // Yatay/dikey komşuluğa yüksek ceza
+      } else if (dr === 1 && dc === 1) {
+        diagonalAdjacent++;
+        penalty += 140; // Çapraz yakınlığa daha düşük ceza
+      }
+      if (Math.abs(a - b) === 1 && manhattan > 1) {
+        penalty += 25; // Satır sonu-başı doğrusal ardışıklık için hafif ceza
+      }
+      penalty -= manhattan * 12; // Büyük Manhattan mesafesini ödüllendir
+    }
   }
-  return defaultShuffle(cards, rnd);
+
+  return {
+    penalty,
+    orthogonalAdjacent,
+    diagonalAdjacent,
+    totalManhattan,
+    minManhattan: pairCount ? minManhattan : 0,
+    avgManhattan: pairCount ? totalManhattan / pairCount : 0,
+    pairCount,
+  };
+}
+
+function combinedLayoutPenalty(cards, colCounts) {
+  let sum = 0;
+  for (const c of colCounts) sum += scoreMemoryLayout(cards, c).penalty;
+  return sum;
+}
+
+/**
+ * 2 × N kart oluşturur ve İngilizce–Türkçe eşlerini mümkün olduğunca uzak hücrelere yerleştirir.
+ * - Birden fazla rastgele aday yerleşim üretir, Manhattan mesafesi ve komşuluk cezalarıyla değerlendirir.
+ * - Hem masaüstü hem mobil sütun düzenlerinde yakın eşleşmeleri en aza indiren yerleşimi seçer.
+ * - Küçük tahtalarda (ör. 2 veya 3 çift) matematiksel olarak mümkün olan en iyi yerleşimi kullanır.
+ */
+export function buildMemoryCards(pairs, rnd = Math.random) {
+  const base = [];
+  for (const p of pairs) {
+    base.push({ uid: `${p.id}::en`, pairId: p.id, side: 'en', text: p.en, state: 'hidden' });
+    base.push({ uid: `${p.id}::tr`, pairId: p.id, side: 'tr', text: p.tr, state: 'hidden' });
+  }
+  if (base.length <= 2) return defaultShuffle(base, rnd);
+
+  const cols = computeGridColumns(base.length);
+  const colCounts = [...new Set([cols.mobile, cols.desktop].filter((c) => c >= 2))];
+  const CANDIDATES = 48;
+
+  let best = defaultShuffle(base, rnd);
+  let bestScore = combinedLayoutPenalty(best, colCounts);
+
+  for (let k = 1; k < CANDIDATES; k++) {
+    const cand = defaultShuffle(base, rnd);
+    const sc = combinedLayoutPenalty(cand, colCounts);
+    if (sc < bestScore) {
+      best = cand;
+      bestScore = sc;
+    }
+  }
+
+  // Eğer hala yatay/dikey komşu eş varsa sınırlı sayıda rastgele takas ile iyileştir
+  if (colCounts.some((c) => scoreMemoryLayout(best, c).orthogonalAdjacent > 0) && base.length >= 6) {
+    const MAX_SWAPS = 24;
+    for (let s = 0; s < MAX_SWAPS; s++) {
+      const i = Math.floor(rnd() * best.length);
+      const j = Math.floor(rnd() * best.length);
+      if (i === j || best[i].pairId === best[j].pairId) continue;
+      [best[i], best[j]] = [best[j], best[i]];
+      const sc = combinedLayoutPenalty(best, colCounts);
+      if (sc < bestScore) {
+        bestScore = sc;
+      } else {
+        [best[i], best[j]] = [best[j], best[i]];
+      }
+    }
+  }
+
+  return best;
 }
 
 export function createMemoryGame(pairs, { rnd = Math.random, now = Date.now() } = {}) {

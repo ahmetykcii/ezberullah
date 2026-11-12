@@ -83,13 +83,19 @@ function segmentPath(points) {
  * Durak penceresi [lo, hi] için yukarıdan aşağıya dikey kıvrımlı yol HTML'i.
  * 1. durak en üstte başlar ve aşağıya doğru ilerler; yalnızca görünür penceredeki duraklar DOM'a eklenir.
  */
-export function pathCanvasHtml(summary, lo, hi, kind) {
+export function pathCanvasHtml(summary, lo, hi, kind, extra = {}) {
   const n = hi - lo + 1;
   if (n <= 0) return '';
-  const H = PAD * 2 + n * ROW;
+  const showBoss = kind === 'notebook' && summary.totalStops > 0 && hi === summary.totalStops - 1;
+  const totalRows = showBoss ? n + 1 : n;
+  const H = PAD * 2 + totalRows * ROW;
   const yOf = (i) => PAD + (i - lo) * ROW + ROW / 2; // 1. durak en üstte → yol yukarıdan aşağıya ilerler
   const pts = [];
-  for (let i = lo; i <= hi; i++) pts.push({ i, x: stopX(i), y: yOf(i) });
+  for (let i = lo; i <= hi; i++) pts.push({ i, x: stopX(i), y: yOf(i), isBoss: false });
+  if (showBoss) {
+    const fbIdx = summary.totalStops;
+    pts.push({ i: fbIdx, x: stopX(fbIdx), y: PAD + (hi - lo + 1) * ROW + ROW / 2, isBoss: true });
+  }
   const track = segmentPath(pts);
   // Tamamlanan bölümler: üst durağı tamamlanmış ardışık parçalar
   let doneD = '';
@@ -97,11 +103,23 @@ export function pathCanvasHtml(summary, lo, hi, kind) {
     const prev = summary.stops[pts[k - 1].i];
     if (prev && prev.progress.state === 'done') doneD += ' ' + segmentPath([pts[k - 1], pts[k]]);
   }
-  const nodes = pts.map(({ i, x, y }) => {
+  const fbUnlocked = Boolean(summary.allDone);
+  const fbPassed = Boolean(extra?.finalBossPassed) && fbUnlocked;
+  const nodes = pts.map(({ i, x, y, isBoss }) => {
+    const side = x > 50 ? 'left' : 'right';
+    if (isBoss) {
+      const fbClass = fbPassed ? 'is-done' : (fbUnlocked ? 'is-unlocked' : 'is-locked');
+      const fbIcon = fbPassed ? '✓' : '👑';
+      const fbSub = fbPassed ? '✓ Tamamlandı' : (fbUnlocked ? '👑 Hazır' : '🔒 Kilitli');
+      return `<button type="button" class="pstop pstop-boss ${fbClass}" data-final-boss="1" style="left:${x.toFixed(2)}%;top:${y}px"
+          aria-label="Final Boss: ${fbPassed ? 'Tamamlandı' : (fbUnlocked ? 'Açık, başlatmak için dokun' : 'Kilitli, önce tüm durakları tamamla')}">
+          <span class="pstop-core" aria-hidden="true">${fbIcon}</span>
+          <span class="pstop-label ${side}" aria-hidden="true"><b>Final Boss</b><small>${fbSub}</small>${fbUnlocked && !fbPassed ? '<em>Sınav</em>' : ''}</span>
+        </button>`;
+    }
     const s = summary.stops[i];
     const st = s.progress.state;
     const isCur = i === summary.currentIndex && !summary.allDone;
-    const side = x > 50 ? 'left' : 'right';
     return `<button type="button" class="pstop is-${st} ${isCur ? 'is-current' : ''}" data-stop-index="${i}" style="left:${x.toFixed(2)}%;top:${y}px;--p:${s.progress.pct}"
         aria-label="Durak ${s.number}: ${s.progress.done}/${s.progress.total} kelime tamamlandı, ${STATE_TEXT[st]}">
         <span class="pstop-core" aria-hidden="true">${st === 'done' ? '✓' : s.number}</span>
@@ -244,6 +262,16 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
   });
 }
 
+export function isFinalBossPassedQuick(list, summary) {
+  if (!list || !list.id || !summary?.allDone) return false;
+  const all = getMeta('finalBossProgress');
+  const rec = all && typeof all === 'object' ? all[list.id] : null;
+  if (!rec?.lastPassedAttempt?.passed) return false;
+  const passedSet = new Set(Array.isArray(rec.lastPassedAttempt.wordIds) ? rec.lastPassedAttempt.wordIds : []);
+  const curIds = (Array.isArray(list.wordIds) ? list.wordIds : []).filter((id) => state.wordMap.has(id));
+  return curIds.length > 0 && curIds.every((id) => passedSet.has(id));
+}
+
 /* ---------- Yolum ekranı ---------- */
 export function renderPath(v) {
   const userId = getActiveUserId();
@@ -292,7 +320,7 @@ export function renderPath(v) {
         </div>`;
       const prevBtn = win.lo > 0 ? `<button type="button" class="btn ghost block path-more" id="path-more-down">Önceki durakları göster (${win.lo} durak)</button>` : '';
       const nextBtn = win.hi < n - 1 ? `<button type="button" class="btn ghost block path-more" id="path-more-up">Sonraki durakları göster (${n - 1 - win.hi} durak daha)</button>` : '';
-      body = `${head}<div class="path-wrap">${prevBtn}${pathCanvasHtml(summary, win.lo, win.hi, kind)}${nextBtn}</div>`;
+      body = `${head}<div class="path-wrap">${prevBtn}${pathCanvasHtml(summary, win.lo, win.hi, kind, { finalBossPassed: tab === 'notebook' ? isFinalBossPassedQuick(list, summary) : false })}${nextBtn}</div>`;
     }
 
     v.innerHTML = `<div class="page path-page">
@@ -318,6 +346,13 @@ export function renderPath(v) {
         openStopDetail({ kind, stop: s, list, level });
       };
     });
+    const fbBtn = $('[data-final-boss]', v);
+    if (fbBtn && list) {
+      fbBtn.onclick = async () => {
+        const { openFinalBossModal } = await import('./final-boss.js');
+        openFinalBossModal({ list, originHash: '#/path', onChanged: () => draw() });
+      };
+    }
     if (opts.scrollToCurrent || (opts.initial && cur > 2)) {
       const target = $('.pstop.is-current', v) || $(`[data-stop-index="${cur}"]`, v);
       if (target && typeof target.scrollIntoView === 'function') {

@@ -14,7 +14,7 @@ import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
 import { syncListPath, removeListPath, ensureListPaths, STOP_SIZE, filterWordsNeedingStudy, isWordNeedsStudy } from './paths.js';
 import {
   pathCanvasHtml, openStopDetail, notebookPathSummary, getPreferredNotebookList, setPreferredNotebookList,
-  WINDOW_RADIUS, WINDOW_STEP, reduceMotion,
+  WINDOW_RADIUS, WINDOW_STEP, reduceMotion, isFinalBossPassedQuick,
 } from './path-ui.js';
 
 /* ---------- Kullanıcı Kimlik Kapsamı (User Scoping) ---------- */
@@ -109,6 +109,9 @@ export async function deleteNotebookList(listId) {
   await saveAllNotebookLists(remaining);
   // v5.0: yalnızca bu listenin öğrenme yolu kaldırılır; diğer listelerin durakları etkilenmez
   await removeListPath(listId);
+  // v5.3: bu listeye ait Final Boss kaydı da temizlenir
+  const { removeFinalBossRecord } = await import('./final-boss.js');
+  await removeFinalBossRecord(listId);
 
   // Bu kullanıcının kalan listelerinde geçmeyen kelimeleri temizle
   const otherLists = remaining.filter((l) => l.userId === userId);
@@ -1778,7 +1781,7 @@ export function renderNotebook(v) {
       bodyHtml = `
         <div class="path-wrap nb-vertical-path">
           ${prevBtn}
-          ${pathCanvasHtml(pathSum, win.lo, win.hi, 'notebook')}
+          ${pathCanvasHtml(pathSum, win.lo, win.hi, 'notebook', { finalBossPassed: isFinalBossPassedQuick(activeList, pathSum) })}
           ${nextBtn}
         </div>
       `;
@@ -1858,6 +1861,14 @@ export function renderNotebook(v) {
         openStopDetail({ kind: 'notebook', stop: s, list: activeList, onChanged: refresh });
       };
     });
+
+    const bossEl = $('[data-final-boss]', v);
+    if (bossEl && activeList) {
+      bossEl.onclick = async () => {
+        const { openFinalBossModal } = await import('./final-boss.js');
+        openFinalBossModal({ list: activeList, originHash: '#/notebook', onChanged: refresh });
+      };
+    }
 
     $$('[data-act="view-list"]', v).forEach((btn) => {
       btn.onclick = () => openListWordsModal(btn.dataset.id, refresh);

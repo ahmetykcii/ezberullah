@@ -185,9 +185,15 @@ function renderItem() {
   lastPct = pct;
   $('#q-exit').onclick = () => {
     const isNotebook = cur?.params?.isNotebook;
-    const originHash = cur?.params?.pathStop?.originHash;
+    const isFinalBoss = cur?.params?.isFinalBoss;
+    const originHash = cur?.params?.originHash || cur?.params?.pathStop?.originHash;
     abortSession();
-    if (originHash === '#/path') {
+    if (isFinalBoss) {
+      const target = originHash === '#/path' ? '#/path' : '#/notebook';
+      if (location.hash === target) window.dispatchEvent(new HashChangeEvent('hashchange'));
+      else location.hash = target;
+      toast('Final Boss oturumu kaydedildi; kaldığınız yerden devam edebilirsiniz.');
+    } else if (originHash === '#/path') {
       if (location.hash === '#/path') window.dispatchEvent(new HashChangeEvent('hashchange'));
       else location.hash = '#/path';
       toast(isNotebook ? 'Oturum kaydedildi; Defterim ekranından devam edebilirsiniz.' : 'Oturum kaydedildi; Hazır Kelime Havuzu ekranından kaldığınız yerden devam edebilirsiniz.');

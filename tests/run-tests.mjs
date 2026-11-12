@@ -34,6 +34,7 @@ import {
   getUserNotebookWords, getAllNotebookWords, saveAllNotebookWords,
 } from '../js/notebook.js';
 import * as MG from '../js/memory-game.js';
+import * as FB from '../js/final-boss.js';
 import { sessionHooks } from '../js/learning.js';
 import {
   BUILTIN_IRREGULAR_VERBS, getBuiltInIrregularVerbs,
@@ -401,7 +402,7 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
 });
 await test('Service Worker önbellek sürümü (veluno-v5.0.3) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'SW sürümü veluno-v5.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'SW sürümü veluno-v5.3.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1308,7 +1309,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'SW sürümü veluno-v5.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'SW sürümü veluno-v5.3.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1733,7 +1734,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2802,7 +2803,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3360,7 +3361,7 @@ await test('v5.0 [5] Defterim ekranında eski büyük buton grubu kaldırılıp 
   ok(!renderSection.includes('Kişisel Çalışma Seçenekleri'), 'Defterim ana ekranında eski "Kişisel Çalışma Seçenekleri" büyük kart bloğu olmamalı');
   ok(renderSection.includes('id="btn-top-add-word"') && renderSection.includes('id="btn-open-study-menu"') && renderSection.includes('id="btn-top-new-list"'), 'Defterim kompakt üst alanında + Kelime, Çalış ve + Liste butonları bulunmalı');
   ok(renderSection.includes('id="nb-active-list"'), 'Defterim üst alanında kişisel liste seçici bulunmalı');
-  ok(renderSection.includes("pathCanvasHtml(pathSum, win.lo, win.hi, 'notebook')"), 'Defterim ekranının ilk görünür alanında doğrudan kişisel öğrenme yolu çizilmeli');
+  ok(renderSection.includes("pathCanvasHtml(pathSum, win.lo, win.hi, 'notebook'"), 'Defterim ekranının ilk görünür alanında doğrudan kişisel öğrenme yolu çizilmeli');
   ok(nbCode.includes('export function openNotebookStudyMenuModal'), 'Kompakt Çalış menüsü (Seçili Listeyi Çalış, Bütün Kelimelerimi Çalış, Yalnızca Bilmediklerimi Çalış, Tekrar Zamanı Gelenler) korunmalı');
   ok(pathUiCode.includes('const yOf = (i) => PAD + (i - lo) * ROW + ROW / 2;') && pathUiCode.includes('data-direction="vertical"'), 'Öğrenme yolu yukarıdan aşağıya (1. durak en üstte) dikey kıvrımlı akmalı');
   ok(learnCode.includes('<h1>Hazır Kelime Havuzu</h1>') && learnCode.includes("pathCanvasHtml(pathSum, win.lo, win.hi, 'builtin')"), '2. sekme Hazır Kelime Havuzu başlığıyla açılmalı ve dikey bronz öğrenme yolunu göstermeli');
@@ -3674,7 +3675,7 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker sürümü veluno-v5.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker sürümü veluno-v5.3.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
@@ -3774,7 +3775,7 @@ await test('v5.0.3 [2] Kelime Defterim liste yönetim butonları (Düzenle ve Si
 
 await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.2.0 olarak güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker sürümü veluno-v5.2.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker sürümü veluno-v5.3.0 olmalı');
 });
 
 /* ---------- 22) v5.2 — Akıllı Eksik / Hatalı / Tekrar Çalışma Güncellemesi Testleri ---------- */
@@ -4077,10 +4078,262 @@ await test('v5.2 [14] Ember Soft ve diğer temaların renk/tasarım standartlar�
   ok(css.includes('--ember-no:#57191C'), 'Ember Soft yanlış vişnesi korunmalı');
 });
 
-await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.2.0) ve dosya bütünlüğü tam', async () => {
+await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.3.0) ve dosya bütünlüğü tam', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker sürümü veluno-v5.2.0 olmalı');
-  ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Yol modülleri önbellekte olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker sürümü veluno-v5.3.0 olmalı');
+  ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'") && sw.includes("'js/final-boss.js'"), 'Yol ve Final Boss modülleri önbellekte olmalı');
+});
+
+/* ============================================================================
+   23. v5.3 — EŞİNİ BUL KART DAĞILIMI VE KELİME DEFTERİM FİNAL BOSS SİSTEMİ
+============================================================================ */
+out('\n--- 23. v5.3 Eşini Bul Dağılımı & Final Boss Testleri ---');
+
+function makeMemoryPairs(n) {
+  return Array.from({ length: n }, (_, i) => ({
+    id: `mp-${i + 1}`,
+    word: `word${i + 1}`,
+    meaning: `anlam${i + 1}`,
+  }));
+}
+
+function countOrthogonalAdjacentPairs(cards, cols) {
+  const pos = new Map();
+  cards.forEach((c, idx) => {
+    if (!pos.has(c.pairId)) pos.set(c.pairId, []);
+    pos.get(c.pairId).push({ r: Math.floor(idx / cols), c: idx % cols });
+  });
+  let adj = 0;
+  for (const [a, b] of pos.values()) {
+    if (Math.abs(a.r - b.r) + Math.abs(a.c - b.c) === 1) adj++;
+  }
+  return adj;
+}
+
+await test('v5.3 [1] Eşini Bul: 2, 3, 4, 5, 6, 8 çiftlik küçük ve büyük tahtalar hatasız ve eksiksiz kurulur', () => {
+  for (const n of [2, 3, 4, 5, 6, 8]) {
+    const pairs = makeMemoryPairs(n);
+    const cards = MG.buildMemoryCards(pairs);
+    eq(cards.length, n * 2, `${n} çift için ${n * 2} kart üretilmeli`);
+    for (const p of pairs) {
+      const ofPair = cards.filter((c) => c.pairId === p.id);
+      eq(ofPair.length, 2, `${p.id} için 2 kart olmalı`);
+      ok(ofPair.some((c) => c.side === 'en') && ofPair.some((c) => c.side === 'tr'), 'EN ve TR kartları bulunmalı');
+    }
+  }
+});
+
+await test('v5.3 [2] Eşini Bul: Yatay/dikey bitişik eşleşme oranı belirgin şekilde düşer (mobil ve masaüstü)', () => {
+  const pairs = makeMemoryPairs(8);
+  const cols = MG.computeGridColumns(16);
+  let totalAdjMobile = 0;
+  let totalAdjDesktop = 0;
+  const runs = 30;
+  for (let i = 0; i < runs; i++) {
+    const cards = MG.buildMemoryCards(pairs);
+    totalAdjMobile += countOrthogonalAdjacentPairs(cards, cols.mobile);
+    totalAdjDesktop += countOrthogonalAdjacentPairs(cards, cols.desktop);
+  }
+  ok(totalAdjMobile / runs < 0.25, `Mobil ızgarada ortalama bitişik çift < 0.25 olmalı (gerçek: ${(totalAdjMobile / runs).toFixed(2)})`);
+  ok(totalAdjDesktop / runs < 0.25, `Masaüstü ızgarada ortalama bitişik çift < 0.25 olmalı (gerçek: ${(totalAdjDesktop / runs).toFixed(2)})`);
+});
+
+await test('v5.3 [3] Eşini Bul: Her oyunda farklı kart dizilimi üretilir ve eşleştirme mantığı korunur', () => {
+  const pairs = makeMemoryPairs(6);
+  const sigs = new Set();
+  for (let i = 0; i < 10; i++) {
+    const cards = MG.buildMemoryCards(pairs);
+    sigs.add(cards.map((c) => c.uid).join(','));
+  }
+  ok(sigs.size >= 3, 'Farklı oyunlarda farklı kart dizilimleri üretilmeli');
+
+  const game = MG.createMemoryGame(pairs, 'Test');
+  const firstEn = game.cards.find((c) => c.pairId === 'mp-1' && c.side === 'en');
+  const firstTr = game.cards.find((c) => c.pairId === 'mp-1' && c.side === 'tr');
+  const wrongTr = game.cards.find((c) => c.pairId === 'mp-2' && c.side === 'tr');
+
+  const r1 = MG.flipMemoryCard(game, firstEn.uid);
+  eq(r1.result, 'opened', 'İlk kart açılmalı');
+  const r2 = MG.flipMemoryCard(game, wrongTr.uid);
+  eq(r2.result, 'mismatch', 'Yanlış kart eşleşmemeli');
+  MG.resolveMemoryMismatch(game);
+  eq(firstEn.state, 'hidden', 'Uyuşmazlık sonrası kart kapanmalı');
+
+  MG.flipMemoryCard(game, firstEn.uid);
+  const r3 = MG.flipMemoryCard(game, firstTr.uid);
+  eq(r3.result, 'match', 'Doğru EN-TR çifti eşleşmeli');
+  eq(game.matches, 1, 'Eşleşen çift sayısı artmalı');
+});
+
+async function makeCompletedList(name, count, userId = 'guest') {
+  const created = await createNotebookList(name, userId);
+  ok(created.ok, 'Liste oluşturulmalı');
+  const listId = created.list.id;
+  const wordIds = [];
+  const prefix = String(Date.now()).split('').map((d) => 'abcdefghij'[Number(d)]).join('').slice(-4);
+  for (let i = 0; i < count; i++) {
+    const suffix = 'abcdefghijklmnopqrstuvwxyz'[i % 26] + 'abcdefghijklmnopqrstuvwxyz'[Math.floor(i / 26) % 26];
+    const res = await addWordToNotebook({
+      word: `boss${prefix}${suffix}`,
+      meanings: `anlam ${i + 1}`,
+      listId,
+      userId,
+    });
+    ok(res.ok, 'Kelime listeye eklenmeli: ' + (res.error || ''));
+    const pw = res.word;
+    pw.example = `This is ${pw.word} in a sentence.`;
+    pw.exampleTr = `Bu cümlede anlam ${i + 1} geçer.`;
+    wordIds.push(pw.id);
+    const p = getProgress(pw.id);
+    p.learningComplete = true;
+    p.currentStatus = 'LEARNED';
+    p.reps = 2;
+    p.interval = 6;
+    p.easeFactor = 2.5;
+    p.nextReviewAt = Date.now() + 86400000 * 30;
+    await saveProgress(p);
+  }
+  const list = getUserNotebookLists(userId).find((l) => l.id === listId);
+  return { list, wordIds };
+}
+
+await test('v5.3 [4] Final Boss: Tüm duraklar tamamlanmadan kilitlidir, tamamlanınca açılır', async () => {
+  await setMeta('finalBossProgress', {});
+  const { list, wordIds } = await makeCompletedList('Boss Kilit Test', 10);
+  const p0 = getProgress(wordIds[0]);
+  p0.learningComplete = false;
+  p0.currentStatus = 'LEARNING';
+  await saveProgress(p0);
+
+  const locked = FB.canUnlockFinalBoss(list);
+  eq(locked.unlocked, false, 'Bir kelime bile eksikse Final Boss kilitli olmalı');
+
+  p0.learningComplete = true;
+  p0.currentStatus = 'LEARNED';
+  await saveProgress(p0);
+  const unlocked = FB.canUnlockFinalBoss(list);
+  eq(unlocked.unlocked, true, 'Tüm duraklar tamamlanınca Final Boss açılmalı');
+  await deleteNotebookList(list.id);
+});
+
+await test('v5.3 [5] Final Boss: Sınavda listedeki tüm kelimeler 1 kez ve değerlendirme sorusu olarak yer alır (flashcard yok)', async () => {
+  const { list, wordIds } = await makeCompletedList('Boss Soru Test', 10);
+  const att = FB.createFinalBossAttempt(list);
+  eq(att.round1Items.length, 10, 'İlk turda listedeki tüm 10 kelime 1 kez yer almalı');
+  const itemIds = new Set(att.round1Items.map((it) => it.wordId));
+  eq(itemIds.size, 10, 'Tekrarlayan kelime olmamalı');
+  for (const wid of wordIds) ok(itemIds.has(wid), `${wid} sınavda olmalı`);
+  ok(att.round1Items.every((it) => it.type && it.type !== 'flashcard'), 'Flashcard aşaması olmamalı');
+  await deleteNotebookList(list.id);
+});
+
+await test('v5.3 [6] Final Boss: 10 kelimede 7 doğru 3 yanlış -> 70/100, tamamlanmaz, telafi 3/3 -> tamamlanır ve puan 70 kalır', async () => {
+  const { list } = await makeCompletedList('Boss 70 Senaryo', 10);
+  await FB.startFinalBossExam(list, { restart: true });
+  let rec = FB.getFinalBossRecord(list.id);
+  const att = rec.activeAttempt;
+  eq(att.round1Items.length, 10, '10 soru hazırlanmalı');
+
+  const wrongSet = new Set(att.round1Items.slice(7).map((it) => it.wordId));
+  for (const it of att.round1Items) {
+    rec = await FB.recordFinalBossAnswer(list.id, 'guest', {
+      wordId: it.wordId,
+      correct: !wrongSet.has(it.wordId),
+      phase: 'round1',
+    });
+  }
+  abortSession();
+
+  eq(rec.activeAttempt.firstRoundScore, 70, 'İlk tur puanı 70 olmalı');
+  eq(rec.activeAttempt.phase, 'remediation', '3 hatalı kelime olduğu için telafi fazına geçmeli');
+  eq(rec.activeAttempt.wrongWordIds.length, 3, 'Tam 3 hatalı kelime telafide olmalı');
+  eq(FB.isFinalBossPassedForList(list), false, 'Telafi bitmeden liste Final Boss tamamlanmış sayılmamalı');
+
+  await FB.startFinalBossExam(list, { restart: false });
+  const curSess = getCurrentSession();
+  eq(curSess.items.length, 3, 'Telafi oturumunda yalnızca 3 hatalı kelime olmalı');
+  ok(curSess.items.every((it) => wrongSet.has(it.wordId)), 'Telafi oturumunda doğru kelimeler bulunmamalı');
+
+  const rem0 = curSess.items[0];
+  rec = await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: rem0.wordId, correct: false, phase: 'remediation' });
+  ok(rec.activeAttempt.wrongWordIds.includes(rem0.wordId), 'Telafide yanlış yapılan kelime telafiden çıkmamalı');
+  eq(FB.isFinalBossPassedForList(list), false, 'Hatalı kelime kaldığı için hala tamamlanmamış olmalı');
+
+  for (const it of curSess.items.slice(1)) {
+    rec = await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: it.wordId, correct: true, phase: 'remediation' });
+  }
+  abortSession();
+  await FB.startFinalBossExam(list, { restart: false });
+  const curSess2 = getCurrentSession();
+  eq(curSess2.items.length, 1, 'Yalnızca tekrar yanlış yapılan 1 kelime kalmalı');
+  rec = await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: curSess2.items[0].wordId, correct: true, phase: 'remediation' });
+  abortSession();
+
+  eq(rec.activeAttempt.phase, 'completed', 'Tüm telafiler doğru yapılınca tamamlanmalı');
+  eq(rec.lastPassedAttempt.score, 70, 'Telafi sonrası puan 70/100 olarak kalmalı, 100e yükselmemeli');
+  eq(FB.isFinalBossPassedForList(list), true, 'Liste Final Boss tamamlanmış sayılmalı');
+
+  await FB.startFinalBossExam(list, { restart: true });
+  const att2 = FB.getFinalBossRecord(list.id).activeAttempt;
+  for (const it of att2.round1Items) {
+    rec = await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: it.wordId, correct: true, phase: 'round1' });
+  }
+  abortSession();
+  eq(rec.lastPassedAttempt.score, 100, 'Yeni denemede 10/10 ile geçerli puan 100 olmalı');
+  eq(rec.bestScore, 100, 'En iyi puan 100 olmalı');
+
+  await deleteNotebookList(list.id);
+});
+
+await test('v5.3 [7] Final Boss: Duraklama/devam etme, SRS korunması, liste değişikliği ve yedekleme/geri yükleme', async () => {
+  const { list, wordIds } = await makeCompletedList('Boss Kalıcılık', 5);
+  const srsBefore = JSON.stringify(wordIds.map((id) => getProgress(id)));
+
+  await FB.startFinalBossExam(list, { restart: true });
+  let att = FB.getFinalBossRecord(list.id).activeAttempt;
+  await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: att.round1Items[0].wordId, correct: true, phase: 'round1' });
+  await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: att.round1Items[1].wordId, correct: false, phase: 'round1' });
+  abortSession();
+
+  att = FB.getFinalBossRecord(list.id).activeAttempt;
+  eq(att.round1Idx, 2, '2 soru yanıtlanmış olarak kaydedilmeli');
+
+  const srsAfter = JSON.stringify(wordIds.map((id) => getProgress(id)));
+  eq(srsAfter, srsBefore, 'Final Boss mevcut SRS öğrenme durumunu bozmamalı');
+
+  for (let i = 2; i < att.round1Items.length; i++) {
+    await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: att.round1Items[i].wordId, correct: true, phase: 'round1' });
+  }
+  await FB.recordFinalBossAnswer(list.id, 'guest', { wordId: att.round1Items[1].wordId, correct: true, phase: 'remediation' });
+  eq(FB.isFinalBossPassedForList(list), true, 'Tamamlandı olarak işaretlenmeli');
+
+  await updateNotebookList(list.id, { name: 'Boss Kalıcılık Yeni Ad' });
+  const renamedList = getUserNotebookLists('guest').find((l) => l.id === list.id);
+  eq(FB.isFinalBossPassedForList(renamedList), true, 'Liste adı değişince Final Boss tamamlandı durumu korunmalı');
+
+  const backup = buildBackup();
+  const fbMeta = Array.isArray(backup.meta) ? backup.meta.find((m) => m.key === 'finalBossProgress')?.value : null;
+  ok(fbMeta && fbMeta[list.id], 'Yedek finalBossProgress içermeli');
+  const val = validateBackup(backup);
+  eq(val.length, 0, 'Yedek geçerli olmalı');
+
+  await FB.removeFinalBossRecord(list.id);
+  eq(FB.isFinalBossPassedForList(renamedList), false, 'Kayıt silinince tamamlanmış sayılmamalı');
+  await restoreBackup(backup, 'replace');
+  eq(FB.isFinalBossPassedForList(renamedList), true, 'Yedekten geri yüklenince Final Boss durumu geri gelmeli');
+
+  const extraRes = await addWordToNotebook({
+    word: 'extraword' + 'abcdefghij'[Math.floor(Math.random() * 10)] + 'abcdefghij'[Math.floor(Math.random() * 10)],
+    meanings: 'ekstra',
+    listId: list.id,
+    userId: 'guest',
+  });
+  ok(extraRes.ok, 'Ekstra kelime eklenmeli');
+  const updatedList = getUserNotebookLists('guest').find((l) => l.id === list.id);
+  eq(FB.canUnlockFinalBoss(updatedList).unlocked, false, 'Yeni öğrenilmemiş kelime eklenince Final Boss yeniden kilitlenmeli');
+
+  await deleteNotebookList(list.id);
+  eq(FB.getFinalBossRecord(list.id), null, 'Liste silinince Final Boss kaydı temizlenmeli');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

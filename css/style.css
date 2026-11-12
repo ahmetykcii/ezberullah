@@ -1023,3 +1023,21 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
   .pstop-label{max-width:94px;padding:3px 6px}
   .pstop-label small{display:none}
 }
+
+/* Final Boss Düğümü & Sonuç/Telafi Kartları (v5.3) */
+.pstop-boss .pstop-core{width:52px;height:52px;font-size:1.15rem;border-width:3px}
+.pstop-boss.is-locked .pstop-core{background:var(--surf);border-color:var(--bd);color:var(--tx2);opacity:.72}
+.pstop-boss.is-active .pstop-core{background:var(--card);border-color:var(--path-bronze,#AC9160);color:var(--path-bronze,#AC9160);box-shadow:0 0 0 5px color-mix(in srgb,var(--path-bronze,#AC9160) 24%,transparent)}
+.pstop-boss.is-done .pstop-core{background:var(--ok,#3FC877);border-color:var(--ok,#3FC877);color:#101820}
+.btn.bronze{background:var(--path-bronze,#AC9160);border-color:var(--path-bronze,#AC9160);color:#101820;font-weight:700}
+.btn.bronze:hover{filter:brightness(1.06)}
+.fb-result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.fb-result-grid>div{background:var(--surf);border:1px solid var(--bd);border-radius:11px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
+.fb-result-grid b{font-size:1.05rem;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.fb-result-grid span{font-size:.74rem;color:var(--tx2)}
+.fb-verdict-pass{color:var(--ok,#3FC877);font-weight:700}
+.fb-verdict-pending{color:var(--warn);font-weight:700}
+.fb-pass-note,.fb-pending-note{margin:0;padding:10px 12px;border-radius:11px;font-size:.85rem;line-height:1.45}
+.fb-pass-note{background:var(--ok-bg);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok,#3FC877) 35%,transparent)}
+.fb-pending-note{background:var(--warn-bg);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.fb-sum-actions{display:flex;flex-direction:column;gap:8px}
