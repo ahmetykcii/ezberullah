@@ -6,7 +6,7 @@
 // - İlerleme YALNIZCA mevcut öğrenme kayıtlarından okunur: progress.learningComplete (Öğrenildi) veya
 //   progress.currentStatus === 'MASTERED' (Kalıcı Öğrenilen). Yeni bir "öğrenildi" sistemi YOKTUR.
 import { state, saveData } from './storage.js';
-import { isWordReady } from './engine.js';
+import { isWordReady, isDue } from './engine.js';
 
 export const STOP_SIZE = 10;
 export const PATHS_META_KEY = 'notebookPaths';
@@ -16,6 +16,43 @@ export const PATH_SCHEMA = 1;
 /** Kelime tamamlanmış mı? (Mevcut sistemdeki Learned = learningComplete, Mastered = currentStatus 'MASTERED') */
 export function isWordCompleted(p) {
   return !!p && (p.learningComplete === true || p.currentStatus === 'MASTERED');
+}
+
+/**
+ * Akıllı Filtre: Eksik, Hatalı veya Tekrarı gelmiş kelime mi?
+ * 1. Henüz Learned (learningComplete) veya Mastered (currentStatus === 'MASTERED') olmayan kelimeler.
+ * 2. Çözülmemiş hata/yanlış durumu bulunan kelimeler (currentStatus === 'REVIEW').
+ * 3. SRS sistemine göre tekrar zamanı gelmiş kelimeler (isDue(p, now)).
+ *
+ * Önemli: Daha önce yanlış cevaplanmış ama sonrasında başarıyla öğrenilmiş ve şu an
+ * hatası/tekrarı olmayan kelimeler eski hata geçmişi var diye seçilmez.
+ */
+export function isWordNeedsStudy(p, now = Date.now()) {
+  if (!p) return true; // Hiç başlanmamış (Yeni)
+  if (!p.learningComplete && p.currentStatus !== 'MASTERED') return true; // Henüz öğrenilmemiş
+  if (p.currentStatus === 'REVIEW') return true; // Aktif / çözülmemiş hata
+  if (isDue(p, now)) return true; // SRS tekrar zamanı gelmiş
+  return false;
+}
+
+/**
+ * Verilen kelime kimliklerinden veya kelime nesnelerinden eksik/hatalı/tekrar kelimelerini filtreler.
+ * Tekrarları engeller, sırayı korur.
+ */
+export function filterWordsNeedingStudy(wordsOrIds, progress = state.progress, now = Date.now()) {
+  const list = Array.isArray(wordsOrIds) ? wordsOrIds : [];
+  const seen = new Set();
+  const result = [];
+  for (const item of list) {
+    const id = typeof item === 'string' ? item : item?.id;
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    const p = progress[id];
+    if (isWordNeedsStudy(p, now)) {
+      result.push(typeof item === 'string' ? id : item);
+    }
+  }
+  return result;
 }
 
 /** Kelimenin durak içindeki görsel durumu (yalnızca okuma). */

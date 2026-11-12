@@ -401,7 +401,7 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
 });
 await test('Service Worker önbellek sürümü (veluno-v5.0.3) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'SW sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'SW sürümü veluno-v5.2.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1308,7 +1308,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'SW sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'SW sürümü veluno-v5.2.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1733,7 +1733,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2802,7 +2802,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3674,7 +3674,7 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker sürümü veluno-v5.2.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
@@ -3772,9 +3772,315 @@ await test('v5.0.3 [2] Kelime Defterim liste yönetim butonları (Düzenle ve Si
   ok(css.includes(':root[data-theme=ember] .nb-list-btn.nb-list-del{background:#281E24;border:1.5px solid #643D45;color:#F28B8E}'), 'Ember Soft Sil butonu #281E24 zemin, #643D45 kenarlık ve #F28B8E ikona sahip olmalı');
 });
 
-await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.0.3 olarak güncellendi', async () => {
+await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.2.0 olarak güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.0.3';"), 'Service Worker sürümü veluno-v5.0.3 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker sürümü veluno-v5.2.0 olmalı');
+});
+
+/* ---------- 22) v5.2 — Akıllı Eksik / Hatalı / Tekrar Çalışma Güncellemesi Testleri ---------- */
+out('\n--- 22) v5.2 — Akıllı Eksik / Hatalı / Tekrar Çalışma Güncellemesi Testleri ---');
+
+await test('v5.2 [1] 10 kelimeden 7\'si öğrenilmişse ve ek tekrar beklenmiyorsa yalnızca kalan 3 kelime seçiliyor', async () => {
+  const testIds = ['v52_w1', 'v52_w2', 'v52_w3', 'v52_w4', 'v52_w5', 'v52_w6', 'v52_w7', 'v52_w8', 'v52_w9', 'v52_w10'];
+  const now = Date.now();
+  // 7 tanesi Learned / Mastered ve SRS tekrarı gelecekte
+  for (let i = 0; i < 7; i++) {
+    const p = E.newProgress(testIds[i]);
+    p.learningComplete = true;
+    p.currentStatus = i < 4 ? 'LEARNING' : 'MASTERED';
+    p.nextReviewAt = now + 5 * 86400000;
+    await saveProgress(p);
+  }
+  // 3 tanesi henüz öğrenilmemiş
+  for (let i = 7; i < 10; i++) {
+    const p = E.newProgress(testIds[i]);
+    p.learningComplete = false;
+    p.currentStage = 2;
+    p.currentStatus = 'LEARNING';
+    await saveProgress(p);
+  }
+
+  const selected = Paths.filterWordsNeedingStudy(testIds, state.progress, now);
+  eq(selected.length, 3, 'Yalnızca 3 eksik kelime seçilmeli');
+  eq(selected, ['v52_w8', 'v52_w9', 'v52_w10'], 'Seçilenler tam olarak öğrenilmemiş 3 kelime olmalı');
+});
+
+await test('v5.2 [2] 10/10 öğrenilmiş ve tekrar yoksa boş oturum engelleniyor ve arayüzde bilgilendirme veriliyor', async () => {
+  const testIds = ['v52_all_1', 'v52_all_2', 'v52_all_3', 'v52_all_4', 'v52_all_5', 'v52_all_6', 'v52_all_7', 'v52_all_8', 'v52_all_9', 'v52_all_10'];
+  const now = Date.now();
+  for (let i = 0; i < 10; i++) {
+    const p = E.newProgress(testIds[i]);
+    p.learningComplete = true;
+    p.currentStatus = 'MASTERED';
+    p.nextReviewAt = now + 10 * 86400000;
+    await saveProgress(p);
+  }
+
+  const selected = Paths.filterWordsNeedingStudy(testIds, state.progress, now);
+  eq(selected.length, 0, 'Hiçbir kelime seçilmemeli (0 eksik/tekrar)');
+
+  const pathUiSrc = await readText('js/path-ui.js');
+  ok(pathUiSrc.includes('filterCount === 0'), 'filterCount sıfır olduğunda kontrol yapılmalı');
+  ok(pathUiSrc.includes('Şu anda çalışılacak eksik veya tekrar kelime yok.'), 'Kompakt bilgilendirme mesajı bulunmalı');
+  ok(pathUiSrc.includes('id="stop-study-filter" ${filterCount ? \'\' : \'disabled\'}'), '0 kelime olduğunda buton disabled olmalı');
+});
+
+await test('v5.2 [3] Öğrenilmemiş ve SRS tekrarı gelmiş kelimeler birlikte doğru seçiliyor (7 öğrenilmiş, 3 öğrenilmemiş, 2 SRS tekrarı gelmiş -> 5 kelime)', async () => {
+  const testIds = ['v52_mix_1', 'v52_mix_2', 'v52_mix_3', 'v52_mix_4', 'v52_mix_5', 'v52_mix_6', 'v52_mix_7', 'v52_mix_8', 'v52_mix_9', 'v52_mix_10'];
+  const now = Date.now();
+  // 5 öğrenilmiş, tekrarı GELMEMİŞ
+  for (let i = 0; i < 5; i++) {
+    const p = E.newProgress(testIds[i]);
+    p.learningComplete = true;
+    p.currentStatus = 'LEARNING';
+    p.nextReviewAt = now + 3 * 86400000;
+    await saveProgress(p);
+  }
+  // 2 öğrenilmiş, tekrarı GELMİŞ (nextReviewAt <= now)
+  for (let i = 5; i < 7; i++) {
+    const p = E.newProgress(testIds[i]);
+    p.learningComplete = true;
+    p.currentStatus = 'LEARNING';
+    p.nextReviewAt = now - 1000; // süresi geçmiş
+    await saveProgress(p);
+  }
+  // 3 henüz öğrenilmemiş
+  for (let i = 7; i < 10; i++) {
+    const p = E.newProgress(testIds[i]);
+    p.learningComplete = false;
+    p.currentStage = 1;
+    await saveProgress(p);
+  }
+
+  const selected = Paths.filterWordsNeedingStudy(testIds, state.progress, now);
+  eq(selected.length, 5, '3 öğrenilmemiş + 2 tekrarı gelmiş = toplam 5 kelime seçilmeli');
+  eq(selected.includes('v52_mix_6'), true, 'Tekrarı gelen 1. kelime seçilmeli');
+  eq(selected.includes('v52_mix_7'), true, 'Tekrarı gelen 2. kelime seçilmeli');
+  eq(selected.includes('v52_mix_8'), true, 'Öğrenilmemiş 1. kelime seçilmeli');
+  eq(selected.includes('v52_mix_9'), true, 'Öğrenilmemiş 2. kelime seçilmeli');
+  eq(selected.includes('v52_mix_10'), true, 'Öğrenilmemiş 3. kelime seçilmeli');
+});
+
+await test('v5.2 [4] Birden fazla filtre koşuluna giren kelime yalnızca 1 kez seçiliyor (tekrarsızlık)', async () => {
+  const wid = 'v52_multi_cond';
+  const p = E.newProgress(wid);
+  // Hem öğrenilmemiş hem de REVIEW (hata) durumunda
+  p.learningComplete = false;
+  p.currentStatus = 'REVIEW';
+  p.currentStage = 2;
+  await saveProgress(p);
+
+  eq(Paths.isWordNeedsStudy(p), true, 'Kelime çalışılmalı');
+  const selected = Paths.filterWordsNeedingStudy([wid, wid, wid], state.progress);
+  eq(selected.length, 1, 'Aynı kelime diziye birden fazla verilse bile tek 1 kez seçilmeli');
+  eq(selected[0], wid);
+});
+
+await test('v5.2 [5] Daha önce yanlış yapılmış ama sonrasında başarıyla öğrenilmiş kelime eski hata geçmişi var diye seçilmez', async () => {
+  const wid = 'v52_resolved_mistake';
+  const now = Date.now();
+  const p = E.newProgress(wid);
+  p.incorrectCount = 4;
+  p.mistakeHistory = [
+    { at: now - 3 * 86400000, stage: 2, qtype: 'mc' },
+    { at: now - 2 * 86400000, stage: 3, qtype: 'typing' },
+  ];
+  // Sonrasında başarıyla öğrenilmiş ve şu an aktif hatası veya tekrarı yok
+  p.learningComplete = true;
+  p.currentStatus = 'LEARNING';
+  p.nextReviewAt = now + 4 * 86400000;
+  await saveProgress(p);
+
+  eq(Paths.isWordNeedsStudy(p, now), false, 'Geçmiş hatası çözülmüş ve tekrarı gelmemiş kelime seçilmemeli');
+  const selected = Paths.filterWordsNeedingStudy([wid], state.progress, now);
+  eq(selected.length, 0, 'Seçim boş olmalı');
+});
+
+await test('v5.2 [6] Filtre sonucu 1, 2, 3 veya 4 kelime kaldığında oturum tam o sayıyla başlatılır ve dışarıdan kelime eklenmez', async () => {
+  // 1 kelime testi
+  const a2Stops = Paths.getLevelPathStops('A2');
+  const singleId = [a2Stops[0].wordIds[0]];
+  const ok1 = await startLearn('A2', {
+    skipModal: true,
+    explicitWordIds: singleId,
+    title: 'A2 — 1 Kelimelik Filtre Testi',
+  });
+  eq(ok1, true, '1 kelimelik oturum başlatılabilmeli');
+  let sess = getCurrentSession();
+  eq(sess.params.groupWordIds.length, 1, 'Grup boyutu tam 1 kelime olmalı');
+  eq(sess.items.length, 4, '1 kelime x 4 aşama = 4 oturum öğesi oluşturulmalı');
+  abortSession();
+
+  // 3 kelime testi
+  const threeIds = a2Stops[0].wordIds.slice(0, 3);
+  const ok3 = await startLearn('A2', {
+    skipModal: true,
+    explicitWordIds: threeIds,
+    title: 'A2 — 3 Kelimelik Filtre Testi',
+  });
+  eq(ok3, true, '3 kelimelik oturum başlatılabilmeli');
+  sess = getCurrentSession();
+  eq(sess.params.groupWordIds.length, 3, 'Grup boyutu tam 3 kelime olmalı');
+  eq(sess.items.length, 12, '3 kelime x 4 aşama = 12 oturum öğesi oluşturulmalı');
+  eq(sess.params.groupWordIds, threeIds, 'Oturumdaki kelimeler yalnızca seçilen 3 kelime olmalı, dışarıdan kelime eklenmemeli');
+  abortSession();
+});
+
+await test('v5.2 [7] "Bu Duraktaki Kelimeleri Çalış" seçeneği tüm kelimeleri (Learned/Mastered dahil) çalıştırma eski davranışını koruyor', async () => {
+  const uid = 'v52_full_user';
+  const { list } = await createNotebookList('Tam Çalış Liste', uid);
+  const names = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape', 'honeydew', 'kiwi', 'lemon'];
+  for (let i = 0; i < 10; i++) {
+    await addWordToNotebook({ word: `vtwo${names[i]}`, meanings: [`anlam ${i}`], listId: list.id, userId: uid });
+  }
+  const lstats = getListStats(list.id);
+  // 7 tanesini Learned yap
+  for (let i = 0; i < 7; i++) {
+    const p = getProgress(lstats.words[i].id);
+    p.learningComplete = true;
+    p.currentStatus = 'MASTERED';
+    await saveProgress(p);
+  }
+
+  // "Bu Duraktaki Kelimeleri Çalış" tüm 10 kelimeyi çalıştırmalıdır
+  const started = await startStudyList(list.id, {
+    stages: [1, 2, 3, 4],
+    groupSize: 10,
+    explicitWordIds: lstats.words.map((w) => w.id),
+  });
+  eq(started, true);
+  const sess = getCurrentSession();
+  eq(sess.params.groupWordIds.length, 10, 'Tüm kelimeleri çalış seçeneği 10 kelimenin tamamını içermeli');
+  abortSession();
+});
+
+await test('v5.2 [8] Durak detay panelinde 3 buton (Eksik / Hatalı / Tekrar Çalış, Bu Duraktaki Kelimeleri Çalış, Kapat) mevcuttur', async () => {
+  const src = await readText('js/path-ui.js');
+  ok(src.includes('id="stop-study-filter"'), 'Eksik / Hatalı / Tekrar Çalış butonu bulunmalı');
+  ok(src.includes('id="stop-study"'), 'Bu Duraktaki Kelimeleri Çalış butonu korunmalı');
+  ok(src.includes('data-x>Kapat</button>'), 'Kapat butonu korunmalı');
+  ok(src.includes('Eksik / Hatalı / Tekrar Çalış'), 'Yeni butonun başlığı doğru olmalı');
+});
+
+await test('v5.2 [9] Kişisel listelerde filtreleme bağımsız ve yalnızca seçili listeyi kapsar', async () => {
+  const uid = 'v52_list_user';
+  const { list: l1 } = await createNotebookList('Liste Bir', uid);
+  const { list: l2 } = await createNotebookList('Liste Iki', uid);
+  const w1 = await addWordToNotebook({ word: 'listonewordalpha', meanings: ['a'], listId: l1.id, userId: uid });
+  const w2 = await addWordToNotebook({ word: 'listonewordbravo', meanings: ['b'], listId: l1.id, userId: uid });
+  const w3 = await addWordToNotebook({ word: 'listtwowordcharlie', meanings: ['c'], listId: l2.id, userId: uid });
+
+  // w1 learned (tekrarı gelecekte), w2 unlearned, w3 unlearned
+  const p1 = getProgress(w1.word.id);
+  p1.learningComplete = true;
+  p1.currentStatus = 'MASTERED';
+  p1.nextReviewAt = Date.now() + 86400000;
+  await saveProgress(p1);
+
+  const l1Words = getListStats(l1.id).words;
+  const filtered = Paths.filterWordsNeedingStudy(l1Words, state.progress);
+  eq(filtered.length, 1, 'Liste 1\'den yalnızca 1 eksik kelime seçilmeli');
+  eq(filtered[0].id, w2.word.id, 'Seçilen kelime Liste 1\'deki unlearned kelime olmalı');
+  ok(!filtered.some((w) => w.id === w3.word.id), 'Liste 2\'deki kelime Liste 1 filtrelemesine kesinlikle sızmamalı');
+});
+
+await test('v5.2 [10] A2/B1/B2 seviyeleri birbirinden bağımsızdır ve seviye filtreleri karışmaz', async () => {
+  const a2Ready = state.words.filter((w) => w.level === 'A2' && E.isWordReady(w));
+  const b1Ready = state.words.filter((w) => w.level === 'B1' && E.isWordReady(w));
+  const a2Filtered = Paths.filterWordsNeedingStudy(a2Ready, state.progress);
+  const b1Filtered = Paths.filterWordsNeedingStudy(b1Ready, state.progress);
+
+  ok(a2Filtered.every((w) => w.level === 'A2'), 'A2 filtresi yalnızca A2 kelimelerini içermeli');
+  ok(b1Filtered.every((w) => w.level === 'B1'), 'B1 filtresi yalnızca B1 kelimelerini içermeli');
+});
+
+await test('v5.2 [11] Duraklar, kalıcı yol kayıtları ve SRS geçmişi filtreli çalışma ile bozulmaz', async () => {
+  const uid = 'v52_srs_user';
+  const { list } = await createNotebookList('Kalıcı Durak Listesi', uid);
+  const names = ['orange', 'peach', 'plum', 'pear', 'quince', 'raspberry', 'strawberry', 'tangerine', 'ugli', 'vanilla'];
+  for (let i = 0; i < 10; i++) {
+    await addWordToNotebook({ word: `vtwosrs${names[i]}`, meanings: [`m${i}`], listId: list.id, userId: uid });
+  }
+  const lObj = getAllNotebookLists().find((l) => l.id === list.id);
+  const stopsBefore = Paths.getListPathStops(lObj);
+  eq(stopsBefore.length, 1, '10 kelime = 1 durak');
+  const stopIdBefore = stopsBefore[0].id;
+
+  // Filtreli oturum başlat
+  const wordIds = stopsBefore[0].wordIds.slice(0, 4);
+  await startStudyList(list.id, {
+    stages: [1, 2, 3, 4],
+    groupSize: 4,
+    explicitWordIds: wordIds,
+    pathStop: { listId: list.id, stopId: stopIdBefore, number: 1, filterMode: true },
+  });
+  abortSession();
+
+  const stopsAfter = Paths.getListPathStops(getAllNotebookLists().find((l) => l.id === list.id));
+  eq(stopsAfter.length, 1, 'Durak sayısı değişmemeli');
+  eq(stopsAfter[0].id, stopIdBefore, 'Durak kimliği değişmemeli');
+  eq(stopsAfter[0].wordIds.length, 10, 'Durağın 10 kelimelik kapasitesi korunmalı');
+});
+
+await test('v5.2 [12] Filtreli oturum yarıda bırakılınca kaldığı yerden devam ettirilebilir', async () => {
+  const a2Stops = Paths.getLevelPathStops('A2');
+  const threeIds = a2Stops[0].wordIds.slice(0, 3);
+  await startLearn('A2', {
+    skipModal: true,
+    explicitWordIds: threeIds,
+    title: 'A2 — Devam Testi',
+  });
+  const sess = getCurrentSession();
+  sess.idx = 2; // 2 soru yanıtlanmış olsun
+  const savedData = {
+    kind: sess.kind,
+    title: sess.title,
+    level: sess.level || 'A2',
+    items: sess.items,
+    idx: 2,
+    results: sess.results || [],
+    params: sess.params,
+    feedback: sess.feedback || null,
+  };
+  await setMeta('activeSession', savedData);
+  const byL = getMeta('activeSessionsByLevel') || {};
+  byL['A2'] = savedData;
+  await setMeta('activeSessionsByLevel', byL);
+  abortSession();
+
+  const saved = getMeta('activeSessionsByLevel')?.A2;
+  ok(saved && saved.idx === 2, 'Oturum indeksi 2 olarak kaydedilmiş olmalı');
+  eq(saved.params.groupWordIds, threeIds, 'Kayıtlı oturumdaki kelimeler aynı 3 kelime olmalı');
+
+  const resumed = await resumeSaved('A2');
+  eq(resumed, true, 'Oturum devam ettirilebilmeli');
+  const curSess = getCurrentSession();
+  eq(curSess.idx, 2, 'Kaldığı 2. indeksten devam etmeli');
+  abortSession();
+});
+
+await test('v5.2 [13] Mobil ekranda butonlar taşma yapmadan gösterilir (CSS .stop-actions, .stop-actions-row)', async () => {
+  const css = await readText('css/style.css');
+  ok(css.includes('.stop-actions{display:flex;flex-direction:column;gap:8px}'), '.stop-actions CSS kuralı tanımlı olmalı');
+  ok(css.includes('.stop-actions-row{display:flex;gap:8px;align-items:center}'), '.stop-actions-row CSS kuralı tanımlı olmalı');
+  ok(css.includes('.stop-filter-msg{'), '.stop-filter-msg CSS kuralı tanımlı olmalı');
+  ok(css.includes('.stop-actions-row{flex-direction:column-reverse}'), 'Mobilde butonlar taşmayı önlemek için dikey yerleşmeli');
+});
+
+await test('v5.2 [14] Ember Soft ve diğer temaların renk/tasarım standartları korunmuştur', async () => {
+  const css = await readText('css/style.css');
+  ok(css.includes('--ember-bg:#101820'), 'Ember Soft arka plan #101820 korunmalı');
+  ok(css.includes('--ember-primary:#245C60'), 'Ember Soft midnight petrol #245C60 korunmalı');
+  ok(css.includes('--ember-active:#438A8B'), 'Ember Soft active petrol #438A8B korunmalı');
+  ok(css.includes('--answer-surface:#193037'), 'Ember Soft carbon petrol cevap yüzeyi korunmalı');
+  ok(css.includes('--ember-ok:#3FC877'), 'Ember Soft doğru yeşili korunmalı');
+  ok(css.includes('--ember-no:#57191C'), 'Ember Soft yanlış vişnesi korunmalı');
+});
+
+await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.2.0) ve dosya bütünlüğü tam', async () => {
+  const sw = await readText('service-worker.js');
+  ok(sw.includes("const VERSION = 'veluno-v5.2.0';"), 'Service Worker sürümü veluno-v5.2.0 olmalı');
+  ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Yol modülleri önbellekte olmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

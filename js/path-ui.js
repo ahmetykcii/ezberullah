@@ -6,6 +6,7 @@ import { LEVELS, LEVEL_NAMES } from './vocabulary.js';
 import { getCurrentUser } from './auth.js';
 import {
   STOP_SIZE, summarizePath, ensureListPaths, getListPathStops, getLevelPathStops, wordPathState, computeStopProgress,
+  filterWordsNeedingStudy, isWordNeedsStudy,
 } from './paths.js';
 
 function getActiveUserId() {
@@ -165,6 +166,8 @@ const WORD_STATE = {
 export function openStopDetail({ kind, stop, list = null, level = null, onChanged = null }) {
   const ids = (stop.wordIds || []).filter((id) => state.wordMap.has(id));
   const pr = computeStopProgress(ids, state.progress);
+  const filterIds = filterWordsNeedingStudy(ids, state.progress);
+  const filterCount = filterIds.length;
   const rows = ids.map((id) => {
     const w = state.wordMap.get(id);
     const ws = WORD_STATE[wordPathState(state.progress[id])] || WORD_STATE.new;
@@ -181,10 +184,49 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
         </div>
         <div class="progress stop-bar" role="progressbar" aria-valuenow="${pr.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pr.pct}%"></i></div>
         <ul class="stop-words">${rows || '<li class="muted small">Bu durakta kelime yok.</li>'}</ul>
-        <div class="row end gap"><button type="button" class="btn ghost" data-x>Kapat</button><button type="button" class="btn primary" id="stop-study" ${ids.length ? '' : 'disabled'}>Bu Duraktaki Kelimeleri Çalış</button></div>
+        ${filterCount === 0 ? '<p class="stop-filter-msg muted small">Şu anda çalışılacak eksik veya tekrar kelime yok.</p>' : ''}
+        <div class="stop-actions">
+          <button type="button" class="btn primary block" id="stop-study-filter" ${filterCount ? '' : 'disabled'}>Eksik / Hatalı / Tekrar Çalış ${filterCount ? `(${filterCount})` : ''}</button>
+          <div class="stop-actions-row">
+            <button type="button" class="btn ghost" data-x>Kapat</button>
+            <button type="button" class="btn" id="stop-study" ${ids.length ? '' : 'disabled'}>Bu Duraktaki Kelimeleri Çalış</button>
+          </div>
+        </div>
       </div>`,
     onMount(b, api) {
       $('[data-x]', b).onclick = api.close;
+
+      const studyFilterBtn = $('#stop-study-filter', b);
+      if (studyFilterBtn) {
+        studyFilterBtn.onclick = async () => {
+          if (!filterIds.length) {
+            toast('Şu anda çalışılacak eksik veya tekrar kelime yok.');
+            return;
+          }
+          const originHash = typeof location !== 'undefined' ? location.hash : '';
+          api.close();
+          if (kind === 'notebook') {
+            await setPreferredNotebookList(list.id, list.userId);
+            const { openStageSelectionModal } = await import('./notebook.js');
+            openStageSelectionModal({
+              listId: list.id,
+              mode: 'list',
+              userId: list.userId,
+              pathStop: { wordIds: filterIds, stopId: stop.id, number: stop.number, originHash, filterMode: true, label: `${filterIds.length} eksik / tekrar kelime` },
+            });
+          } else {
+            const { startLearn } = await import('./learning.js');
+            await startLearn(level, {
+              skipModal: true,
+              explicitWordIds: filterIds,
+              pathStop: { stopId: stop.id, number: stop.number, originHash, filterMode: true },
+              title: `${level} — Durak ${stop.number || ''} · Eksik/Tekrar (${filterIds.length} Kelime)`,
+            });
+          }
+          if (typeof onChanged === 'function') onChanged();
+        };
+      }
+
       $('#stop-study', b).onclick = async () => {
         const originHash = typeof location !== 'undefined' ? location.hash : '';
         api.close();

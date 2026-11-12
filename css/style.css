@@ -1006,8 +1006,14 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .stop-chip.warn{background:var(--warn-bg);color:var(--warn)}
 .stop-chip.mid{background:var(--ac-soft);color:var(--ac2)}
 .stop-note{margin:0;line-height:1.45}
+.stop-filter-msg{margin:0;padding:8px 12px;border-radius:10px;background:var(--surf);color:var(--tx2);text-align:center;border:1px dashed var(--bd);font-size:.82rem}
+.stop-actions{display:flex;flex-direction:column;gap:8px}
+.stop-actions-row{display:flex;gap:8px;align-items:center}
+.stop-actions-row .btn{flex:1}
 
 @media (max-width:480px){
+  .stop-actions-row{flex-direction:column-reverse}
+  .stop-actions-row .btn{width:100%}
   .home-mini-grid{grid-template-columns:1fr}
   .pstop-label{max-width:110px;padding:4px 7px}
   .pstop-label b{font-size:.72rem}

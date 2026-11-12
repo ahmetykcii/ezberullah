@@ -11,7 +11,7 @@ import { getCurrentUser } from './auth.js';
 import { startSession, resumeSaved, sessionHooks, getStudyGroupRotation, saveStudyGroupRotation } from './learning.js';
 import { bumpDaily } from './statistics.js';
 import { startMemoryGame, MEMORY_STAGE } from './memory-game.js';
-import { syncListPath, removeListPath, ensureListPaths, STOP_SIZE } from './paths.js';
+import { syncListPath, removeListPath, ensureListPaths, STOP_SIZE, filterWordsNeedingStudy, isWordNeedsStudy } from './paths.js';
 import {
   pathCanvasHtml, openStopDetail, notebookPathSummary, getPreferredNotebookList, setPreferredNotebookList,
   WINDOW_RADIUS, WINDOW_STEP, reduceMotion,
@@ -787,8 +787,10 @@ export async function startStudyList(listId, options = null) {
   await startSession({
     kind: 'learn',
     title: pathStop
-      ? `${list.name} — Durak ${pathStop.number || ''} (${group.batch.length} Kelime)`
-      : `${list.name} — Kelime Öğren (${group.batch.length} Kelime)`,
+      ? `${list.name} — Durak ${pathStop.number || ''}${pathStop.filterMode ? ' · Eksik/Tekrar' : ''} (${group.batch.length} Kelime)`
+      : options?.filterMode
+        ? `${list.name} — Eksik / Hatalı / Tekrar (${group.batch.length} Kelime)`
+        : `${list.name} — Kelime Öğren (${group.batch.length} Kelime)`,
     items,
     params: {
       isNotebook: true,
@@ -959,17 +961,28 @@ export async function startStudyDue(userId = getActiveUserId()) {
 /* ---------- Arayüz Modalları (UI Modals) ---------- */
 
 /** Çalışma Aşamalarını ve Grup Büyüklüğünü Seç Modalı (Kelime Defterim v4.6.1) */
-export function openStageSelectionModal({ listId = null, mode = 'list', userId = getActiveUserId(), defaultGroupSize = E.DEFAULT_GROUP_SIZE, onStart = null, pathStop = null } = {}) {
+export function openStageSelectionModal({ listId = null, mode = 'list', userId = getActiveUserId(), defaultGroupSize = E.DEFAULT_GROUP_SIZE, onStart = null, pathStop = null, explicitWordIds = null, filterMode = false } = {}) {
   let contextLabel = 'Seçili kelimelerin';
   // v5.0: Yolum durağı modu — grup büyüklüğü sorulmaz; durağın TÜM kelimeleri çalışılır (10 kelimelik durak kapasitesi ≠ 5/10/15/20 grup seçimi)
   const stopIds = pathStop && Array.isArray(pathStop.wordIds) ? pathStop.wordIds.filter((id) => state.wordMap.has(id)) : null;
+  const isFilter = Boolean(pathStop?.filterMode || filterMode);
+  const explicitIds = Array.isArray(explicitWordIds) ? explicitWordIds.filter((id) => state.wordMap.has(id)) : null;
+
   if (pathStop && mode === 'list' && listId) {
     const list = getAllNotebookLists().find((l) => l.id === listId);
     if (!list || !stopIds || !stopIds.length) {
       toast('Bu durakta çalışılacak kelime bulunamadı.');
       return false;
     }
-    contextLabel = `<b>${esc(list.name)} · Durak ${esc(pathStop.number || '')}</b> (${stopIds.length} kelimenin tamamı)`;
+    const countLabel = pathStop.label || (isFilter ? `${stopIds.length} eksik / tekrar kelime` : `${stopIds.length} kelimenin tamamı`);
+    contextLabel = `<b>${esc(list.name)} · Durak ${esc(pathStop.number || '')}</b> (${countLabel})`;
+  } else if (explicitIds && mode === 'list' && listId) {
+    const list = getAllNotebookLists().find((l) => l.id === listId);
+    if (!list || !explicitIds.length) {
+      toast('Bu listede çalışılacak kelime bulunamadı.');
+      return false;
+    }
+    contextLabel = `<b>${esc(list.name)}</b> (${explicitIds.length} eksik / tekrar kelime)`;
   } else if (mode === 'list' && listId) {
     const stats = getListStats(listId);
     const list = getAllNotebookLists().find((l) => l.id === listId);
@@ -1134,7 +1147,16 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
             stages,
             groupSize: E.normalizeGroupSize(stopIds.length),
             explicitWordIds: stopIds,
-            pathStop: { listId, stopId: pathStop.stopId || null, number: pathStop.number || null, originHash: pathStop.originHash || '' },
+            pathStop: { listId, stopId: pathStop.stopId || null, number: pathStop.number || null, originHash: pathStop.originHash || '', filterMode: isFilter },
+          });
+          return;
+        }
+        if (explicitIds) {
+          await startStudyList(listId, {
+            stages,
+            groupSize: Math.min(chosenGroupSize, explicitIds.length),
+            explicitWordIds: explicitIds,
+            filterMode: true,
           });
           return;
         }
@@ -1582,7 +1604,9 @@ export function openListWordsModal(listId, onUpdated = () => {}) {
 /* ---------- Kompakt Çalışma Seçenekleri Menüsü (v5.0 Mobil Revizyon) ---------- */
 export function openNotebookStudyMenuModal({ activeList = null, userId = getActiveUserId(), onUpdated = () => {} } = {}) {
   const summary = getUserNotebookSummary(userId);
-  const listStats = activeList ? getListStats(activeList.id) : { total: 0 };
+  const listStats = activeList ? getListStats(activeList.id) : { total: 0, words: [] };
+  const listFilterIds = activeList ? filterWordsNeedingStudy(listStats.words, state.progress) : [];
+  const listFilterCount = listFilterIds.length;
   openModal({
     title: 'Çalışma Seçenekleri',
     html: `
@@ -1590,10 +1614,19 @@ export function openNotebookStudyMenuModal({ activeList = null, userId = getActi
         <ul class="list nb-study-menu-list">
           ${activeList ? `
             <li>
+              <button type="button" class="list-row linkrow" id="btn-study-active-list-filter" data-id="${activeList.id}" ${listFilterCount ? '' : 'disabled'}>
+                <div class="row-main">
+                  <b>Eksik / Hatalı / Tekrar Çalış ${listFilterCount ? `(${listFilterCount})` : ''}</b>
+                  <span class="muted small">${esc(activeList.name)} · ${listFilterCount ? `${listFilterCount} kelime` : 'Şu anda çalışılacak eksik veya tekrar kelime yok'}</span>
+                </div>
+                ${ICONS.chev}
+              </button>
+            </li>
+            <li>
               <button type="button" class="list-row linkrow" id="btn-study-active-list" data-act="study-list" data-id="${activeList.id}" ${listStats.total ? '' : 'disabled'}>
                 <div class="row-main">
                   <b>${esc(activeList.name)} Listesini Çalış</b>
-                  <span class="muted small">${listStats.total} kelime · Grup ve aşama seç</span>
+                  <span class="muted small">${listStats.total} kelime · Tüm kelimeler</span>
                 </div>
                 ${ICONS.chev}
               </button>
@@ -1643,6 +1676,23 @@ export function openNotebookStudyMenuModal({ activeList = null, userId = getActi
     `,
     onMount(b, api) {
       $('[data-x]', b).onclick = api.close;
+      const studyActiveFilter = $('#btn-study-active-list-filter', b);
+      if (studyActiveFilter && activeList) {
+        studyActiveFilter.onclick = () => {
+          if (!listFilterCount) {
+            toast('Şu anda çalışılacak eksik veya tekrar kelime yok.');
+            return;
+          }
+          api.close();
+          openStageSelectionModal({
+            listId: activeList.id,
+            mode: 'list',
+            userId,
+            explicitWordIds: listFilterIds,
+            filterMode: true,
+          });
+        };
+      }
       const studyActive = $('#btn-study-active-list', b);
       if (studyActive && activeList) {
         studyActive.onclick = () => { api.close(); openStageSelectionModal({ listId: activeList.id, mode: 'list', userId }); };

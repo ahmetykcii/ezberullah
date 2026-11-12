@@ -6,6 +6,7 @@ import { $, $$, esc, toast, speak, sfx, openModal, hasModal, closeTopModal, conf
 import { LEVELS, LEVEL_NAMES, posLabel, statusLabel } from './vocabulary.js';
 import { bumpDaily, levelStats } from './statistics.js';
 import { pathCanvasHtml, levelPathSummary, openStopDetail, WINDOW_RADIUS, WINDOW_STEP, reduceMotion } from './path-ui.js';
+import { filterWordsNeedingStudy, isWordNeedsStudy } from './paths.js';
 
 export const handlers = {}; // kind -> { onAnswer(item, ok, info), onDone(results, sess) }
 let cur = null;
@@ -462,11 +463,11 @@ export async function startLearn(level, options = null) {
     await setMeta('learnLevel', level);
     await startSession({
       kind: 'learn',
-      title: `${level} — Durak ${pathStop.number || ''} (${batch.length} Kelime)`,
+      title: options.title || `${level} — Durak ${pathStop.number || ''} (${batch.length} Kelime)`,
       level,
       params: {
         level,
-        groupSize: E.normalizeGroupSize(batch.length),
+        groupSize: batch.length,
         groupWordIds,
         selectedStages,
         groupEval: E.createGroupEvaluation(groupWordIds, selectedStages),
@@ -544,6 +545,10 @@ export function renderLearn(v) {
     const prevBtn = win.lo > 0 ? `<button type="button" class="btn ghost block path-more" id="lv-path-prev">Önceki durakları göster (${win.lo} durak)</button>` : '';
     const nextBtn = win.hi < n - 1 ? `<button type="button" class="btn ghost block path-more" id="lv-path-next">Sonraki durakları göster (${n - 1 - win.hi} durak daha)</button>` : '';
 
+    const readyWords = state.words.filter((w) => w.level === lv && E.isWordReady(w));
+    const filterWords = filterWordsNeedingStudy(readyWords, state.progress);
+    const filterCount = filterWords.length;
+
     v.innerHTML = `<div class="page learn-pool-page">
       <div class="learn-top-bar">
         <h1>Hazır Kelime Havuzu</h1>
@@ -560,6 +565,7 @@ export function renderLearn(v) {
           <button type="button" class="btn sm ghost" id="discard">Vazgeç</button>
         ` : ''}
         <button type="button" class="btn ${hasSaved ? '' : 'bronze xl'} block" id="go">${lv} Öğrenmeye Başla</button>
+        <button type="button" class="btn block" id="btn-learn-filter" ${filterCount ? '' : 'disabled'}>${lv} Eksik / Hatalı / Tekrar Çalış ${filterCount ? `(${filterCount})` : ''}</button>
       </div>
       ${n ? `<div class="path-wrap lv-vertical-path">${prevBtn}${pathCanvasHtml(pathSum, win.lo, win.hi, 'builtin')}${nextBtn}</div>` : ''}
     </div>`;
@@ -575,6 +581,43 @@ export function renderLearn(v) {
       };
     });
     $('#go', v).onclick = () => startLearn(lv);
+    const filterBtn = $('#btn-learn-filter', v);
+    if (filterBtn) {
+      filterBtn.onclick = async () => {
+        if (!filterCount) {
+          toast('Şu anda çalışılacak eksik veya tekrar kelime yok.');
+          return;
+        }
+        const filterIds = filterWords.map((w) => w.id);
+        if (filterIds.length <= 20) {
+          await startLearn(lv, {
+            skipModal: true,
+            explicitWordIds: filterIds,
+            title: `${lv} — Eksik / Hatalı / Tekrar (${filterIds.length} Kelime)`,
+          });
+        } else {
+          await openGroupSizeModal({
+            level: lv,
+            defaultSize: E.DEFAULT_GROUP_SIZE,
+            onStart: async (chosenSize) => {
+              const scopeKey = `level:${lv}:filter`;
+              const seenWordIds = getStudyGroupRotation(scopeKey);
+              const group = E.selectStudyGroup(filterWords, state.progress, chosenSize, { seenWordIds });
+              if (!group.batch.length) {
+                toast('Şu anda çalışılacak eksik veya tekrar kelime yok.');
+                return;
+              }
+              await saveStudyGroupRotation(scopeKey, group.nextSeenIds);
+              await startLearn(lv, {
+                skipModal: true,
+                explicitWordIds: group.batch.map((w) => w.id),
+                title: `${lv} — Eksik / Hatalı / Tekrar (${group.batch.length} Kelime)`,
+              });
+            },
+          });
+        }
+      };
+    }
     const rs = $('#resume', v);
     if (rs) rs.onclick = async () => { if (!(await resumeSaved(lv))) toast('Oturum devam ettirilemedi.', 'error'); };
     const dc = $('#discard', v);
