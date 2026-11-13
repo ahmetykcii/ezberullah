@@ -278,7 +278,8 @@ function showFeedback(ok, word, item, r) {
   if (item.type === 'mc') $$('.opt').forEach((b, i) => { b.disabled = true; if (i === curQ.answerIndex) b.classList.add('right'); else if (!ok && b.classList.contains('picked')) b.classList.add('bad'); });
   $$('#qbody input,#qbody form button').forEach((e) => (e.disabled = true));
   const ans = `Doğru cevap: ${curQ.display}`;
-  const feedbackText = `<div class="feedback ${ok ? 'ok' : 'no'}" role="status"><b>${ok ? 'Doğru' : 'Yanlış'}</b><span>${esc(ans)}</span>
+  const learnedTag = ok && r?.learnedNow ? `<span class="learned-plain is-glitch" data-text="✓ Öğrenildi">✓ Öğrenildi</span>` : '';
+  const feedbackText = `<div class="feedback ${ok ? 'ok' : 'no'}" role="status"><div class="feedback-head"><b>${ok ? 'Doğru' : 'Yanlış'}</b>${learnedTag}</div><span>${esc(ans)}</span>
     ${!ok && cur.kind === 'learn' ? `<small>Kelime "${statusLabel('REVIEW')}" havuzuna alındı; sonraki oturumda öncelikli gösterilecek.</small>` : ''}</div>`;
   $('#fb').innerHTML = `${feedbackText}<button type="button" class="btn primary xl block" id="cont">Devam</button>`;
   $('#cont').onclick = renderItem; $('#cont').focus();
@@ -326,7 +327,7 @@ handlers.learn = {
     const d = { seconds: Math.round(elapsed), [ok ? 'correct' : 'wrong']: 1 };
     if (!was && p.learningComplete) { d.learnedWordId = item.wordId; d.done = 1; }
     await bumpDaily(d);
-    return { drop: !ok };
+    return { drop: !ok, learnedNow: !was && Boolean(p.learningComplete) };
   },
   async onDone(results, sess) {
     await bumpDaily({ sessionsCompleted: 1 });

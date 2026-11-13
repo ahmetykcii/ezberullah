@@ -1041,3 +1041,291 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 .fb-pass-note{background:var(--ok-bg);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok,#3FC877) 35%,transparent)}
 .fb-pending-note{background:var(--warn-bg);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
 .fb-sum-actions{display:flex;flex-direction:column;gap:8px}
+
+/* ==================== VELUNO NOIR — AÇILIŞ V + BEYAZ IŞIK (5,5 sn) ==================== */
+.v-splash{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;transition:opacity 500ms cubic-bezier(.16,1,.3,1)}
+.v-splash.is-leaving{opacity:0;pointer-events:none}
+.v-splash[hidden]{display:none!important}
+.v-splash-inner{width:min(74vw,340px);aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.v-scene{width:100%;aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;isolation:isolate}
+.v-scene svg{width:100%;height:100%;display:block;overflow:visible}
+.v-scene .bloom,.v-scene .inside,.v-scene .wide,.v-scene .sources{mix-blend-mode:screen;transform-origin:center;animation:v-splash-breath 5.5s cubic-bezier(.22,1,.36,1) forwards;will-change:opacity}
+.v-scene .wide{animation-delay:-.15s}
+.v-scene .inside{animation-delay:-.05s}
+.v-scene .source{animation:v-splash-node 5.5s cubic-bezier(.32,.04,.22,1) forwards;transform-origin:center;opacity:0}
+.v-scene .source:nth-child(2){animation-delay:-.25s}.v-scene .source:nth-child(3){animation-delay:-.50s}.v-scene .source:nth-child(4){animation-delay:-.75s}.v-scene .source:nth-child(5){animation-delay:-1s}.v-scene .source:nth-child(6){animation-delay:-1.25s}.v-scene .source:nth-child(7){animation-delay:-1.50s}.v-scene .source:nth-child(8){animation-delay:-1.75s}.v-scene .source:nth-child(9){animation-delay:-2s}.v-scene .source:nth-child(10){animation-delay:-2.25s}
+@keyframes v-splash-breath{0%{opacity:0}18%{opacity:.28}36%{opacity:.68}55%{opacity:.96}68%{opacity:.72}80%{opacity:.90}91%{opacity:.76}100%{opacity:.55}}
+@keyframes v-splash-node{0%{opacity:0}18%{opacity:.18}38%{opacity:.44}55%{opacity:.68}70%{opacity:.34}82%{opacity:.58}91%{opacity:.38}100%{opacity:.22}}
+.v-scene.is-paused .bloom,.v-scene.is-paused .inside,.v-scene.is-paused .wide,.v-scene.is-paused .source{animation-play-state:paused!important}
+.v-scene.is-static .bloom,.v-scene.is-static .inside,.v-scene.is-static .wide{animation:none!important;opacity:.65!important}
+.v-scene.is-static .source{animation:none!important;opacity:.2!important}
+@media (prefers-reduced-motion:reduce){
+  .v-splash{transition:none}
+  .v-scene .bloom,.v-scene .inside,.v-scene .wide{animation:none!important;opacity:.65!important}
+  .v-scene .source{animation:none!important;opacity:.2!important}
+}
+
+/* ==================== VELUNO NOIR TEMA SİSTEMİ (FAZ C) ==================== */
+.theme-p-noir{background:#0A0A0A;border:1px solid #2E2E2E}
+.theme-p-noir .theme-swatch-bar{background:#EDEDED}
+
+:root[data-theme=veluno-noir]{
+  --bg:#0A0A0A;
+  --card:#1A1A1A;
+  --surf:#141414;
+  --tx:#EDEDED;
+  --tx-sec:#A1A1A1;
+  --tx2:#878787;
+  --bd:#2E2E2E;
+  --bd-strong:#454545;
+  --ac:#EDEDED;
+  --ac2:#FFFFFF;
+  --ac-soft:rgba(255,255,255,.09);
+  --on-ac:#0A0A0A;
+  --ok:#63C46D;
+  --ok-bg:rgba(99,196,109,.10);
+  --warn:#F2A700;
+  --warn-bg:rgba(242,167,0,.10);
+  --no:#FF6166;
+  --no-bg:rgba(255,97,102,.10);
+  --no-tx:#FF6166;
+  --path-petrol:#438A8B;
+  --path-petrol-dark:#245C60;
+  --path-bronze:#AC9160;
+  --path-bronze-dark:#75603C;
+  --special-accent:#EDEDED;
+  --r:12px;
+  --dur:150ms;
+  --font-sans:'Geist',ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  color-scheme:dark;
+}
+:root[data-theme=veluno-noir] body{font-family:var(--font-sans);background:#0A0A0A;color:#EDEDED}
+:root[data-theme=veluno-noir] h1,:root[data-theme=veluno-noir] h2,:root[data-theme=veluno-noir] h3{font-family:var(--font-sans);font-weight:600;letter-spacing:-.03em;color:#EDEDED}
+:root[data-theme=veluno-noir] .mono,:root[data-theme=veluno-noir] .stat-v,:root[data-theme=veluno-noir] .row-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+:root[data-theme=veluno-noir] .hero-title{font-family:var(--font-sans);font-weight:600;letter-spacing:-.03em;color:#EDEDED}
+:root[data-theme=veluno-noir] .hero-sig{font-family:var(--font-sans);font-size:.78rem;color:#A1A1A1;letter-spacing:.01em}
+
+/* Navigasyon: Sidebar & 4 Sekmeli Alt Bar */
+:root[data-theme=veluno-noir] #sidebar{background:#0A0A0A;border-right:1px solid #2E2E2E}
+:root[data-theme=veluno-noir] #sidebar a{border-radius:6px;color:#A1A1A1;transition:background-color 150ms,color 150ms}
+:root[data-theme=veluno-noir] #sidebar a:hover{background:#1F1F1F;color:#EDEDED}
+:root[data-theme=veluno-noir] #sidebar a.active{background:#1A1A1A;color:#EDEDED;border:1px solid #2E2E2E}
+:root[data-theme=veluno-noir] #bottomnav{background:#0A0A0A;border-top:1px solid #2E2E2E}
+:root[data-theme=veluno-noir] #bottomnav a{color:#878787;transition:color 150ms}
+:root[data-theme=veluno-noir] #bottomnav a.active{color:#EDEDED}
+
+/* Kartlar, Listeler & Paneller */
+:root[data-theme=veluno-noir] .card,:root[data-theme=veluno-noir] .list,:root[data-theme=veluno-noir] .path-wrap,:root[data-theme=veluno-noir] .path-empty,:root[data-theme=veluno-noir] .nb-progress-strip{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:12px;box-shadow:none}
+:root[data-theme=veluno-noir] .list-row{border-color:#2E2E2E;transition:background-color 150ms}
+:root[data-theme=veluno-noir] .list-row.linkrow:hover{background:#1F1F1F}
+:root[data-theme=veluno-noir] .modal-card{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:12px;box-shadow:none}
+:root[data-theme=veluno-noir] .modal-backdrop{background:rgba(0,0,0,.76)}
+
+/* Butonlar & Formlar */
+:root[data-theme=veluno-noir] .btn{border-radius:6px;border:1px solid #2E2E2E;background:#0A0A0A;color:#EDEDED;font-family:var(--font-sans);font-weight:500;transition:background-color 150ms,border-color 150ms,color 150ms}
+:root[data-theme=veluno-noir] .btn:hover:not(:disabled){background:#1F1F1F;border-color:#454545}
+:root[data-theme=veluno-noir] .btn.primary{background:#EDEDED;border-color:#EDEDED;color:#0A0A0A}
+:root[data-theme=veluno-noir] .btn.primary:hover:not(:disabled){background:#FFFFFF;border-color:#FFFFFF}
+:root[data-theme=veluno-noir] .btn.ghost{background:transparent;border-color:#2E2E2E;color:#A1A1A1}
+:root[data-theme=veluno-noir] .btn.ghost:hover:not(:disabled){background:#1F1F1F;color:#EDEDED;border-color:#454545}
+:root[data-theme=veluno-noir] .btn.danger{background:rgba(255,97,102,.10);border-color:rgba(255,97,102,.35);color:#FF6166}
+:root[data-theme=veluno-noir] .input,:root[data-theme=veluno-noir] select,:root[data-theme=veluno-noir] textarea{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:6px;color:#EDEDED;font-family:var(--font-sans)}
+:root[data-theme=veluno-noir] .input:hover,:root[data-theme=veluno-noir] select:hover,:root[data-theme=veluno-noir] textarea:hover{border-color:#454545}
+:root[data-theme=veluno-noir] .input:focus-visible,:root[data-theme=veluno-noir] select:focus-visible,:root[data-theme=veluno-noir] textarea:focus-visible,:root[data-theme=veluno-noir] .btn:focus-visible{outline:2px solid #52A8FF;outline-offset:2px}
+:root[data-theme=veluno-noir] .icon-btn.nb-list-btn{width:44px;height:44px;border-radius:6px;background:#0A0A0A;border:1px solid #2E2E2E;color:#EDEDED}
+:root[data-theme=veluno-noir] .icon-btn.nb-list-btn:hover{background:#1F1F1F;border-color:#454545}
+:root[data-theme=veluno-noir] .icon-btn.nb-list-del{color:#FF6166;border-color:rgba(255,97,102,.30)}
+
+/* Dikey Kıvrımlı Öğrenme Yolu & Durak Düğümleri */
+:root[data-theme=veluno-noir] .pstop-core{background:#0A0A0A;border:1.5px solid #454545;color:#A1A1A1}
+:root[data-theme=veluno-noir] .pstop:hover .pstop-core{border-color:#EDEDED}
+:root[data-theme=veluno-noir] .pstop.is-done .pstop-core{background:#0A0A0A;border-color:#63C46D;color:#63C46D}
+:root[data-theme=veluno-noir] .pstop.is-current .pstop-core{background:#EDEDED;border-color:#EDEDED;color:#0A0A0A;box-shadow:0 0 0 4px rgba(255,255,255,.09)}
+:root[data-theme=veluno-noir] .pstop-boss.is-active .pstop-core{background:#0A0A0A;border-color:#AC9160;color:#AC9160;box-shadow:0 0 0 4px rgba(172,145,96,.16)}
+:root[data-theme=veluno-noir] .pstop-boss.is-done .pstop-core{background:#63C46D;border-color:#63C46D;color:#0A0A0A}
+:root[data-theme=veluno-noir] .pstop-label{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:6px}
+:root[data-theme=veluno-noir] .progress{background:rgba(255,255,255,.09)}
+:root[data-theme=veluno-noir] .progress>i{background:#EDEDED}
+:root[data-theme=veluno-noir] .table-wrap{border:1px solid #2E2E2E;border-radius:12px;background:#0A0A0A}
+:root[data-theme=veluno-noir] table th{color:#878787;border-bottom:1px solid #2E2E2E}
+:root[data-theme=veluno-noir] table td{border-bottom:1px solid #1A1A1A}
+:root[data-theme=veluno-noir] table tbody tr:hover{background:#1F1F1F}
+
+/* ==================== VELUNO NOIR — FAZ D: ÖĞRENME EKRANLARI ==================== */
+.feedback-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.learned-plain{display:inline-block;background:transparent;border:0;padding:0;color:var(--ok);font-weight:600;font-size:.86rem;letter-spacing:.01em}
+
+@keyframes noir-learned-glitch{
+  0%{opacity:0;transform:translate3d(-2px,0,0)}
+  35%{opacity:1;transform:translate3d(2px,0,0)}
+  70%{opacity:.78;transform:translate3d(-1px,0,0)}
+  100%{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* Ortak Odaklı Öğrenme Oturumu (Kartlar, Çoktan Seçmeli, Yazma, Eksik Harf, Dinleme, Cümle) */
+:root[data-theme=veluno-noir] .run-count,
+:root[data-theme=veluno-noir] .word.mono,
+:root[data-theme=veluno-noir] .big-num,
+:root[data-theme=veluno-noir] .big-count,
+:root[data-theme=veluno-noir] .mg-stat b,
+:root[data-theme=veluno-noir] .mg-result-stats b,
+:root[data-theme=veluno-noir] .fb-result-grid b,
+:root[data-theme=veluno-noir] .stop-stats b,
+:root[data-theme=veluno-noir] .irv-stat-pill b,
+:root[data-theme=veluno-noir] .step-no{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+
+:root[data-theme=veluno-noir] .run-label{color:#878787;letter-spacing:.06em;flex-wrap:wrap;justify-content:center}
+:root[data-theme=veluno-noir] .stage-dots i{background:#2E2E2E}
+:root[data-theme=veluno-noir] .stage-dots i.on{background:#EDEDED}
+:root[data-theme=veluno-noir] .stage-step-text{background:#1F1F1F;border:1px solid #2E2E2E;color:#EDEDED;border-radius:6px;font-weight:500;white-space:nowrap}
+:root[data-theme=veluno-noir] .word{color:#EDEDED;font-weight:600;letter-spacing:-.03em}
+:root[data-theme=veluno-noir] .sent{color:#EDEDED;font-weight:500;letter-spacing:-.015em}
+:root[data-theme=veluno-noir] .meaning{color:#A1A1A1;font-weight:500}
+:root[data-theme=veluno-noir] .pos,:root[data-theme=veluno-noir] .hint{color:#878787}
+:root[data-theme=veluno-noir] .speak-btn{background:#0A0A0A;border:1px solid #2E2E2E;color:#EDEDED;border-radius:8px;transition:background-color 150ms,border-color 150ms}
+:root[data-theme=veluno-noir] .speak-btn:hover{background:#1F1F1F;border-color:#454545}
+:root[data-theme=veluno-noir] .kv{border-color:#2E2E2E;color:#A1A1A1}
+:root[data-theme=veluno-noir] .kv span{color:#878787}
+
+:root[data-theme=veluno-noir] .opt{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:10px;color:#EDEDED;font-family:var(--font-sans);min-height:54px;transition:border-color 150ms,background-color 150ms,transform 150ms}
+:root[data-theme=veluno-noir] .opt:hover:not(:disabled){background:#1F1F1F;border-color:#454545}
+:root[data-theme=veluno-noir] .opt-n{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:6px;color:#A1A1A1;font-family:var(--font-mono)}
+:root[data-theme=veluno-noir] .opt.right{background:rgba(99,196,109,.10);border-color:#63C46D;color:#EDEDED}
+:root[data-theme=veluno-noir] .opt.right .opt-n{background:#63C46D;border-color:#63C46D;color:#0A0A0A}
+:root[data-theme=veluno-noir] .opt.bad{background:rgba(255,97,102,.10);border-color:#FF6166;color:#EDEDED}
+:root[data-theme=veluno-noir] .opt.bad .opt-n{background:#FF6166;border-color:#FF6166;color:#0A0A0A}
+
+:root[data-theme=veluno-noir] .feedback{border-radius:10px;border:1px solid #2E2E2E;animation:pin 180ms cubic-bezier(.16,1,.3,1)}
+:root[data-theme=veluno-noir] .feedback.ok{background:rgba(99,196,109,.10);border-color:rgba(99,196,109,.35);color:#63C46D}
+:root[data-theme=veluno-noir] .feedback.no{background:rgba(255,97,102,.10);border-color:rgba(255,97,102,.35);color:#FF6166}
+:root[data-theme=veluno-noir] .feedback span{color:#EDEDED}
+:root[data-theme=veluno-noir] .feedback small{color:#A1A1A1}
+:root[data-theme=veluno-noir] .learned-plain{background:transparent;border:0;padding:0;color:#63C46D}
+:root[data-theme=veluno-noir] .learned-plain.is-glitch{animation:noir-learned-glitch 220ms steps(2,end) 1}
+
+/* Durak Detay Paneli, Aşama Seçimi & Oturum Devam Ettirme */
+:root[data-theme=veluno-noir] .btn.bronze{background:#1A1A1A;border:1px solid #454545;color:#EDEDED;font-weight:500}
+:root[data-theme=veluno-noir] .btn.bronze:hover:not(:disabled){background:#292929;border-color:#878787;color:#FFFFFF;filter:none}
+:root[data-theme=veluno-noir] .stop-stats>div,
+:root[data-theme=veluno-noir] .nb-stage-toolbar,
+:root[data-theme=veluno-noir] .nb-group-section{background:#141414;border:1px solid #2E2E2E;border-radius:10px}
+:root[data-theme=veluno-noir] .stop-words{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:10px}
+:root[data-theme=veluno-noir] .stop-word+.stop-word{border-top-color:#2E2E2E}
+:root[data-theme=veluno-noir] .stop-filter-msg{background:#141414;border:1px dashed #2E2E2E;border-radius:8px;color:#A1A1A1}
+:root[data-theme=veluno-noir] .stop-chip{border-radius:6px;background:#1A1A1A;color:#A1A1A1;border:1px solid #2E2E2E}
+:root[data-theme=veluno-noir] .stop-chip.ok{background:transparent;border:0;padding:0;border-radius:0;color:#63C46D;font-weight:500}
+:root[data-theme=veluno-noir] .stop-chip.warn{background:rgba(242,167,0,.10);border-color:rgba(242,167,0,.35);color:#F2A700}
+:root[data-theme=veluno-noir] .stop-chip.mid{background:#1F1F1F;border-color:#454545;color:#EDEDED}
+:root[data-theme=veluno-noir] .nb-stage-counter,:root[data-theme=veluno-noir] .nb-group-badge{color:#EDEDED;background:#1F1F1F;border-color:#2E2E2E;border-radius:6px}
+:root[data-theme=veluno-noir] .nb-stage-card,
+:root[data-theme=veluno-noir] .nb-size-option{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:10px;transition:border-color 150ms,background-color 150ms}
+:root[data-theme=veluno-noir] .nb-stage-card:hover,
+:root[data-theme=veluno-noir] .nb-size-option:hover{background:#1F1F1F;border-color:#454545}
+:root[data-theme=veluno-noir] .nb-stage-card.active,
+:root[data-theme=veluno-noir] .nb-size-option.active{background:#1F1F1F;border-color:#EDEDED;color:#EDEDED}
+:root[data-theme=veluno-noir] .nb-stage-ic{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:8px}
+:root[data-theme=veluno-noir] .nb-stage-step{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:6px;color:#A1A1A1}
+:root[data-theme=veluno-noir] .nb-stage-box{border-radius:6px;border-color:#454545;background:#0A0A0A}
+:root[data-theme=veluno-noir] .nb-stage-card.active .nb-stage-box{background:#EDEDED;border-color:#EDEDED;color:#0A0A0A}
+
+/* Eşini Bul Oyunu */
+:root[data-theme=veluno-noir] .mg-title{font-weight:600;letter-spacing:-.02em;color:#EDEDED}
+:root[data-theme=veluno-noir] .mg-stat,
+:root[data-theme=veluno-noir] .mg-result-stats div{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:10px}
+:root[data-theme=veluno-noir] .mg-stat span,:root[data-theme=veluno-noir] .mg-result-stats span{color:#878787}
+:root[data-theme=veluno-noir] .mg-note{background:#141414;border:1px solid #2E2E2E;border-radius:8px;color:#A1A1A1}
+:root[data-theme=veluno-noir] .mg-inner{transition:transform 240ms cubic-bezier(.16,1,.3,1)}
+:root[data-theme=veluno-noir] .mg-face{border-radius:10px;border:1px solid #2E2E2E}
+:root[data-theme=veluno-noir] .mg-back{background:#1A1A1A;border-color:#2E2E2E;color:#878787}
+:root[data-theme=veluno-noir] .mg-card:hover .mg-back{background:#1F1F1F;border-color:#454545;color:#EDEDED;filter:none}
+:root[data-theme=veluno-noir] .mg-front{background:#0A0A0A;border-color:#454545;color:#EDEDED}
+:root[data-theme=veluno-noir] .mg-card[data-side=tr] .mg-front{background:#141414}
+:root[data-theme=veluno-noir] .mg-lang{font-family:var(--font-mono);color:#878787}
+:root[data-theme=veluno-noir] .mg-card.matched .mg-front{background:rgba(99,196,109,.10);border-color:#63C46D}
+:root[data-theme=veluno-noir] .mg-card.matched .mg-lang{color:#63C46D}
+:root[data-theme=veluno-noir] .mg-card.wrong .mg-front{background:rgba(255,97,102,.10);border-color:#FF6166}
+
+/* Final Boss, Tamamlama & Sonuç Ekranları */
+:root[data-theme=veluno-noir] .summary .big-num,
+:root[data-theme=veluno-noir] .review-page .big-count{color:#EDEDED;font-weight:700}
+:root[data-theme=veluno-noir] .verdict{color:#A1A1A1}
+:root[data-theme=veluno-noir] .fb-verdict-pass{color:#63C46D}
+:root[data-theme=veluno-noir] .fb-verdict-pending{color:#F2A700}
+:root[data-theme=veluno-noir] .fb-result-grid>div{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:10px}
+:root[data-theme=veluno-noir] .fb-pass-note{background:rgba(99,196,109,.10);border:1px solid rgba(99,196,109,.35);border-radius:10px;color:#63C46D}
+:root[data-theme=veluno-noir] .fb-pending-note{background:rgba(242,167,0,.10);border:1px solid rgba(242,167,0,.35);border-radius:10px;color:#F2A700}
+:root[data-theme=veluno-noir] .sm-c,:root[data-theme=veluno-noir] .sm-t{stroke:#EDEDED}
+:root[data-theme=veluno-noir] .g-ans{border-left-color:#2E2E2E}
+:root[data-theme=veluno-noir] .g-ans.ok{border-left-color:#63C46D}
+:root[data-theme=veluno-noir] .g-ans.no{border-left-color:#FF6166}
+
+/* Grammar Academy */
+:root[data-theme=veluno-noir] .seg{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:8px;padding:3px}
+:root[data-theme=veluno-noir] .seg-btn{border-radius:6px;color:#A1A1A1;transition:background-color 150ms,color 150ms}
+:root[data-theme=veluno-noir] .seg-btn.active{background:#1F1F1F;color:#EDEDED;border:1px solid #454545}
+:root[data-theme=veluno-noir] .step-btn{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:10px;transition:background-color 150ms,border-color 150ms}
+:root[data-theme=veluno-noir] .step-btn:hover:not(:disabled){background:#1F1F1F;border-color:#454545}
+:root[data-theme=veluno-noir] .step-node{background:#0A0A0A;border:1px solid #454545;color:#A1A1A1}
+:root[data-theme=veluno-noir] .step.is-done .step-node{border-color:#63C46D;color:#63C46D;background:#0A0A0A}
+:root[data-theme=veluno-noir] .step.is-current .step-node{background:#EDEDED;border-color:#EDEDED;color:#0A0A0A}
+:root[data-theme=veluno-noir] .step-cta{background:#EDEDED;color:#0A0A0A;border-radius:6px;font-weight:600;padding:4px 10px;font-size:.78rem}
+:root[data-theme=veluno-noir] .eyebrow,:root[data-theme=veluno-noir] .back-link,:root[data-theme=veluno-noir] .text-btn{color:#A1A1A1}
+:root[data-theme=veluno-noir] .back-link:hover,:root[data-theme=veluno-noir] .text-btn:hover{color:#EDEDED}
+:root[data-theme=veluno-noir] .done-tag{color:#63C46D}
+:root[data-theme=veluno-noir] .formula,
+:root[data-theme=veluno-noir] .examples li,
+:root[data-theme=veluno-noir] .mistakes li{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:10px}
+:root[data-theme=veluno-noir] .formula code{font-family:var(--font-mono);background:#0A0A0A;border:1px solid #2E2E2E;border-radius:6px;color:#EDEDED}
+:root[data-theme=veluno-noir] .m-wrong{color:#FF6166}
+:root[data-theme=veluno-noir] .m-right{color:#63C46D}
+
+/* Fiillerin 3 Hali */
+:root[data-theme=veluno-noir] .irv-choice-card,
+:root[data-theme=veluno-noir] .irv-stat-pill,
+:root[data-theme=veluno-noir] .irv-flashcard,
+:root[data-theme=veluno-noir] .irv-form-box,
+:root[data-theme=veluno-noir] .irv-meaning-box{background:#1A1A1A;border:1px solid #2E2E2E;border-radius:10px;box-shadow:none}
+:root[data-theme=veluno-noir] .irv-choice-card:hover{background:#1F1F1F;border-color:#454545;transform:none;box-shadow:none}
+:root[data-theme=veluno-noir] .irv-ic-manual{background:#1F1F1F;border:1px solid #2E2E2E;color:#EDEDED;border-radius:8px}
+:root[data-theme=veluno-noir] .irv-ic-builtin{background:rgba(99,196,109,.10);border:1px solid rgba(99,196,109,.35);color:#63C46D;border-radius:8px}
+:root[data-theme=veluno-noir] .irv-choice-cta{color:#EDEDED}
+:root[data-theme=veluno-noir] .irv-meta-pill{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:6px;color:#A1A1A1}
+:root[data-theme=veluno-noir] .irv-meta-pill.ok{background:rgba(99,196,109,.10);border-color:rgba(99,196,109,.35);color:#63C46D}
+:root[data-theme=veluno-noir] .irv-meta-pill.warn{background:rgba(242,167,0,.10);border-color:rgba(242,167,0,.35);color:#F2A700}
+:root[data-theme=veluno-noir] .irv-mode-btn{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:10px;transition:border-color 150ms,background-color 150ms}
+:root[data-theme=veluno-noir] .irv-mode-btn:hover:not(:disabled){background:#1F1F1F;border-color:#454545;transform:none}
+:root[data-theme=veluno-noir] .irv-mode-btn.accent{background:#1F1F1F;border-color:#EDEDED}
+:root[data-theme=veluno-noir] .irv-mode-btn.warn{border-color:rgba(255,97,102,.35)}
+:root[data-theme=veluno-noir] .irv-mode-btn.srs{border-color:rgba(99,196,109,.35)}
+:root[data-theme=veluno-noir] .irv-form-box{background:#0A0A0A}
+:root[data-theme=veluno-noir] .irv-stat-pill.ok b{color:#63C46D}
+:root[data-theme=veluno-noir] .irv-stat-pill.bad b{color:#FF6166}
+:root[data-theme=veluno-noir] .irv-stat-pill.ac b{color:#EDEDED}
+:root[data-theme=veluno-noir] .chip{background:#1F1F1F;border:1px solid #2E2E2E;color:#EDEDED;border-radius:6px}
+:root[data-theme=veluno-noir] .chip.ok{background:rgba(99,196,109,.10);border-color:rgba(99,196,109,.35);color:#63C46D}
+:root[data-theme=veluno-noir] .chip.bad{background:rgba(255,97,102,.10);border-color:rgba(255,97,102,.35);color:#FF6166}
+:root[data-theme=veluno-noir] .chip.alt{background:#141414;border-color:#2E2E2E;color:#A1A1A1}
+
+:root[data-theme=veluno-noir] .opt:focus-visible,
+:root[data-theme=veluno-noir] .mg-card:focus-visible,
+:root[data-theme=veluno-noir] .pstop:focus-visible,
+:root[data-theme=veluno-noir] .nb-stage-card:focus-visible,
+:root[data-theme=veluno-noir] .nb-size-option:focus-visible,
+:root[data-theme=veluno-noir] .step-btn:focus-visible,
+:root[data-theme=veluno-noir] .nb-list-btn:focus-visible,
+:root[data-theme=veluno-noir] .speak-btn:focus-visible,
+:root[data-theme=veluno-noir] .icon-btn:focus-visible,
+:root[data-theme=veluno-noir] #sidebar a:focus-visible,
+:root[data-theme=veluno-noir] #bottomnav a:focus-visible{outline:2px solid #52A8FF;outline-offset:2px}
+
+@media (max-width:768px){
+  :root[data-theme=veluno-noir] .nb-top-actions .btn.sm{min-height:44px;padding:8px 14px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .learned-plain.is-glitch,
+  :root[data-theme=veluno-noir] .feedback,
+  :root[data-theme=veluno-noir] .mg-inner,
+  :root[data-theme=veluno-noir] .opt{animation:none!important;transition:none!important}
+}

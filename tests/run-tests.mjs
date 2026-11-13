@@ -402,7 +402,7 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
 });
 await test('Service Worker önbellek sürümü (veluno-v5.0.3) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'SW sürümü veluno-v5.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'SW sürümü veluno-v5.4.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -1309,7 +1309,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'SW sürümü veluno-v5.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'SW sürümü veluno-v5.4.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1734,7 +1734,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2803,7 +2803,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3675,7 +3675,7 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker sürümü veluno-v5.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker sürümü veluno-v5.4.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
@@ -3775,7 +3775,7 @@ await test('v5.0.3 [2] Kelime Defterim liste yönetim butonları (Düzenle ve Si
 
 await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.2.0 olarak güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker sürümü veluno-v5.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker sürümü veluno-v5.4.0 olmalı');
 });
 
 /* ---------- 22) v5.2 — Akıllı Eksik / Hatalı / Tekrar Çalışma Güncellemesi Testleri ---------- */
@@ -4078,9 +4078,9 @@ await test('v5.2 [14] Ember Soft ve diğer temaların renk/tasarım standartlar�
   ok(css.includes('--ember-no:#57191C'), 'Ember Soft yanlış vişnesi korunmalı');
 });
 
-await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.3.0) ve dosya bütünlüğü tam', async () => {
+await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.4.0) ve dosya bütünlüğü tam', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.3.0';"), 'Service Worker sürümü veluno-v5.3.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker sürümü veluno-v5.4.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'") && sw.includes("'js/final-boss.js'"), 'Yol ve Final Boss modülleri önbellekte olmalı');
 });
 
@@ -4334,6 +4334,90 @@ await test('v5.3 [7] Final Boss: Duraklama/devam etme, SRS korunması, liste de�
 
   await deleteNotebookList(list.id);
   eq(FB.getFinalBossRecord(list.id), null, 'Liste silinince Final Boss kaydı temizlenmeli');
+});
+
+/* ============================================================================
+   24. FAZ C — VELUNO NOIR TEMA ENTEGRASYONU & 5,5 SN AÇILIŞ KATMANI TESTLERİ
+============================================================================ */
+out('\n--- 24. FAZ C VELUNO Noir Tema & Açılış Katmanı Testleri ---');
+
+await test('FAZ C [1] veluno-noir teması bağımsız seçenek olarak eklendi ve eski temalar korundu', async () => {
+  ok(THEME_IDS.includes('veluno-noir'), 'THEME_IDS veluno-noir içermeli');
+  for (const id of ['light', 'dark', 'auto', 'studio', 'ember']) {
+    ok(THEME_IDS.includes(id), `Eski tema (${id}) korunmalı`);
+  }
+  eq(resolveTheme('veluno-noir'), 'veluno-noir', 'resolveTheme veluno-noir döndürmeli');
+  eq(THEME_META_COLORS['veluno-noir'], '#0A0A0A', 'VELUNO Noir meta rengi #0A0A0A olmalı');
+});
+
+await test('FAZ C [2] index.html, css/style.css ve js/v-light.js 5,5 sn açılış ve Geist tokenlarını içerir', async () => {
+  const html = await readText('index.html');
+  const css = await readText('css/style.css');
+  const vLight = await readText('js/v-light.js');
+  const sw = await readText('service-worker.js');
+  ok(html.includes('id="v-splash"') && html.includes('Geist'), 'index.html v-splash ve Geist fontlarını içermeli');
+  ok(css.includes(':root[data-theme=veluno-noir]') && css.includes('5.5s'), 'style.css veluno-noir tokenlarını ve 5.5s animasyonu içermeli');
+  ok(vLight.includes('M171 162H244L288 262L332 162H405L288 430Z') && !vLight.includes('FPS ölç'), 'v-light.js onaylı V geometrisini içermeli ve test butonu olmamalı');
+  ok(sw.includes("'js/v-light.js'"), 'Service Worker js/v-light.js dosyasını önbelleğe almalı');
+});
+
+/* ============================================================================
+   25. FAZ D — VELUNO NOIR ÖĞRENME EKRANLARI TASARIM & REGRESYON TESTLERİ
+============================================================================ */
+out('\n--- 25. FAZ D VELUNO Noir Öğrenme Ekranları Testleri ---');
+
+await test('FAZ D [1] Öğrenme ekranları, Eşini Bul, Final Boss, Grammar ve Fiiller Noir CSS kurallarını içerir', async () => {
+  const css = await readText('css/style.css');
+  for (const sel of [
+    ':root[data-theme=veluno-noir] .opt',
+    ':root[data-theme=veluno-noir] .feedback.ok',
+    ':root[data-theme=veluno-noir] .learned-plain.is-glitch',
+    ':root[data-theme=veluno-noir] .stop-chip.ok',
+    ':root[data-theme=veluno-noir] .mg-card.matched .mg-front',
+    ':root[data-theme=veluno-noir] .fb-result-grid>div',
+    ':root[data-theme=veluno-noir] .step-btn',
+    ':root[data-theme=veluno-noir] .irv-choice-card',
+    'noir-learned-glitch',
+  ]) {
+    ok(css.includes(sel), `style.css ${sel} kuralını içermeli`);
+  }
+});
+
+await test('FAZ D [2] ✓ Öğrenildi yalnızca motor learningComplete ürettiğinde glitch ile gösterilir; tek doğru ile Learned/Mastered yapılmaz', async () => {
+  const learningSrc = await readText('js/learning.js');
+  ok(learningSrc.includes('learnedNow: !was && Boolean(p.learningComplete)'), 'learnedNow yalnızca gerçek learningComplete geçişinde true olmalı');
+  ok(learningSrc.includes('learned-plain is-glitch'), '✓ Öğrenildi çerçevesiz düz metin + glitch sınıfını kullanmalı');
+  const p = E.newProgress('fazd-1');
+  E.applyAnswer(p, true, { mode: 'learn', stage: 2, qtype: 'mc' });
+  eq(p.learningComplete, false, 'Tek bir doğru cevapla learningComplete true olmamalı');
+  ok(p.status !== 'MASTERED' && p.status !== 'LEARNED', 'Tek bir doğru cevapla kelime Learned/Mastered olmamalı');
+});
+
+/* ============================================================================
+   26. FAZ E — PERFORMANS, ERİŞİLEBİLİRLİK & PWA ÖNBELLEK BÜTÜNLÜK TESTLERİ
+============================================================================ */
+out('\n--- 26. FAZ E Erişilebilirlik, Performans & PWA Bütünlük Testleri ---');
+
+await test('FAZ E [1] Tüm etkileşimli Noir bileşenlerinde focus-visible ve reduced-motion kuralları bulunur', async () => {
+  const css = await readText('css/style.css');
+  ok(css.includes(':root[data-theme=veluno-noir] .opt:focus-visible'), 'Seçeneklerde focus-visible olmalı');
+  ok(css.includes(':root[data-theme=veluno-noir] .mg-card:focus-visible'), 'Eşini Bul kartlarında focus-visible olmalı');
+  ok(css.includes(':root[data-theme=veluno-noir] .pstop:focus-visible'), 'Yol duraklarında focus-visible olmalı');
+  ok(css.includes(':root[data-theme=veluno-noir] #bottomnav a:focus-visible'), 'Alt navigasyonda focus-visible olmalı');
+  ok(css.includes('prefers-reduced-motion:reduce'), 'Reduced-motion desteği bulunmalı');
+});
+
+await test('FAZ E [2] Service Worker veluno-v5.4.0 FILES listesindeki tüm dosyalar diskte mevcut ve geçerlidir', async () => {
+  const sw = await readText('service-worker.js');
+  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'SW sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes('k !== VERSION') && sw.includes('caches.delete(k)'), 'Eski önbellekler activate aşamasında silinmeli');
+  const m = sw.match(/const FILES = \[([\s\S]*?)\];/);
+  ok(m, 'FILES listesi okunabilmeli');
+  const entries = [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]).filter((p) => p !== './');
+  for (const rel of entries) {
+    const content = await readText(rel);
+    ok(content !== null && content !== undefined, `SW dosyası mevcut olmalı: ${rel}`);
+  }
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

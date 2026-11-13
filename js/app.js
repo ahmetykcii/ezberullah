@@ -20,11 +20,12 @@ const view = () => $('#view');
 const INTRO_KEY = 'lexora_intro_seen';
 
 /* ---------- Tema Çözümleme & Ayarların Uygulanması ---------- */
-export const THEME_META_COLORS = { dark: '#101317', studio: '#131F23', ember: '#101820', light: '#F7F9FC' };
-export const THEME_IDS = ['light', 'dark', 'auto', 'studio', 'ember'];
+export const THEME_META_COLORS = { dark: '#101317', studio: '#131F23', ember: '#101820', 'veluno-noir': '#0A0A0A', light: '#F7F9FC' };
+export const THEME_IDS = ['light', 'dark', 'auto', 'studio', 'ember', 'veluno-noir'];
 export function resolveTheme(themePref = 'light', prefersDark = null) {
   if (themePref === 'studio') return 'studio';
   if (themePref === 'ember') return 'ember';
+  if (themePref === 'veluno-noir') return 'veluno-noir';
   if (themePref === 'dark') return 'dark';
   if (themePref === 'auto') {
     const isDark = prefersDark !== null
@@ -45,7 +46,7 @@ export function applySettings() {
   r.classList.toggle('reduce', !!s.reducedMotion);
   const metaTheme = document.getElementById('meta-theme-color');
   if (metaTheme) {
-    const metaColors = { dark: '#101317', studio: '#131F23', ember: '#101820', light: '#F7F9FC' };
+    const metaColors = { dark: '#101317', studio: '#131F23', ember: '#101820', 'veluno-noir': '#0A0A0A', light: '#F7F9FC' };
     metaTheme.setAttribute('content', metaColors[resolved] || '#F7F9FC');
   }
 }
@@ -83,10 +84,41 @@ function showIntro() {
   setTimeout(() => focusTarget.focus({ preventScroll: true }), getSettings().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 5200 : 100);
 }
 
+let launchSplashPlayed = false;
+async function playLaunchVSplash() {
+  if (launchSplashPlayed) return;
+  launchSplashPlayed = true;
+  const splash = $('#v-splash');
+  const mount = $('#v-splash-mount');
+  if (!splash || !mount) return;
+  const reduce = !!getSettings().reducedMotion || (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+  try {
+    const { mountVLightScene } = await import('./v-light.js');
+    splash.classList.remove('is-leaving');
+    splash.hidden = false;
+    const ctrl = mountVLightScene(mount);
+    if (reduce) {
+      ctrl.setStaticMode(true);
+      setTimeout(() => {
+        splash.classList.add('is-leaving');
+        setTimeout(() => { splash.hidden = true; ctrl.destroy(); }, 200);
+      }, 250);
+    } else {
+      setTimeout(() => {
+        splash.classList.add('is-leaving');
+        setTimeout(() => { splash.hidden = true; ctrl.destroy(); }, 500);
+      }, 5000);
+    }
+  } catch {
+    splash.hidden = true;
+  }
+}
+
 function enterApp() {
   $('#app').hidden = false;
   if (!location.hash || location.hash === '#/dashboard') location.hash = '#/notebook';
   route();
+  playLaunchVSplash();
 }
 
 /* ---------- Router (hash tabanlı → GitHub Pages'te yenileme sorunu olmaz) ---------- */
@@ -248,6 +280,7 @@ function renderSettings(v) {
       <button type="button" class="theme-card-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto"><span class="theme-preview theme-p-auto" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Otomatik</button>
       <button type="button" class="theme-card-btn ${curTheme === 'studio' ? 'active' : ''}" data-set-theme="studio"><span class="theme-preview theme-p-studio" aria-hidden="true"><span class="theme-swatch-bar"></span></span>VELUNO Studio</button>
       <button type="button" class="theme-card-btn ${curTheme === 'ember' ? 'active' : ''}" data-set-theme="ember"><span class="theme-preview theme-p-ember" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Ember Soft</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'veluno-noir' ? 'active' : ''}" data-set-theme="veluno-noir"><span class="theme-preview theme-p-noir" aria-hidden="true"><span class="theme-swatch-bar"></span></span>VELUNO Noir</button>
     </div></div></div>
   <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder. VELUNO Studio, petrol ve lime yeşili özel tasarım sunar. Ember Soft; koyu antrasit zemin, Midnight Petrol ve Aged Bronze tonlarıyla sakin bir görünüm sunar.</p>
 

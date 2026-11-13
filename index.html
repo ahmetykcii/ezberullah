@@ -17,7 +17,7 @@
   try {
     var raw = localStorage.getItem('lexora_settings');
     var pref = (raw && JSON.parse(raw).theme) || 'light';
-    var resolved = (pref === 'studio' || pref === 'ember')
+    var resolved = (pref === 'studio' || pref === 'ember' || pref === 'veluno-noir')
       ? pref
       : (pref === 'auto'
         ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
@@ -26,7 +26,7 @@
     document.documentElement.dataset.themeMode = pref;
     var mt = document.getElementById('meta-theme-color');
     if (mt) {
-      var metaColors = { dark: '#101317', studio: '#131F23', ember: '#101820', light: '#F7F9FC' };
+      var metaColors = { dark: '#101317', studio: '#131F23', ember: '#101820', 'veluno-noir': '#0A0A0A', light: '#F7F9FC' };
       mt.setAttribute('content', metaColors[resolved] || '#F7F9FC');
     }
   } catch (e) {
@@ -40,11 +40,12 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <a class="skip" href="#view">İçeriğe geç</a>
+<div class="v-splash" id="v-splash" hidden aria-hidden="true"><div class="v-splash-inner" id="v-splash-mount"></div></div>
 
 <section id="intro" hidden aria-label="Açılış">
   <div class="glow"></div>
