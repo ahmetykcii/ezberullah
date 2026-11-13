@@ -12,7 +12,7 @@
 
 import { getMeta, setMeta } from './storage.js';
 import * as E from './engine.js';
-import { $, $$, esc, toast, sfx } from './ui.js';
+import { $, $$, esc, toast, sfx, ICONS } from './ui.js';
 import { bumpDaily } from './statistics.js';
 
 export const MEMORY_STAGE = 5;
@@ -599,7 +599,7 @@ function renderZeroCorrect(round, ctx) {
   if (typeof document !== 'undefined') document.body.classList.add('focus');
 
   v.innerHTML = `<div class="summary mg-result mg-zero-state" data-memory-zero>
-    <div class="mg-trophy" aria-hidden="true">🎯</div>
+    <div class="mg-trophy" aria-hidden="true">${ICONS.target}</div>
     <h2>Eşini Bul — Hafıza Oyunu</h2>
     <p class="mg-zero-msg">${esc(ZERO_CORRECT_MESSAGE)}</p>
     <div class="sum-actions">
@@ -665,7 +665,7 @@ function renderGame(game, round, ctx) {
   v.innerHTML = `<div class="mg" data-memory-game data-card-count="${n}">
     <div class="run-top mg-top">
       <button class="icon-btn" id="mg-exit" aria-label="Oyundan çık">✕</button>
-      <h2 class="mg-title">🧠 Eşini Bul (${game.total} Kelime · ${n} Kart)</h2>
+      <h2 class="mg-title">${ICONS.grid} Eşini Bul (${game.total} Kelime · ${n} Kart)</h2>
       <span class="mg-scope muted small">${esc(ctx.title)}</span>
     </div>
     <div class="mg-stats" role="status" aria-live="polite">
@@ -745,7 +745,7 @@ async function finishGame(game, round, ctx) {
   const sessionNote = ctx.fromSession ? `<p class="muted small">Seçtiğin ${ctx.stageCount} aşamanın tamamı bitti. Çalışma oturumu tamamlandı.</p>` : '';
   const showNextBtn = Boolean(round.hasNextRound || typeof ctx.onNextGroup === 'function');
   v.innerHTML = `<div class="summary mg-result">
-    <div class="mg-trophy" aria-hidden="true">🎉</div>
+    <div class="mg-trophy" aria-hidden="true">${ICONS.star}</div>
     <h2>Tebrikler! Bütün eşleşmeleri tamamladın!</h2>
     <div class="mg-result-stats">
       <div><span>Eşleşme</span><b>${game.matches}/${game.total}</b></div>

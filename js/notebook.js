@@ -4,7 +4,7 @@
 
 import { state, saveData, setMeta, getSettings, getProgress, saveProgress } from './storage.js';
 import * as E from './engine.js';
-import { $, $$, esc, openModal, toast, confirmDialog, speak, ICONS } from './ui.js';
+import { $, $$, esc, openModal, toast, confirmDialog, speak, ICONS, vBrandMini } from './ui.js';
 import { prepareWordInfo } from './vocabulary.js';
 import { blankSentence, isWordReady } from './engine.js';
 import { getCurrentUser } from './auth.js';
@@ -501,7 +501,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
   {
     stage: 1,
     type: 'card',
-    icon: '📖',
+    icon: ICONS.book,
     title: 'Kelimeyi Öğren',
     desc: 'Kelime kartı, Türkçe anlamı ve örnek cümlesi',
     defaultSelected: true,
@@ -509,7 +509,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
   {
     stage: 2,
     type: 'mc',
-    icon: '🎯',
+    icon: ICONS.target,
     title: 'Çoktan Seçmeli Test',
     desc: 'Doğru Türkçe anlamı seçenekler arasından bulma',
     defaultSelected: true,
@@ -517,7 +517,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
   {
     stage: 3,
     type: 'typing',
-    icon: '✍️',
+    icon: ICONS.edit,
     title: 'İngilizce Kelimeyi Yaz',
     desc: 'Türkçe anlamı verilen kelimenin İngilizcesini yazma',
     defaultSelected: true,
@@ -525,7 +525,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
   {
     stage: 4,
     type: 'missing',
-    icon: '🧩',
+    icon: ICONS.grid,
     title: 'Eksik Harfleri Tamamla',
     desc: 'İngilizce kelimedeki eksik harfleri tamamlama',
     defaultSelected: true,
@@ -533,7 +533,7 @@ export const NOTEBOOK_STAGE_OPTIONS = [
   {
     stage: 5,
     type: 'match',
-    icon: '🧠',
+    icon: ICONS.brain,
     title: 'Eşini Bul — Hafıza Oyunu',
     desc: 'İngilizce kelimeleri Türkçe anlamlarıyla kapalı kartlar arasında eşleştir',
     defaultSelected: false,
@@ -887,7 +887,7 @@ export async function startStudyUnknown(userId = getActiveUserId(), options = nu
   const candidates = words.filter(isUnknownCandidate);
 
   if (!candidates.length) {
-    toast('Tebrikler! Şu an zorlandığınız veya bilmediğiniz kişisel bir kelime bulunmuyor. 🎉', 'success');
+    toast('Tebrikler! Şu an zorlandığınız veya bilmediğiniz kişisel bir kelime bulunmuyor.', 'success');
     return false;
   }
 
@@ -943,7 +943,7 @@ export async function startStudyDue(userId = getActiveUserId()) {
   const dueWords = words.filter((w) => E.isDue(getProgress(w.id), now));
 
   if (!dueWords.length) {
-    toast('Harika! Şu an aralıklı tekrar (SRS) zamanı gelen bir kelimeniz yok. 🎉', 'success');
+    toast('Harika! Şu an aralıklı tekrar (SRS) zamanı gelen bir kelimeniz yok.', 'success');
     return false;
   }
 
@@ -1012,7 +1012,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
       return !p.learningComplete || p.currentStatus === 'REVIEW' || (p.masteryScore || 0) < 60;
     });
     if (!candidates.length) {
-      toast('Tebrikler! Şu an zorlandığınız veya bilmediğiniz kişisel bir kelime bulunmuyor. 🎉', 'success');
+      toast('Tebrikler! Şu an zorlandığınız veya bilmediğiniz kişisel bir kelime bulunmuyor.', 'success');
       return false;
     }
     contextLabel = `<b>Yalnızca Bilmediklerim</b> (${candidates.length} kelime)`;
@@ -1067,7 +1067,7 @@ export function openStageSelectionModal({ listId = null, mode = 'list', userId =
         <div class="nb-stage-grid" role="group" aria-label="Çalışma Aşamaları">
           ${cardsHtml}
         </div>
-        <p class="muted small nb-stage-hint">🧠 Eşini Bul yalnızca Kelime Defterim'e özeldir. Diğer aşamalarla seçilirse o grupta hatasız tamamladığın kelimelerle oynanır; tek başına seçilirse doğrudan seçilen kelime grubuyla başlar.</p>
+        <p class="muted small nb-stage-hint">Eşini Bul yalnızca Kelime Defterim'e özeldir. Diğer aşamalarla seçilirse o grupta hatasız tamamladığın kelimelerle oynanır; tek başına seçilirse doğrudan seçilen kelime grubuyla başlar.</p>
         <div class="err small" id="nb-stage-err" role="alert"></div>
         <div class="nb-stage-actions">
           <button type="button" class="btn ghost" data-x>Vazgeç</button>
@@ -1497,7 +1497,7 @@ export function openListWordsModal(listId, onUpdated = () => {}) {
         </div>
         <div class="row gap">
           <button type="button" class="btn sm primary" id="btn-modal-add-word">＋ Kelime Ekle</button>
-          <button type="button" class="btn sm" id="btn-modal-study-list" ${stats.total ? '' : 'disabled'}>🚀 Listeyi Çalış</button>
+          <button type="button" class="btn sm" id="btn-modal-study-list" ${stats.total ? '' : 'disabled'}>Listeyi Çalış</button>
         </div>
       </div>
 
@@ -1791,7 +1791,7 @@ export function renderNotebook(v) {
       <div class="page notebook-page">
         <header class="nb-header">
           <div class="nb-brand-row">
-            <span class="hero-title" aria-label="VELUNO">VELUNO</span>
+            ${vBrandMini('sm')}
             <span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>
           </div>
           <div class="nb-top-bar">

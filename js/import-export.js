@@ -131,7 +131,7 @@ export function openImportWizard(onDone) {
         $('#go', wz).onclick = async () => {
           const add = res.filter((r) => r.status === 'ok').map((r) => r.w);
           try { await saveMany('words', add); } catch (err) { return toast('Kayıt başarısız, hiçbir kelime eklenmedi: ' + err.message, 'error'); }
-          wz.innerHTML = `<h3>✅ İçe aktarma tamamlandı</h3><p>${add.length} kelime eklendi, ${c.dup} tekrar ve ${c.error} hatalı satır atlandı.</p><div class="row end"><button class="btn primary" data-close2>Kapat</button></div>`;
+          wz.innerHTML = `<h3>İçe aktarma tamamlandı</h3><p>${add.length} kelime eklendi, ${c.dup} tekrar ve ${c.error} hatalı satır atlandı.</p><div class="row end"><button class="btn primary" data-close2>Kapat</button></div>`;
           $('[data-close2]', wz).onclick = () => { api.close(); onDone && onDone(); };
           onDone && onDone();
         };

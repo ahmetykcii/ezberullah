@@ -136,20 +136,18 @@ await test('seviye, durum, kelime türü ve kategori Türkçe etiketleri eksiksi
 await test('Ayarlar sayfasında #intro ID çakışması yok ve index.html Türkçe menü içeriyor', async () => {
   const appCode = await readText('js/app.js');
   ok(!appCode.includes('id="intro"'), 'app.js içinde id="intro" kalmamalı');
-  ok(appCode.includes("btnRow('replay-intro'") && appCode.includes("$('#replay-intro'"), 'replay-intro butonu bulunmalı');
+  ok(!appCode.includes('replay-intro'), 'Hayrat tekrar izle butonu kaldırılmış olmalı');
   const html = await readText('index.html');
   for (const label of ['Kelime Defterim', 'Hazır Kelime Havuzu', 'Yolum', 'Tekrar', 'Grammar', 'Kelime Havuzum', 'Sınavlar', 'İstatistikler', 'Ayarlar']) {
     ok(html.includes(label), 'Eksik menü etiketi: ' + label);
   }
 });
-await test('Açılış ekranı onay kutusu ve giriş bildirimi güncel kurallara uygun', async () => {
+await test('Hayrat giriş ekranı kaldırıldı ve uygulama doğrudan 5,5 sn V açılışı ile başlıyor', async () => {
   const html = await readText('index.html');
-  ok(html.includes('id="intro-agree"'), 'intro-agree onay kutusu bulunmalı');
-  ok(html.includes('Duamı ettim, Allah Ahmet Yakıcı’dan razı olsun.'), 'Onay kutusu metni doğru olmalı');
-  ok(html.includes('id="intro-go" class="intro-btn rv t6" disabled'), 'Giriş butonu başlangıçta disabled olmalı');
+  ok(!html.includes('id="intro"') && !html.includes('HAYRATIDIR'), 'Hayrat giriş ekranı index.html içinde olmamalı');
+  ok(html.includes('id="v-splash"'), 'v-splash açılış katmanı index.html içinde bulunmalı');
   const appCode = await readText('js/app.js');
-  ok(appCode.includes('btn.disabled = !agree.checked'), 'Checkbox durumuna göre buton aktif/pasif olmalı');
-  ok(appCode.includes('✅ Duanız sisteme başarıyla kaydedildi. +10 sevap (temsili) 😇'), 'Güncellenmiş bildirim metni bulunmalı');
+  ok(!appCode.includes('showIntro') && appCode.includes('enterApp()') && appCode.includes('playLaunchVSplash()'), 'boot() doğrudan enterApp() ve playLaunchVSplash() çağırmalı');
 });
 
 out('2) Engine ve 6 Aşamalı Öğrenme');
@@ -402,7 +400,7 @@ await test('önceden IndexedDB\'de taslak (isDraft:true) olan yerleşik kelime s
 });
 await test('Service Worker önbellek sürümü (veluno-v5.0.3) ve önbellek dosya listesi güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'SW sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'SW sürümü veluno-v5.5.0 olmalı');
   for (const f of ['index.html', 'manifest.webmanifest', 'manifest.json', 'css/style.css', 'js/app.js', 'js/grammar-data.js', 'js/grammar.js', 'js/notebook.js', 'js/irregular-verbs.js', 'data/a2.json', 'data/b1.json', 'data/b2.json', 'data/irregular-verbs.json', 'assets/icons/icon.svg', 'assets/icons/logo-full.svg', 'assets/icons/apple-touch-icon.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/icon-maskable-512.png']) {
     ok(sw.includes(`'${f}'`), 'SW FILES içinde eksik dosya: ' + f);
   }
@@ -417,8 +415,8 @@ await test('VELUNO marka dönüşümü, modern safir-mavi ikon sistemi, Apple be
   const svgLogoFull = await readText('assets/icons/logo-full.svg');
 
   ok(html.includes('<title>VELUNO'), 'Tarayıcı sekmesi başlığı VELUNO olmalı');
-  ok(html.includes('✦ VELUNO ✦'), 'Açılış ekranında VELUNO imzası bulunmalı');
-  ok(html.includes('<b class="brand-name" aria-label="VELUNO">VELUNO</b>'), 'Sol menüde VELUNO başlığı bulunmalı');
+  ok(html.includes('id="v-splash"'), 'Açılışta VELUNO V + beyaz ışık katmanı bulunmalı');
+  ok(html.includes('class="v-brand-mini" role="img" aria-label="VELUNO"'), 'Sol menüde küçük V marka logosu bulunmalı');
   ok(!html.includes('LEXORA') && !html.includes('EZBERULLAH'), 'index.html içinde eski LEXORA veya EZBERULLAH adı kalmamalı');
   ok(!html.includes('ahmet') && !html.includes('sude'), 'ahmet ❤️ sude imzası index.html / kenar çubuğunda değil yalnızca Ana Sayfada olmalı');
   ok(html.includes('class="nav-ic"') && html.includes('<svg viewBox="0 0 24 24"'), 'Navigasyonda ince çizgili modern monokrom SVG ikonlar kullanılmalı');
@@ -432,40 +430,41 @@ await test('VELUNO marka dönüşümü, modern safir-mavi ikon sistemi, Apple be
   ok(svgIcon.includes('aria-label="VELUNO"') && svgIcon.includes('#4F8EF7') && !svgIcon.includes('<text'), 'Telefon/uygulama ikonunda yalnızca VELUNO sembolü bulunmalı');
   ok(svgLogoFull.includes('VELUNO'), 'Tam logoda VELUNO başlığı olmalı');
 
-  ok(appCode.includes('<span class="hero-title" aria-label="VELUNO">VELUNO</span>'), 'Üst marka alanında VELUNO başlığı bulunmalı');
+  ok(appCode.includes("vBrandMini('sm')"), 'Üst marka alanında küçük V logosu bulunmalı');
   ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Küçük harfli ahmet ❤️ sude imzası dokunulmadan korunmalı');
   ok(css.includes('.hero-sig{') && css.includes('text-transform:lowercase') && css.includes('font-weight:300') && css.includes('align-self:flex-end'), 'İmza CSS kuralları (küçük harf, ince font, sağ alt hiza) bulunmalı');
   ok(css.includes('.sig-heart{color:#EF4444'), 'Kalp kırmızı renkte (#EF4444) tanımlanmalı');
   ok(!css.includes('#D4B475') && !css.includes('#C9A86A'), 'Eski sarı/altın renk kodları (#D4B475, #C9A86A) tamamen kaldırılmış olmalı');
 });
-await test('VELUNO Tema Sistemi: Açık tema varsayılan, Koyu ve Otomatik (Cihaz Teması) seçenekleri, renk paletleri ve parlama önleyici script doğrulandı', async () => {
+await test('VELUNO Tema Sistemi: VELUNO Noir varsayılan, Açık ve Ember Soft seçenekleri, renk paletleri ve parlama önleyici script doğrulandı', async () => {
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
   const css = await readText('css/style.css');
 
-  // 1) Varsayılan tema Açık (light) olmalı
-  eq(DEFAULT_SETTINGS.theme, 'light', 'DEFAULT_SETTINGS.theme varsayılan olarak light olmalı');
-  ok(html.includes('<html lang="tr" data-theme="light">'), 'index.html varsayılan olarak data-theme="light" ile başlamalı');
-  ok(html.includes('prefers-color-scheme: dark') && html.includes('document.documentElement.dataset.theme'), 'Sayfa yenilemesinde yanlış tema parlamasını (flash) önleyen inline script bulunmalı');
+  // 1) Varsayılan tema VELUNO Noir (veluno-noir) olmalı
+  eq(DEFAULT_SETTINGS.theme, 'veluno-noir', 'DEFAULT_SETTINGS.theme varsayılan olarak veluno-noir olmalı');
+  ok(html.includes('<html lang="tr" data-theme="veluno-noir">'), 'index.html varsayılan olarak data-theme="veluno-noir" ile başlamalı');
+  ok(html.includes('document.documentElement.dataset.theme'), 'Sayfa yenilemesinde yanlış tema parlamasını (flash) önleyen inline script bulunmalı');
 
-  // 2) resolveTheme fonksiyonu light / dark / auto modlarını doğru çözümlemeli
-  eq(resolveTheme('light', true), 'light');
-  eq(resolveTheme('light', false), 'light');
-  eq(resolveTheme('dark', false), 'dark');
-  eq(resolveTheme('dark', true), 'dark');
-  eq(resolveTheme('auto', true), 'dark', 'Otomatik modda cihaz koyu ise dark dönmeli');
-  eq(resolveTheme('auto', false), 'light', 'Otomatik modda cihaz açık ise light dönmeli');
+  // 2) resolveTheme fonksiyonu veluno-noir / light / ember modlarını doğru çözümlemeli, eski/geçersiz tercihleri veluno-noir yapmalı
+  eq(resolveTheme('veluno-noir'), 'veluno-noir');
+  eq(resolveTheme('light'), 'light');
+  eq(resolveTheme('ember'), 'ember');
+  eq(resolveTheme('dark'), 'veluno-noir');
+  eq(resolveTheme('auto'), 'veluno-noir');
+  eq(resolveTheme('studio'), 'veluno-noir');
+  eq(resolveTheme('unknown-theme'), 'veluno-noir');
 
-  // 3) Ayarlar menüsünde Açık, Koyu ve Otomatik seçenekleri bulunmalı
-  ok(appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="dark"') && appCode.includes('data-set-theme="auto"'), 'Ayarlarda Açık / Koyu / Otomatik tema butonları bulunmalı');
-  ok(appCode.includes('>Açık</button>') && appCode.includes('>Koyu</button>') && appCode.includes('>Otomatik</button>'), 'Ayarlarda Açık / Koyu / Otomatik etiketleri bulunmalı');
+  // 3) Ayarlar menüsünde yalnızca VELUNO Noir, Açık ve Ember Soft seçenekleri bulunmalı
+  ok(appCode.includes('data-set-theme="veluno-noir"') && appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="ember"'), 'Ayarlarda 3 tema butonu bulunmalı');
+  ok(!appCode.includes('data-set-theme="dark"') && !appCode.includes('data-set-theme="auto"') && !appCode.includes('data-set-theme="studio"'), 'Koyu, Otomatik ve Studio seçenekleri kaldırılmış olmalı');
 
-  // 4) Açık ve Koyu tema renk paletleri şartnameye birebir uymalı
+  // 4) Açık ve Noir tema renk paletleri CSS içinde bulunmalı
   for (const token of ['#F7F9FC', '#FFFFFF', '#F1F4F8', '#17243B', '#738098', '#E5E9F0', '#4F8EF7', '#EAF2FF', '#2F9E66', '#D89B2B', '#D96B6B']) {
     ok(css.includes(token), `Açık tema renk paletinde ${token} bulunmalı`);
   }
-  for (const token of ['#101317', '#1B2027', '#252B33', '#F3F5F7', '#9BA6B5', '#303741', '#6FA8FF', '#1E314D', '#3FB97C', '#E0AB45', '#E07A7A']) {
-    ok(css.includes(token), `Koyu tema renk paletinde ${token} bulunmalı`);
+  for (const token of ['#0A0A0A', '#141414', '#2E2E2E', '#EDEDED']) {
+    ok(css.includes(token), `Noir tema renk paletinde ${token} bulunmalı`);
   }
 });
 await test('iPhone / Safari uyumluluğu (safe-area, viewport-fit, apple-touch-icon, klavye ve TTS) ve yedek uyumluluğu doğrulandı', async () => {
@@ -767,7 +766,7 @@ await test('v3.1 Varsayılan Defterim ekranı, Menü günlük hedef/seri satır�
   ok(appCode.includes('Seri ${strk.current} gün'), 'Tek satırlık seri bilgisi bulunmalı');
   ok(learnCode.includes('Öğrenmeye Başla') && learnCode.includes('Kaldığın Yerden Devam Et'), 'Hazır Kelime Havuzu ekranında birincil eylem bulunmalı');
   ok(nbCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude') && appCode.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude özel imzası korunmalı');
-  ok(nbCode.includes('aria-label="VELUNO">VELUNO</span>'), 'Defterim üst alanında VELUNO başlığı bulunmalı');
+  ok(nbCode.includes("vBrandMini('sm')"), 'Defterim üst alanında küçük V marka logosu bulunmalı');
   ok(!appCode.includes('function renderDashboard'), 'Eski Ana Sayfa (renderDashboard) tamamen kaldırılmış olmalı');
   ok(css.includes('.nb-header{') && css.includes('.nb-progress-strip{') && css.includes('.path-canvas{'), 'Defterim ve öğrenme yolu CSS kuralları bulunmalı');
 });
@@ -1309,7 +1308,7 @@ await test('v4.0 [8] Özel İmza Güvenliği: "ahmet ❤️ sude" özel imzası 
 
 await test('v4.0 [9] PWA ve Çevrimdışı Uyumluluk: Service Worker sürümü güncellenmiştir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'SW sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'SW sürümü veluno-v5.5.0 olmalı');
 });
 
 out('\n10) VELUNO v4.1 — Vocabulary Expansion / Phase D (375 Taslak Aktivasyonu)');
@@ -1411,42 +1410,32 @@ await test('v4.1 [5] Phase E: Yeni Eklenen 704 Kelimenin Soru Üretimi ve Seviye
 
 out('\n12) VELUNO Studio Theme Update');
 
-await test('Studio [1] VELUNO Studio temasının seçilmesi, saklanması ve ayarlar arayüzü', async () => {
+await test('Studio [1] Ayarlarda yalnızca 3 tema (VELUNO Noir, Açık, Ember Soft) ve tema kartı ızgarası bulunur', async () => {
   const appCode = await readText('js/app.js');
   const css = await readText('css/style.css');
 
-  // 4 seçenek bulunmalı: Açık, Koyu, Otomatik ve VELUNO Studio
-  ok(appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="dark"') && appCode.includes('data-set-theme="auto"') && appCode.includes('data-set-theme="studio"'), 'Ayarlarda 4 tema butonu (light, dark, auto, studio) tanımlı olmalı');
-  ok(appCode.includes('>Açık</button>') && appCode.includes('>Koyu</button>') && appCode.includes('>Otomatik</button>') && appCode.includes('>VELUNO Studio</button>'), 'Ayarlarda Açık, Koyu, Otomatik ve VELUNO Studio etiketleri bulunmalı');
-
-  // 2x2 ızgara ve önizleme swatch sınıfları CSS ve JS'de mevcut olmalı
-  ok(appCode.includes('class="theme-grid"') && css.includes('.theme-grid{display:grid'), '2x2 tema seçim ızgarası tanımlı olmalı');
-  ok(css.includes('.theme-card-btn') && css.includes('.theme-p-studio'), 'Studio tema kartı ve önizleme swatch stili mevcut olmalı');
+  ok(appCode.includes('data-set-theme="veluno-noir"') && appCode.includes('data-set-theme="light"') && appCode.includes('data-set-theme="ember"'), 'Ayarlarda 3 tema butonu tanımlı olmalı');
+  ok(appCode.includes('>VELUNO Noir</button>') && appCode.includes('>Açık</button>') && appCode.includes('>Ember Soft</button>'), 'Ayarlarda 3 tema etiketi bulunmalı');
+  ok(appCode.includes('class="theme-grid"') && css.includes('.theme-grid{display:grid'), 'Tema seçim ızgarası tanımlı olmalı');
+  ok(css.includes('.theme-card-btn') && css.includes('.theme-p-noir'), 'Noir tema kartı ve önizleme swatch stili mevcut olmalı');
 });
 
-await test('Studio [2] resolveTheme() fonksiyonu ve cihaz tema bağımsızlığı', () => {
-  // Studio doğrudan studio dönmeli; cihazın koyu/açık modundan etkilenmemeli
-  eq(resolveTheme('studio', false), 'studio', 'Studio teması açık cihaz ayarında studio dönmeli');
-  eq(resolveTheme('studio', true), 'studio', 'Studio teması koyu cihaz ayarında studio dönmeli');
-  eq(resolveTheme('studio'), 'studio', 'Studio teması argümansız studio dönmeli');
-
-  // Eski temalar eksiksiz korunmalı
-  eq(resolveTheme('light', true), 'light');
-  eq(resolveTheme('light', false), 'light');
-  eq(resolveTheme('dark', true), 'dark');
-  eq(resolveTheme('dark', false), 'dark');
-  eq(resolveTheme('auto', true), 'dark');
-  eq(resolveTheme('auto', false), 'light');
+await test('Studio [2] resolveTheme() fonksiyonu 3 tema ve eski tema yönlendirmesi', () => {
+  eq(resolveTheme('veluno-noir'), 'veluno-noir');
+  eq(resolveTheme('light'), 'light');
+  eq(resolveTheme('ember'), 'ember');
+  eq(resolveTheme('studio'), 'veluno-noir');
+  eq(resolveTheme('dark'), 'veluno-noir');
+  eq(resolveTheme('auto'), 'veluno-noir');
 });
 
-await test('Studio [3] index.html açılış scripti ve Safari theme-color meta etiketi (#131F23)', async () => {
+await test('Studio [3] index.html açılış scripti ve Safari theme-color meta etiketi', async () => {
   const html = await readText('index.html');
   const appCode = await readText('js/app.js');
 
-  // index.html inline scripti studio değerini çözebilmeli
-  ok(html.includes("pref === 'studio'") && html.includes("'studio'"), 'index.html inline scripti studio tercihini tanımalı');
-  ok(html.includes("studio: '#131F23'"), 'index.html inline scripti studio için #131F23 theme-color tanımlamalı');
-  ok(appCode.includes("studio: '#131F23'"), 'applySettings() studio için #131F23 theme-color ayarlamalı');
+  ok(html.includes("'veluno-noir'") && html.includes("'ember'") && html.includes("'light'"), 'index.html inline scripti 3 temayı tanımalı');
+  ok(html.includes("'veluno-noir': '#0A0A0A'"), 'index.html inline scripti veluno-noir için #0A0A0A theme-color tanımlamalı');
+  ok(appCode.includes("'veluno-noir': '#0A0A0A'"), 'THEME_META_COLORS veluno-noir için #0A0A0A tanımlamalı');
 });
 
 await test('Studio [4] Studio renk paleti, değişkenler ve durum renkleri (#92D332, #131F23, #37464F, #CD82FF)', async () => {
@@ -1510,7 +1499,7 @@ await test('UI Refinement: Kelime öğrenme ekranında Yavaş metni kaldırıld�
 
   // 2) Üst logoyu içermemeli, VELUNO başlığı ve imza yan yana korunmalı
   ok(!appSrc.includes('alt="VELUNO logosu"') && !appSrc.includes('class="hero-logo"'), 'Üst bölümde logo görseli bulunmamalı');
-  ok(appSrc.includes('<span class="hero-title" aria-label="VELUNO">VELUNO</span>'), 'VELUNO başlığı korunmalı');
+  ok(appSrc.includes("vBrandMini('sm')"), 'Menü üst alanında küçük V marka logosu korunmalı');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
   ok(css.includes('.hero-title-row{') && css.includes('.hero-sig{'), 'Başlık ve imza satır CSS kuralları korunmalı');
 });
@@ -1625,12 +1614,10 @@ await test('Sude [6] Çevrimdışı ve Sıfır Bağımlılık Garantisi: Firebas
   eq(G.GRAMMAR_TOPICS.length, 38, '38 Grammar dersi korunmalı');
   eq(G.GRAMMAR_QUESTIONS.length, 760, '760 Grammar sorusu korunmalı');
 
-  // 2) Dört tema ve imza korunmalı
+  // 2) 3 geçerli tema ve imza korunmalı
+  eq(resolveTheme('veluno-noir'), 'veluno-noir');
   eq(resolveTheme('light'), 'light');
-  eq(resolveTheme('dark'), 'dark');
-  eq(resolveTheme('studio'), 'studio');
-  eq(resolveTheme('auto', true), 'dark');
-  eq(resolveTheme('auto', false), 'light');
+  eq(resolveTheme('ember'), 'ember');
 
   const appSrc = await readText('js/app.js');
   ok(appSrc.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'ahmet ❤️ sude imzası korunmalı');
@@ -1734,7 +1721,7 @@ await test('Sude [10] Kalp Patlaması Güvenilirliği: Safari Uyumu, ~100 Parça
   ok(surpriseSrc.includes('prefers-reduced-motion') && css.includes('jfyBurstReduced'), 'Erişilebilirlik modunda nazik süzülme animasyonu sağlanmalı');
 
   // 6) Service Worker Önbellek Yenilenmesi
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'Eski tarayıcı önbelleklerini temizlemek için SW sürümü güncellenmiş olmalı');
 });
 
 await test('Sude [11] Romantik Buton Tasarımı, Üstte Birikmeyen Kalpler ve ~80 Arka Plan Kalbi', async () => {
@@ -2803,7 +2790,7 @@ await test('Eşini Bul [14] Mobil ve masaüstü uyumluluğu (2–40 kart dinamik
   ok(css.includes('prefers-reduced-motion'), 'azaltılmış hareket desteği');
   ok(css.includes('var(--ok-bg)') && css.includes('var(--no-bg)') && css.includes(':root[data-theme=studio] .mg-back'), 'tema değişkenleriyle 4 tema desteği');
   ok(css.includes('env(safe-area-inset-bottom)'));
-  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
+  ok(sw.includes("'js/memory-game.js'") && sw.includes("const VERSION = 'veluno-v5.5.0';"), 'Service Worker yeni dosyayı önbelleğe almalı');
   ok(js.includes('Doğru eşleşme') && js.includes('Deneme') && js.includes('Süre') && js.includes('Kalan'), 'oyun istatistikleri gösterilmeli');
   eq(MG.fmtClock(155), '02:35');
 });
@@ -3319,24 +3306,25 @@ await test('v5.0 [1] Ember Soft seçiliyor ve ana arka plan rengi #101820 ile ke
   ok(!css.includes('--ac:#FB6A21'), '#FB6A21 kesinlikle ana renk olmamalı');
 });
 
-await test('v5.0 [2] Mevcut dört tema (light, dark, auto, studio) ve kullanıcı tema tercihi etkilenmeden çalışıyor', async () => {
-  eq(DEFAULT_SETTINGS.theme, 'light', 'Varsayılan tema zorla ember yapılmamalı, light kalmalı');
+await test('v5.0 [2] 3 tema (veluno-noir, light, ember) ve kullanıcı tema tercihi etkilenmeden çalışıyor', async () => {
+  eq(DEFAULT_SETTINGS.theme, 'veluno-noir', 'Varsayılan tema veluno-noir olmalı');
+  eq(resolveTheme('veluno-noir'), 'veluno-noir');
   eq(resolveTheme('light'), 'light');
-  eq(resolveTheme('dark'), 'dark');
-  eq(resolveTheme('auto', false), 'light');
-  eq(resolveTheme('auto', true), 'dark');
-  eq(resolveTheme('studio'), 'studio');
-  setSetting('theme', 'studio');
-  eq(getSettings().theme, 'studio', 'Kullanıcının mevcut tema tercihi korunmalı');
+  eq(resolveTheme('ember'), 'ember');
+  eq(resolveTheme('dark'), 'veluno-noir');
+  eq(resolveTheme('auto'), 'veluno-noir');
+  eq(resolveTheme('studio'), 'veluno-noir');
+  setSetting('theme', 'light');
+  eq(getSettings().theme, 'light', 'Kullanıcının geçerli Açık tema tercihi korunmalı');
   setSetting('theme', 'ember');
   eq(getSettings().theme, 'ember', 'Ember Soft seçildiğinde kaydedilmeli');
-  setSetting('theme', 'light');
+  setSetting('theme', 'veluno-noir');
 });
 
 await test('v5.0 [3] VELUNO başlığı ve mevcut ahmet ❤️ sude imzası Defterim ve Menü ekranlarında aynen korunmuş', async () => {
   const appCode = await readText('js/app.js');
   const nbCode = await readText('js/notebook.js');
-  ok(nbCode.includes('<span class="hero-title" aria-label="VELUNO">VELUNO</span>'), 'Defterim ekranında VELUNO başlığı korunmalı');
+  ok(nbCode.includes("vBrandMini('sm')"), 'Defterim ekranında küçük V marka logosu korunmalı');
   ok(nbCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Defterim ekranında ahmet ❤️ sude imzası korunmalı');
   ok(appCode.includes('<span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>'), 'Menü ekranında ahmet ❤️ sude imzası korunmalı');
 });
@@ -3675,7 +3663,7 @@ await test('v5.0 [19] Uzun yollarda (200 durak) pencereli render, Kaldığım Ye
 await test('v5.0 [20] GitHub Pages yenileme (hash router), statik dosya yolları ve PWA Service Worker önbellek listesi tam uyumlu', async () => {
   const sw = await readText('service-worker.js');
   const html = await readText('index.html');
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'Service Worker sürümü veluno-v5.5.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'"), 'Service Worker yeni yol modüllerini önbelleğe almalı');
   ok(html.includes('href="#/path"') && html.includes('href="#/notebook"') && html.includes('href="#/learn"') && html.includes('href="#/more"'), 'Hash tabanlı rotalar GitHub Pages alt dizin yenilemesiyle uyumlu olmalı');
 });
@@ -3775,7 +3763,7 @@ await test('v5.0.3 [2] Kelime Defterim liste yönetim butonları (Düzenle ve Si
 
 await test('v5.0.3 [3] Service Worker ve önbellek sürümü veluno-v5.2.0 olarak güncellendi', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'Service Worker sürümü veluno-v5.5.0 olmalı');
 });
 
 /* ---------- 22) v5.2 — Akıllı Eksik / Hatalı / Tekrar Çalışma Güncellemesi Testleri ---------- */
@@ -3821,9 +3809,8 @@ await test('v5.2 [2] 10/10 öğrenilmiş ve tekrar yoksa boş oturum engelleniyo
   eq(selected.length, 0, 'Hiçbir kelime seçilmemeli (0 eksik/tekrar)');
 
   const pathUiSrc = await readText('js/path-ui.js');
-  ok(pathUiSrc.includes('filterCount === 0'), 'filterCount sıfır olduğunda kontrol yapılmalı');
-  ok(pathUiSrc.includes('Şu anda çalışılacak eksik veya tekrar kelime yok.'), 'Kompakt bilgilendirme mesajı bulunmalı');
-  ok(pathUiSrc.includes('id="stop-study-filter" ${filterCount ? \'\' : \'disabled\'}'), '0 kelime olduğunda buton disabled olmalı');
+  ok(pathUiSrc.includes('reviewCount ?'), 'Hata/tekrar yoksa Tekrar butonu gizlenmeli');
+  ok(pathUiSrc.includes('id="stop-study"'), 'Bu Duraktaki Kelimeleri Çalış butonu korunmalı');
 });
 
 await test('v5.2 [3] Öğrenilmemiş ve SRS tekrarı gelmiş kelimeler birlikte doğru seçiliyor (7 öğrenilmiş, 3 öğrenilmemiş, 2 SRS tekrarı gelmiş -> 5 kelime)', async () => {
@@ -3955,12 +3942,11 @@ await test('v5.2 [7] "Bu Duraktaki Kelimeleri Çalış" seçeneği tüm kelimele
   abortSession();
 });
 
-await test('v5.2 [8] Durak detay panelinde 3 buton (Eksik / Hatalı / Tekrar Çalış, Bu Duraktaki Kelimeleri Çalış, Kapat) mevcuttur', async () => {
+await test('v5.2 [8] Durak detay paneli: normal çalışma butonu, koşullu küçük Tekrar butonu ve gereksiz alt Kapat butonu yok', async () => {
   const src = await readText('js/path-ui.js');
-  ok(src.includes('id="stop-study-filter"'), 'Eksik / Hatalı / Tekrar Çalış butonu bulunmalı');
   ok(src.includes('id="stop-study"'), 'Bu Duraktaki Kelimeleri Çalış butonu korunmalı');
-  ok(src.includes('data-x>Kapat</button>'), 'Kapat butonu korunmalı');
-  ok(src.includes('Eksik / Hatalı / Tekrar Çalış'), 'Yeni butonun başlığı doğru olmalı');
+  ok(src.includes('id="stop-study-filter">Tekrar (${reviewCount})</button>'), 'Hata/SRS varsa küçük Tekrar butonu gösterilmeli');
+  ok(!src.includes('data-x>Kapat</button>'), 'Modal X varken alttaki gereksiz Kapat butonu kaldırılmış olmalı');
 });
 
 await test('v5.2 [9] Kişisel listelerde filtreleme bağımsız ve yalnızca seçili listeyi kapsar', async () => {
@@ -4078,9 +4064,9 @@ await test('v5.2 [14] Ember Soft ve diğer temaların renk/tasarım standartlar�
   ok(css.includes('--ember-no:#57191C'), 'Ember Soft yanlış vişnesi korunmalı');
 });
 
-await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.4.0) ve dosya bütünlüğü tam', async () => {
+await test('v5.2 [15] Service Worker önbellek sürümü (veluno-v5.5.0) ve dosya bütünlüğü tam', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'Service Worker sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'Service Worker sürümü veluno-v5.5.0 olmalı');
   ok(sw.includes("'js/paths.js'") && sw.includes("'js/path-ui.js'") && sw.includes("'js/final-boss.js'"), 'Yol ve Final Boss modülleri önbellekte olmalı');
 });
 
@@ -4341,10 +4327,10 @@ await test('v5.3 [7] Final Boss: Duraklama/devam etme, SRS korunması, liste de�
 ============================================================================ */
 out('\n--- 24. FAZ C VELUNO Noir Tema & Açılış Katmanı Testleri ---');
 
-await test('FAZ C [1] veluno-noir teması bağımsız seçenek olarak eklendi ve eski temalar korundu', async () => {
-  ok(THEME_IDS.includes('veluno-noir'), 'THEME_IDS veluno-noir içermeli');
-  for (const id of ['light', 'dark', 'auto', 'studio', 'ember']) {
-    ok(THEME_IDS.includes(id), `Eski tema (${id}) korunmalı`);
+await test('FAZ C [1] veluno-noir varsayılan tema ve 3 tema seçeneği (veluno-noir, light, ember) doğrulandı', async () => {
+  eq(THEME_IDS.length, 3, 'THEME_IDS yalnızca 3 tema içermeli');
+  for (const id of ['veluno-noir', 'light', 'ember']) {
+    ok(THEME_IDS.includes(id), `Tema (${id}) bulunmalı`);
   }
   eq(resolveTheme('veluno-noir'), 'veluno-noir', 'resolveTheme veluno-noir döndürmeli');
   eq(THEME_META_COLORS['veluno-noir'], '#0A0A0A', 'VELUNO Noir meta rengi #0A0A0A olmalı');
@@ -4407,9 +4393,9 @@ await test('FAZ E [1] Tüm etkileşimli Noir bileşenlerinde focus-visible ve re
   ok(css.includes('prefers-reduced-motion:reduce'), 'Reduced-motion desteği bulunmalı');
 });
 
-await test('FAZ E [2] Service Worker veluno-v5.4.0 FILES listesindeki tüm dosyalar diskte mevcut ve geçerlidir', async () => {
+await test('FAZ E [2] Service Worker veluno-v5.5.0 FILES listesindeki tüm dosyalar diskte mevcut ve geçerlidir', async () => {
   const sw = await readText('service-worker.js');
-  ok(sw.includes("const VERSION = 'veluno-v5.4.0';"), 'SW sürümü veluno-v5.4.0 olmalı');
+  ok(sw.includes("const VERSION = 'veluno-v5.5.0';"), 'SW sürümü veluno-v5.5.0 olmalı');
   ok(sw.includes('k !== VERSION') && sw.includes('caches.delete(k)'), 'Eski önbellekler activate aşamasında silinmeli');
   const m = sw.match(/const FILES = \[([\s\S]*?)\];/);
   ok(m, 'FILES listesi okunabilmeli');
@@ -4418,6 +4404,63 @@ await test('FAZ E [2] Service Worker veluno-v5.4.0 FILES listesindeki tüm dosya
     const content = await readText(rel);
     ok(content !== null && content !== undefined, `SW dosyası mevcut olmalı: ${rel}`);
   }
+});
+
+/* ============================================================================
+   27. v5.5 — HAYRAT KALDIRMA, 3 TEMA & KONTROL ET / DEVAM ET TESTLERİ
+============================================================================ */
+out('\n--- 27. v5.5 Hayrat Kaldırma, 3 Tema & Kontrol Et / Devam Et Testleri ---');
+
+await test('v5.5 [1] Hayrat giriş ekranı tamamen kaldırıldı, doğrudan 5,5 sn V açılışı ve Defterim başlıyor', async () => {
+  const html = await readText('index.html');
+  const appCode = await readText('js/app.js');
+  ok(!html.includes('HAYRAT') && !html.includes('dua yeter') && !html.includes('id="intro"'), 'Hayrat giriş ekranı HTML içinde bulunmamalı');
+  ok(!appCode.includes('showIntro') && !appCode.includes('replay-intro'), 'app.js içinde showIntro ve replay-intro bulunmamalı');
+  ok(html.includes('id="v-splash"') && appCode.includes('playLaunchVSplash()'), 'Doğrudan 5,5 sn V açılış katmanı oynatılmalı');
+});
+
+await test('v5.5 [2] Varsayılan tema veluno-noir ve Ayarlarda yalnızca VELUNO Noir, Açık, Ember Soft var', async () => {
+  eq(DEFAULT_SETTINGS.theme, 'veluno-noir');
+  eq(THEME_IDS, ['veluno-noir', 'light', 'ember']);
+  eq(resolveTheme('light'), 'light');
+  eq(resolveTheme('ember'), 'ember');
+  eq(resolveTheme('veluno-noir'), 'veluno-noir');
+  eq(resolveTheme('dark'), 'veluno-noir');
+  eq(resolveTheme('auto'), 'veluno-noir');
+  eq(resolveTheme('studio'), 'veluno-noir');
+  eq(resolveTheme(''), 'veluno-noir');
+});
+
+await test('v5.5 [3] Öğrenme ve Fiiller ekranlarında Kontrol Et -> Devam Et tek konum/genişlik ve çift gönderim koruması', async () => {
+  const learnSrc = await readText('js/learning.js');
+  const irvSrc = await readText('js/irregular-verbs.js');
+  const css = await readText('css/style.css');
+  ok(learnSrc.includes('class="ans-actions"') && learnSrc.includes('id="check-btn"') && learnSrc.includes('id="cont" hidden'), 'learning.js .ans-actions içinde Kontrol Et ve gizli Devam Et butonu barındırmalı');
+  ok(learnSrc.includes('checkBtn.hidden = true') && learnSrc.includes('contBtn.hidden = false'), 'learning.js cevap sonrası Kontrol Et gizleyip Devam Et göstermeli');
+  ok(learnSrc.includes('if (answered || !cur) return;') && learnSrc.includes('if (answered) return;'), 'learning.js çift cevap gönderimini engellemeli');
+  ok(learnSrc.includes('feedback-compact') && learnSrc.includes('Doğru cevap:'), 'learning.js sade geri bildirim ve yanlışta doğru karşılık göstermeli');
+  ok(irvSrc.includes('class="ans-actions"') && irvSrc.includes('id="irv-check-btn"') && irvSrc.includes('id="irv-next-btn"') && irvSrc.includes('hidden>Devam Et</button>'), 'irregular-verbs.js .ans-actions içinde Kontrol Et ve gizli Devam Et barındırmalı');
+  ok(irvSrc.includes('chk.hidden = true') && irvSrc.includes('nextBtn.hidden = false'), 'irregular-verbs.js cevap sonrası Kontrol Et gizleyip Devam Et göstermeli');
+  ok(css.includes('.ans-actions{width:100%}') && css.includes('.feedback.feedback-compact'), 'style.css .ans-actions ve .feedback-compact kurallarını içermeli');
+});
+
+await test('v5.5 [4] Final Boss başlatma/devam etme onChanged ile sınav ekranını ezmiyor ve Listeye Dön aynı hash durumunda çalışıyor', async () => {
+  const fbSrc = await readText('js/final-boss.js');
+  ok(fbSrc.includes('const started = await startFinalBossExam(list, { restart: true, originHash })'), 'Final Boss başlatma sonucu kontrol edilmeli');
+  ok(fbSrc.includes('if (!started && typeof onChanged === \'function\') onChanged()'), 'Sınav başladığında onChanged ile view ezilmemeli');
+  ok(fbSrc.includes("const backBtn = $('#fb-back', v)") && fbSrc.includes("new HashChangeEvent('hashchange')"), 'Listeye Dön butonu aynı hash durumunda da çalışmalı');
+});
+
+await test('v5.5 [5] UI dosyalarında renkli emoji temizlendi, ahmet ❤️ sude imzası ve küçük V logosu korundu', async () => {
+  const files = ['index.html', 'js/app.js', 'js/final-boss.js', 'js/path-ui.js', 'js/memory-game.js', 'js/notebook.js', 'js/review.js'];
+  for (const f of files) {
+    const src = await readText(f);
+    for (const em of ['👑', '🔒', '🎉', '🚀', '🧠', '🎯', '✍️', '🧩', '📖', '⚡', '🎧', '🏛️', '2️⃣', '3️⃣']) {
+      ok(!src.includes(em), `${f} içinde renkli emoji (${em}) kalmamalı`);
+    }
+  }
+  const nb = await readText('js/notebook.js');
+  ok(nb.includes('ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude'), 'ahmet ❤️ sude imzası korunmalı');
 });
 
 out(`\n${pass} geçti, ${fail} başarısız`);

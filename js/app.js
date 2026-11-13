@@ -1,7 +1,7 @@
 // VELUNO v5.0 (Ember Soft) — uygulama giriş noktası: açılış (hayrat) ekranı, router, Defterim (varsayılan), Hazır Kelime Havuzu, Yolum, Menü, Ayarlar, Tema Sistemi, PWA kaydı.
 import { initStorage, state, getSettings, setSetting, getMeta, setMeta, persistent, replaceAll, DEFAULT_SETTINGS } from './storage.js';
 import { seedBuiltIn, LEVELS } from './vocabulary.js';
-import { $, $$, esc, toast, confirmDialog, openModal, ICONS } from './ui.js';
+import { $, $$, esc, toast, confirmDialog, openModal, ICONS, vBrandMini } from './ui.js';
 import { renderLearn, initKeys, abortSession } from './learning.js';
 import { renderReview, studyPlan } from './review.js';
 import { renderExams } from './exams.js';
@@ -17,23 +17,13 @@ import { renderPath } from './path-ui.js';
 import { ensureListPaths } from './paths.js';
 
 const view = () => $('#view');
-const INTRO_KEY = 'lexora_intro_seen';
 
 /* ---------- Tema Çözümleme & Ayarların Uygulanması ---------- */
-export const THEME_META_COLORS = { dark: '#101317', studio: '#131F23', ember: '#101820', 'veluno-noir': '#0A0A0A', light: '#F7F9FC' };
-export const THEME_IDS = ['light', 'dark', 'auto', 'studio', 'ember', 'veluno-noir'];
-export function resolveTheme(themePref = 'light', prefersDark = null) {
-  if (themePref === 'studio') return 'studio';
-  if (themePref === 'ember') return 'ember';
-  if (themePref === 'veluno-noir') return 'veluno-noir';
-  if (themePref === 'dark') return 'dark';
-  if (themePref === 'auto') {
-    const isDark = prefersDark !== null
-      ? Boolean(prefersDark)
-      : (typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    return isDark ? 'dark' : 'light';
-  }
-  return 'light';
+export const THEME_META_COLORS = { ember: '#101820', 'veluno-noir': '#0A0A0A', light: '#F7F9FC' };
+export const THEME_IDS = ['veluno-noir', 'light', 'ember'];
+export function resolveTheme(themePref = 'veluno-noir') {
+  if (themePref === 'light' || themePref === 'ember' || themePref === 'veluno-noir') return themePref;
+  return 'veluno-noir';
 }
 
 export function applySettings() {
@@ -41,48 +31,16 @@ export function applySettings() {
   const r = document.documentElement;
   const resolved = resolveTheme(s.theme);
   r.dataset.theme = resolved;
-  r.dataset.themeMode = s.theme || 'light';
+  r.dataset.themeMode = resolved;
   r.classList.toggle('no-anim', !s.animations);
   r.classList.toggle('reduce', !!s.reducedMotion);
   const metaTheme = document.getElementById('meta-theme-color');
   if (metaTheme) {
-    const metaColors = { dark: '#101317', studio: '#131F23', ember: '#101820', 'veluno-noir': '#0A0A0A', light: '#F7F9FC' };
-    metaTheme.setAttribute('content', metaColors[resolved] || '#F7F9FC');
+    metaTheme.setAttribute('content', THEME_META_COLORS[resolved] || '#0A0A0A');
   }
 }
 
-/* ---------- Açılış ekranı ---------- */
-function showIntro() {
-  const el = $('#intro');
-  el.hidden = false; el.classList.remove('leave');
-  $('#app').hidden = true;
-  el.querySelectorAll('.rv').forEach((n) => { n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; });
-
-  const agree = $('#intro-agree');
-  const btn = $('#intro-go');
-
-  if (agree) {
-    agree.checked = false;
-    agree.onchange = () => {
-      btn.disabled = !agree.checked;
-    };
-  }
-  btn.disabled = true;
-
-  btn.onclick = () => {
-    if (agree && !agree.checked) return;
-    try { localStorage.setItem(INTRO_KEY, 'true'); } catch { /* özel mod */ }
-    el.classList.add('leave');
-    setTimeout(() => {
-      el.hidden = true;
-      enterApp();
-      toast('✅ Duanız sisteme başarıyla kaydedildi. +10 sevap (temsili) 😇', 'success', 4500);
-    }, 450);
-  };
-
-  const focusTarget = agree || btn;
-  setTimeout(() => focusTarget.focus({ preventScroll: true }), getSettings().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 5200 : 100);
-}
+/* ---------- Açılış V + Beyaz Işık Katmanı ---------- */
 
 let launchSplashPlayed = false;
 async function playLaunchVSplash() {
@@ -226,7 +184,7 @@ function renderMore(v) {
 
   v.innerHTML = `<div class="page">
   <div class="nb-brand-row" style="margin-bottom:6px">
-    <span class="hero-title" aria-label="VELUNO">VELUNO</span>
+    ${vBrandMini('sm')}
     <span class="hero-sig" aria-label="ahmet ❤️ sude">ahmet <span class="sig-heart" aria-hidden="true">❤️</span> sude</span>
   </div>
   <h1>Menü</h1>
@@ -267,7 +225,7 @@ function renderMore(v) {
 /* ---------- Ayarlar (iOS tarzı liste) ---------- */
 function renderSettings(v) {
   const s = getSettings();
-  const curTheme = THEME_IDS.includes(s.theme) ? s.theme : 'light';
+  const curTheme = resolveTheme(s.theme);
   const sw = (id, label, on, desc = '') => `<label class="list-row"><span class="row-main"><b>${label}</b>${desc ? `<span class="muted small">${desc}</span>` : ''}</span><input type="checkbox" class="switch" id="${id}" ${on ? 'checked' : ''}></label>`;
   const btnRow = (id, label, cls = '') => `<li><button type="button" class="list-row linkrow ${cls}" id="${id}"><span class="row-main"><b>${label}</b></span>${ICONS.chev}</button></li>`;
   v.innerHTML = `<div class="page settings"><h1>Ayarlar</h1>
@@ -275,14 +233,11 @@ function renderSettings(v) {
   <h2 class="group-title">Görünüm</h2>
   <div class="list"><div class="list-row stack"><span class="row-main"><b>Tema</b></span>
     <div class="theme-grid" role="group" aria-label="Tema seçimi">
-      <button type="button" class="theme-card-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light"><span class="theme-preview theme-p-light" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Açık</button>
-      <button type="button" class="theme-card-btn ${curTheme === 'dark' ? 'active' : ''}" data-set-theme="dark"><span class="theme-preview theme-p-dark" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Koyu</button>
-      <button type="button" class="theme-card-btn ${curTheme === 'auto' ? 'active' : ''}" data-set-theme="auto"><span class="theme-preview theme-p-auto" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Otomatik</button>
-      <button type="button" class="theme-card-btn ${curTheme === 'studio' ? 'active' : ''}" data-set-theme="studio"><span class="theme-preview theme-p-studio" aria-hidden="true"><span class="theme-swatch-bar"></span></span>VELUNO Studio</button>
-      <button type="button" class="theme-card-btn ${curTheme === 'ember' ? 'active' : ''}" data-set-theme="ember"><span class="theme-preview theme-p-ember" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Ember Soft</button>
       <button type="button" class="theme-card-btn ${curTheme === 'veluno-noir' ? 'active' : ''}" data-set-theme="veluno-noir"><span class="theme-preview theme-p-noir" aria-hidden="true"><span class="theme-swatch-bar"></span></span>VELUNO Noir</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'light' ? 'active' : ''}" data-set-theme="light"><span class="theme-preview theme-p-light" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Açık</button>
+      <button type="button" class="theme-card-btn ${curTheme === 'ember' ? 'active' : ''}" data-set-theme="ember"><span class="theme-preview theme-p-ember" aria-hidden="true"><span class="theme-swatch-bar"></span></span>Ember Soft</button>
     </div></div></div>
-  <p class="group-note muted small">Otomatik, cihazının açık / koyu görünümünü takip eder. VELUNO Studio, petrol ve lime yeşili özel tasarım sunar. Ember Soft; koyu antrasit zemin, Midnight Petrol ve Aged Bronze tonlarıyla sakin bir görünüm sunar.</p>
+  <p class="group-note muted small">VELUNO Noir varsayılan koyu arayüzüdür. Açık ve Ember Soft temaları arasından dilediğinizi seçebilirsiniz.</p>
 
   <h2 class="group-title">Günlük Hedef</h2>
   <ul class="list">
@@ -300,7 +255,7 @@ function renderSettings(v) {
 
   <h2 class="group-title">Yedekleme ve Geri Yükleme</h2>
   <ul class="list">
-    ${btnRow('exp', 'Yedeği indir (JSON)')}${btnRow('imp', 'Yedeği geri yükle')}${btnRow('replay-intro', 'Hayrat açılışını tekrar izle')}
+    ${btnRow('exp', 'Yedeği indir (JSON)')}${btnRow('imp', 'Yedeği geri yükle')}
   </ul>
   <ul class="list">${btnRow('reset', 'İlerlemeyi sıfırla…', 'danger-text')}</ul>
   <p class="group-note muted small">Sıfırlama, kelime ilerlemelerini ve istatistikleri siler; kelimelerin korunur. İki aşamalı onay gerekir.</p>
@@ -326,7 +281,7 @@ function renderSettings(v) {
   <h2 class="group-title">Hakkında</h2>
   <div class="list">
     <div class="list-row"><span class="row-main"><b>VELUNO</b><span class="muted small">Daha akıllıca öğren, daha uzun süre hatırla.</span></span><span class="row-value">v5.0.2</span></div>
-    <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : '⚠ Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
+    <div class="list-row"><span class="row-main"><b>Veri depolama</b><span class="muted small">${persistent ? 'IndexedDB (kalıcı) · yalnızca bu tarayıcıda' : 'Bellek: tarayıcı IndexedDB\'yi engelliyor; yedek almadan sekmeyi kapatmayın'}</span></span><span class="row-value">${state.words.length} kelime</span></div>
   </div></div>`;
   const on = (id, fn, ev = 'change') => { $(id, v).addEventListener(ev, fn); };
   const num = (id, key, min, max) => on(id, (e) => { const n = Math.max(min, Math.min(max, parseInt(e.target.value, 10) || DEFAULT_SETTINGS[key])); e.target.value = n; setSetting(key, n); toast('Ayarlar kaydedildi.'); });
@@ -345,7 +300,6 @@ function renderSettings(v) {
   on('#rate', (e) => { setSetting('ttsRate', +e.target.value); $('#rv', v).textContent = e.target.value + '×'; });
   $('#tts', v).onclick = async () => { const { speak } = await import('./ui.js'); speak('achieve'); };
   $('#exp', v).onclick = exportBackup; $('#imp', v).onclick = pickAndRestore;
-  $('#replay-intro', v).onclick = () => { localStorage.removeItem(INTRO_KEY); showIntro(); };
   $('#reset', v).onclick = resetProgress;
   if ($('#open-auth', v)) $('#open-auth', v).onclick = () => openAuthModal(() => renderSettings(v));
   if ($('#logout-btn', v)) $('#logout-btn', v).onclick = async () => { await logout(); toast('Çıkış yapıldı.'); renderSettings(v); };
@@ -375,7 +329,7 @@ async function showAccessTestModal() {
     const isOk = t.status === 'ALLOWED';
     const isDenied = t.status === 'DENIED';
     const badgeClass = isOk ? 'ok-t' : (isDenied ? 'warn-t' : 'err-t');
-    const badgeText = isOk ? '✅ İZİN VERİLDİ' : (isDenied ? '🔒 ENGELLENDİ' : '⚠️ ' + t.status);
+    const badgeText = isOk ? 'İZİN VERİLDİ' : (isDenied ? 'ENGELLENDİ' : t.status);
     return `
       <li class="list-row" style="align-items:flex-start">
         <div class="row-main">
@@ -399,8 +353,8 @@ async function showAccessTestModal() {
       </ul>
       <div class="group-note muted small" style="margin-bottom:14px">
         ${res.currentUser && (res.currentUser.role.includes('Ahmet') || res.currentUser.role.includes('Sude'))
-          ? '✨ Yetkili hesap oturumunuz açık. Yalnızca siz özel fotoğrafa ve mesaja erişebilirsiniz.'
-          : '🛡️ Giriş yapılmamış (Misafir). Özel dokümanlara erişim sunucu tarafından başarıyla engellenmiştir (DENIED).'}
+          ? 'Yetkili hesap oturumunuz açık. Yalnızca siz özel fotoğrafa ve mesaja erişebilirsiniz.'
+          : 'Giriş yapılmamış (Misafir). Özel dokümanlara erişim sunucu tarafından başarıyla engellenmiştir (DENIED).'}
       </div>
       <div class="row end">
         <button type="button" class="btn primary" data-x>Kapat</button>
@@ -554,8 +508,6 @@ async function boot() {
   if (!persistent) setTimeout(() => toast('Tarayıcınız kalıcı depolamayı engelliyor; ilerlemeniz bu sekme kapanınca kaybolabilir. Düzenli yedek alın.', 'error', 8000), 1500);
   try { await initAuth(); } catch {}
   registerSW();
-  let seen = false;
-  try { seen = localStorage.getItem(INTRO_KEY) === 'true'; } catch { /* */ }
-  if (seen) { $('#intro').hidden = true; enterApp(); } else showIntro();
+  enterApp();
 }
 boot();

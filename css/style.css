@@ -214,7 +214,7 @@ input[type=range]{accent-color:var(--ac);width:130px}
 .settings label.list-row{cursor:pointer}
 
 /* ===== Ayarlar Tema Seçim Izgarası (2x2) ===== */
-.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;width:100%}
 .theme-card-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surf);border:1.5px solid var(--bd);border-radius:12px;color:var(--tx);font:600 .9rem Inter,sans-serif;cursor:pointer;text-align:left;min-height:52px;transition:border-color var(--dur),background var(--dur),box-shadow var(--dur)}
 .theme-card-btn:hover{border-color:var(--ac)}
 .theme-card-btn.active{border-color:var(--ac);background:var(--card);box-shadow:0 0 0 1px var(--ac)}
@@ -1138,13 +1138,28 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 :root[data-theme=veluno-noir] .icon-btn.nb-list-del{color:#FF6166;border-color:rgba(255,97,102,.30)}
 
 /* Dikey Kıvrımlı Öğrenme Yolu & Durak Düğümleri */
-:root[data-theme=veluno-noir] .pstop-core{background:#0A0A0A;border:1.5px solid #454545;color:#A1A1A1}
+.fb-icon-noir{display:none}
+:root[data-theme=veluno-noir] .fb-icon-default{display:none}
+:root[data-theme=veluno-noir] .fb-icon-noir{display:inline}
+:root[data-theme=veluno-noir] .path-wrap{padding:14px 10px}
+:root[data-theme=veluno-noir] .path-canvas .path-track{stroke:#2E2E2E;stroke-width:2.5;stroke-dasharray:none;stroke-linecap:round}
+:root[data-theme=veluno-noir] .path-canvas .path-done{stroke:#63C46D;stroke-width:3;stroke-dasharray:none;stroke-linecap:round}
+:root[data-theme=veluno-noir] .pstop-core{width:46px;height:46px;background:#0A0A0A;border:1.5px solid #2E2E2E;color:#878787;font-family:var(--font-mono);font-size:.9rem;font-weight:600}
 :root[data-theme=veluno-noir] .pstop:hover .pstop-core{border-color:#EDEDED}
 :root[data-theme=veluno-noir] .pstop.is-done .pstop-core{background:#0A0A0A;border-color:#63C46D;color:#63C46D}
-:root[data-theme=veluno-noir] .pstop.is-current .pstop-core{background:#EDEDED;border-color:#EDEDED;color:#0A0A0A;box-shadow:0 0 0 4px rgba(255,255,255,.09)}
-:root[data-theme=veluno-noir] .pstop-boss.is-active .pstop-core{background:#0A0A0A;border-color:#AC9160;color:#AC9160;box-shadow:0 0 0 4px rgba(172,145,96,.16)}
-:root[data-theme=veluno-noir] .pstop-boss.is-done .pstop-core{background:#63C46D;border-color:#63C46D;color:#0A0A0A}
-:root[data-theme=veluno-noir] .pstop-label{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:6px}
+:root[data-theme=veluno-noir] .pstop.is-current .pstop-core{background:#EDEDED;border-color:#EDEDED;color:#0A0A0A;box-shadow:0 0 0 4px rgba(255,255,255,.10)}
+:root[data-theme=veluno-noir] .pstop-boss .pstop-core{width:46px;height:46px;border-width:1.5px;font-size:1rem}
+:root[data-theme=veluno-noir] .pstop-boss.is-locked .pstop-core{background:#0A0A0A;border-color:#2E2E2E;color:#878787;opacity:1}
+:root[data-theme=veluno-noir] .pstop-boss.is-unlocked .pstop-core,
+:root[data-theme=veluno-noir] .pstop-boss.is-active .pstop-core{background:#0A0A0A;border-color:#EDEDED;color:#EDEDED;box-shadow:0 0 0 4px rgba(255,255,255,.08)}
+:root[data-theme=veluno-noir] .pstop-boss.is-done .pstop-core{background:#0A0A0A;border-color:#63C46D;color:#63C46D}
+:root[data-theme=veluno-noir] .pstop-label{background:#0A0A0A;border:1px solid #2E2E2E;border-radius:8px;padding:6px 10px;gap:2px;max-width:124px}
+:root[data-theme=veluno-noir] .pstop-label.right{left:calc(100% + 10px)}
+:root[data-theme=veluno-noir] .pstop-label.left{right:calc(100% + 10px)}
+:root[data-theme=veluno-noir] .pstop-label b{font-size:.78rem;font-weight:600;color:#EDEDED}
+:root[data-theme=veluno-noir] .pstop-label small{font-size:.7rem;color:#878787;font-family:var(--font-mono)}
+:root[data-theme=veluno-noir] .pstop-label em{font-size:.64rem;font-weight:600;color:#EDEDED;letter-spacing:.02em}
+:root[data-theme=veluno-noir] .learn-cta-row{flex-wrap:wrap}
 :root[data-theme=veluno-noir] .progress{background:rgba(255,255,255,.09)}
 :root[data-theme=veluno-noir] .progress>i{background:#EDEDED}
 :root[data-theme=veluno-noir] .table-wrap{border:1px solid #2E2E2E;border-radius:12px;background:#0A0A0A}
@@ -1153,7 +1168,16 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 :root[data-theme=veluno-noir] table tbody tr:hover{background:#1F1F1F}
 
 /* ==================== VELUNO NOIR — FAZ D: ÖĞRENME EKRANLARI ==================== */
+.v-brand-mini{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#0A0A0A;border:1px solid #242424;overflow:hidden;flex-shrink:0}
+.v-brand-mini.sm{width:28px;height:28px;border-radius:8px}
+.v-brand-mini svg{width:100%;height:100%;display:block}
+.v-brand-mini .v-mini-glow{transform-origin:center;animation:v-mini-breathe 4.2s ease-in-out infinite}
+@keyframes v-mini-breathe{0%,100%{opacity:.58;transform:scale(.95)}50%{opacity:.95;transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.v-brand-mini .v-mini-glow{animation:none;opacity:.75}}
+.ans-actions{width:100%}
 .feedback-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.feedback.feedback-compact{padding:10px 14px;gap:4px;font-size:.92rem}
+.feedback.feedback-compact small{font-size:.8rem}
 .learned-plain{display:inline-block;background:transparent;border:0;padding:0;color:var(--ok);font-weight:600;font-size:.86rem;letter-spacing:.01em}
 
 @keyframes noir-learned-glitch{
@@ -1321,6 +1345,27 @@ blockquote small{display:block;color:var(--tx2);margin-top:4px;font-size:.88rem}
 
 @media (max-width:768px){
   :root[data-theme=veluno-noir] .nb-top-actions .btn.sm{min-height:44px;padding:8px 14px}
+}
+
+@media (max-width:640px){
+  :root[data-theme=veluno-noir] .nb-top-bar,
+  :root[data-theme=veluno-noir] .learn-top-bar{flex-direction:column;align-items:stretch;gap:10px}
+  :root[data-theme=veluno-noir] .nb-top-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
+  :root[data-theme=veluno-noir] .nb-top-actions .btn.sm{width:100%;min-height:44px;padding:8px 6px;font-size:.82rem;white-space:nowrap;justify-content:center}
+  :root[data-theme=veluno-noir] .learn-top-bar .seg{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  :root[data-theme=veluno-noir] .learn-top-bar .seg-btn{min-height:40px;justify-content:center}
+  :root[data-theme=veluno-noir] .learn-cta-row,
+  :root[data-theme=veluno-noir] .nb-resume-row{flex-direction:column;align-items:stretch;gap:8px}
+  :root[data-theme=veluno-noir] .learn-cta-row .btn,
+  :root[data-theme=veluno-noir] .nb-resume-row .btn{width:100%;min-height:46px;white-space:normal;text-align:center;line-height:1.3}
+  :root[data-theme=veluno-noir] .nb-progress-strip{padding:10px 12px;gap:8px}
+}
+
+@media (max-width:390px){
+  :root[data-theme=veluno-noir] .pstop-label{max-width:108px;padding:5px 8px}
+}
+@media (max-width:350px){
+  :root[data-theme=veluno-noir] .pstop-label{max-width:92px;padding:4px 6px}
 }
 
 @media (prefers-reduced-motion:reduce){

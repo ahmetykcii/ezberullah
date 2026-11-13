@@ -1002,8 +1002,8 @@ export function startIrregularStudySession(verbs, mode, title, onReturn) {
   }
 
   if (!pool.length) {
-    if (mode === 'mistakes') toast('Harika! Bu grupta yanlış yaptığınız bir fiil bulunmuyor. 🎉', 'success');
-    else if (mode === 'srs') toast('Şu an tekrar zamanı gelen fiil bulunmuyor. 🎉', 'success');
+    if (mode === 'mistakes') toast('Harika! Bu grupta yanlış yaptığınız bir fiil bulunmuyor.', 'success');
+    else if (mode === 'srs') toast('Şu an tekrar zamanı gelen fiil bulunmuyor.', 'success');
     else toast('Çalışılacak fiil bulunamadı.');
     return false;
   }
@@ -1134,7 +1134,10 @@ export function startIrregularStudySession(verbs, mode, title, onReturn) {
         <p class="hint">${esc(q.subPrompt)}</p>
         <form id="irv-ans-form" autocomplete="off">
           <input id="irv-inp" class="input lg" placeholder="${q.form === 'v2' ? 'Fiilin 2. halini (V2) yazın…' : 'Fiilin 3. halini (V3) yazın…'}" autocapitalize="off" autocorrect="off" spellcheck="false">
-          <button type="submit" class="btn primary xl block">Kontrol Et</button>
+          <div class="ans-actions">
+            <button type="submit" id="irv-check-btn" class="btn primary xl block">Kontrol Et</button>
+            <button type="button" id="irv-next-btn" class="btn primary xl block" hidden>Devam Et</button>
+          </div>
         </form>
       `;
 
@@ -1174,23 +1177,27 @@ export function startIrregularStudySession(verbs, mode, title, onReturn) {
           else if (!isOk && Number(userInput) === i) b.classList.add('bad');
         });
       } else {
-        $$('#qbody input, #qbody button', v).forEach((el) => { el.disabled = true; });
+        const inp = $('#irv-inp', v);
+        if (inp) inp.disabled = true;
+        const chk = $('#irv-check-btn', v);
+        if (chk) { chk.disabled = true; chk.hidden = true; }
       }
 
       const fullForms = `${currentVerb.v1} – ${currentVerb.v2} – ${currentVerb.v3} (${currentVerb.meaning})`;
-      $('#fb', v).innerHTML = `
-        <div class="feedback ${isOk ? 'ok' : 'no'}" role="status">
-          <b>${isOk ? 'Doğru!' : 'Yanlış'}</b>
-          <span>Doğru Cevap: <b>${esc(q.expected)}</b></span>
-          <small>3 Hali: ${esc(fullForms)}</small>
-        </div>
-        <button type="button" class="btn primary xl block" id="irv-next-btn">Devam</button>
-      `;
-      $('#irv-next-btn', v).onclick = () => {
-        idx++;
-        renderStep();
-      };
-      $('#irv-next-btn', v).focus();
+      const fbHtml = isOk
+        ? `<div class="feedback feedback-compact ok" role="status"><div class="feedback-head"><b>Doğru</b><small>${esc(fullForms)}</small></div></div>`
+        : `<div class="feedback feedback-compact no" role="status"><div class="feedback-head"><b>Yanlış</b><span>Doğru cevap: <b>${esc(q.expected)}</b></span></div><small>${esc(fullForms)}</small></div>`;
+      const nextBtn = $('#irv-next-btn', v);
+      if (nextBtn) {
+        $('#fb', v).innerHTML = fbHtml;
+        nextBtn.hidden = false;
+        nextBtn.onclick = () => { idx++; renderStep(); };
+        nextBtn.focus();
+      } else {
+        $('#fb', v).innerHTML = `${fbHtml}<button type="button" class="btn primary xl block" id="irv-next-btn">Devam Et</button>`;
+        $('#irv-next-btn', v).onclick = () => { idx++; renderStep(); };
+        $('#irv-next-btn', v).focus();
+      }
     };
 
     if (q.format === 'mc') {
@@ -1525,32 +1532,32 @@ function renderStudyModesBar(stats, titlePrefix) {
   return `
     <div class="irv-modes-grid">
       <button type="button" class="irv-mode-btn" data-study-mode="cards" ${stats.total ? '' : 'disabled'}>
-        <span class="irv-mode-ic">🃏</span>
+        <span class="irv-mode-ic">${ICONS.book}</span>
         <b>Öğrenme Kartları</b>
         <span class="muted small">V1 · V2 · V3 & Anlam</span>
       </button>
       <button type="button" class="irv-mode-btn" data-study-mode="v2" ${stats.total ? '' : 'disabled'}>
-        <span class="irv-mode-ic">2️⃣</span>
+        <span class="irv-mode-ic">V2</span>
         <b>V2 Testi</b>
         <span class="muted small">go → went</span>
       </button>
       <button type="button" class="irv-mode-btn" data-study-mode="v3" ${stats.total ? '' : 'disabled'}>
-        <span class="irv-mode-ic">3️⃣</span>
+        <span class="irv-mode-ic">V3</span>
         <b>V3 Testi</b>
         <span class="muted small">go → went → gone</span>
       </button>
       <button type="button" class="irv-mode-btn" data-study-mode="mixed" ${stats.total ? '' : 'disabled'}>
-        <span class="irv-mode-ic">⚡</span>
+        <span class="irv-mode-ic">${ICONS.bolt}</span>
         <b>Karışık Test</b>
         <span class="muted small">Çoktan Seçmeli & Yazılı</span>
       </button>
       <button type="button" class="irv-mode-btn" data-study-mode="mistakes" ${stats.mistakes ? '' : 'disabled'}>
-        <span class="irv-mode-ic">🎯</span>
+        <span class="irv-mode-ic">${ICONS.target}</span>
         <b>Yanlışlarım (${stats.mistakes})</b>
         <span class="muted small">V2/V3 Odaklı Tekrar</span>
       </button>
       <button type="button" class="irv-mode-btn primary-mode" data-study-mode="srs" ${stats.due ? '' : 'disabled'}>
-        <span class="irv-mode-ic">🧠</span>
+        <span class="irv-mode-ic">${ICONS.brain}</span>
         <b>SRS Tekrar (${stats.due})</b>
         <span class="muted small">1-3-7-14-30 Gün</span>
       </button>
@@ -1591,7 +1598,7 @@ export function renderIrregularVerbs(v) {
         <div class="irv-choice-grid">
           <!-- SEÇENEK 1: MANUEL EKLE -->
           <button type="button" class="irv-choice-card" id="irv-choose-manual">
-            <div class="irv-choice-icon" aria-hidden="true">✍️</div>
+            <div class="irv-choice-icon" aria-hidden="true">${ICONS.edit}</div>
             <div class="irv-choice-body">
               <h2>Manuel Ekle</h2>
               <p class="muted">Kendi fiillerini ekle ve çalış.</p>
@@ -1605,7 +1612,7 @@ export function renderIrregularVerbs(v) {
 
           <!-- SEÇENEK 2: HAZIR FİİLLER -->
           <button type="button" class="irv-choice-card" id="irv-choose-builtin">
-            <div class="irv-choice-icon" aria-hidden="true">🏛️</div>
+            <div class="irv-choice-icon" aria-hidden="true">${ICONS.book}</div>
             <div class="irv-choice-body">
               <h2>Hazır Fiiller</h2>
               <p class="muted">Hazır düzensiz fiilleri öğren ve tekrar et.</p>
@@ -1658,8 +1665,8 @@ export function renderIrregularVerbs(v) {
                   <div class="row gap wrap">
                     <button type="button" class="btn sm primary" data-list-study="${l.id}" ${st.total ? '' : 'disabled'}>Çalış / Test</button>
                     <button type="button" class="btn sm" data-list-add="${l.id}">＋ Fiil Ekle</button>
-                    <button type="button" class="btn sm ghost" data-list-edit="${l.id}" title="Adı Düzenle">✏️</button>
-                    <button type="button" class="btn sm ghost" data-list-del="${l.id}" title="Listeyi Sil" style="color:var(--no)">🗑️</button>
+                    <button type="button" class="btn sm ghost" data-list-edit="${l.id}" title="Adı Düzenle">${ICONS.edit}</button>
+                    <button type="button" class="btn sm ghost" data-list-del="${l.id}" title="Listeyi Sil" style="color:var(--no)">${ICONS.trash}</button>
                   </div>
                 </div>
                 <div class="progress thin" style="margin-bottom:10px"><i style="width:${st.completion}%"></i></div>

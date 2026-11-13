@@ -11,11 +11,11 @@ const seen = (w) => (state.progress[w.id]?.currentStage || 0) >= 1;
 const P = (w) => state.progress[w.id];
 
 export const MODES = {
-  smart: { name: 'Akıllı Tekrar', desc: 'Aralıklı tekrar (1-3-7-14-30 gün) zamanı gelen kelimeler.', icon: '🧠' },
-  quick: { name: 'Hızlı Tekrar', desc: 'Öğrendiğiniz kelimelerden hızlı çoktan seçmeli tekrar.', icon: '⚡' },
-  mistakes: { name: 'Yanlışlarım', desc: 'En çok yanlış yaptığınız kelimeler.', icon: '🎯' },
-  writing: { name: 'Yazarak Çalışma', desc: 'Türkçe anlamdan İngilizce kelimeyi yazın.', icon: '✍️' },
-  listening: { name: 'Dinleyerek Çalışma', desc: 'Seslendirilen kelimeyi duyup yazın.', icon: '🎧' },
+  smart: { name: 'Akıllı Tekrar', desc: 'Aralıklı tekrar (1-3-7-14-30 gün) zamanı gelen kelimeler.', icon: ICONS.brain },
+  quick: { name: 'Hızlı Tekrar', desc: 'Öğrendiğiniz kelimelerden hızlı çoktan seçmeli tekrar.', icon: ICONS.bolt },
+  mistakes: { name: 'Yanlışlarım', desc: 'En çok yanlış yaptığınız kelimeler.', icon: ICONS.target },
+  writing: { name: 'Yazarak Çalışma', desc: 'Türkçe anlamdan İngilizce kelimeyi yazın.', icon: ICONS.edit },
+  listening: { name: 'Dinleyerek Çalışma', desc: 'Seslendirilen kelimeyi duyup yazın.', icon: ICONS.speaker },
 };
 
 export function candidates(mode, level = '', now = Date.now(), rnd = Math.random) {

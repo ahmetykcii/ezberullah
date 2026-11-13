@@ -213,7 +213,7 @@ function renderItem() {
 export function toggleFocus() { setFocusMode(!document.body.classList.contains('focus')); }
 
 const speakBtn = (t) => `<span class="speak-row"><button type="button" class="speak-btn" data-speak="${esc(t)}" aria-label="Dinle">${ICONS.speaker}</button></span>`;
-const inputForm = (ph) => `<form id="ans" autocomplete="off"><input id="inp" class="input lg" placeholder="${ph}" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" inputmode="text" aria-label="Cevabınız"><button class="btn primary xl block" type="submit">Kontrol Et</button></form>`;
+const inputForm = (ph) => `<form id="ans" autocomplete="off"><input id="inp" class="input lg" placeholder="${ph}" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" inputmode="text" aria-label="Cevabınız"><div class="ans-actions"><button class="btn primary xl block" id="check-btn" type="submit">Kontrol Et</button><button type="button" class="btn primary xl block" id="cont" hidden>Devam Et</button></div></form>`;
 
 function cardDetails(w) {
   const fam = w.wordFamily?.length ? `<div class="kv"><span>Kelime ailesi</span>${esc(w.wordFamily.join(', '))}</div>` : '';
@@ -248,8 +248,8 @@ function wire(item, word) {
     rv.focus();
     return;
   }
-  if (item.type === 'mc') $$('.opt').forEach((b) => { b.onclick = () => { b.classList.add('picked'); submit(+b.dataset.i, +b.dataset.i); }; });
-  else { $('#ans').onsubmit = (e) => { e.preventDefault(); const v = $('#inp').value; if (v.trim()) submit(v, v); }; $('#inp').focus(); }
+  if (item.type === 'mc') $$('.opt').forEach((b) => { b.onclick = () => { if (answered) return; b.classList.add('picked'); submit(+b.dataset.i, +b.dataset.i); }; });
+  else { $('#ans').onsubmit = (e) => { e.preventDefault(); if (answered) return; const v = $('#inp').value; if (v.trim()) submit(v, v); }; $('#inp').focus(); }
   if (item.type === 'listening') speak(word.word);
 }
 
@@ -276,13 +276,24 @@ function showFeedback(ok, word, item, r) {
   qc.classList.add(ok ? 'correct' : 'wrong');
   sfx(ok ? 'ok' : 'bad');
   if (item.type === 'mc') $$('.opt').forEach((b, i) => { b.disabled = true; if (i === curQ.answerIndex) b.classList.add('right'); else if (!ok && b.classList.contains('picked')) b.classList.add('bad'); });
-  $$('#qbody input,#qbody form button').forEach((e) => (e.disabled = true));
-  const ans = `Doğru cevap: ${curQ.display}`;
+  const inp = $('#inp'); if (inp) inp.disabled = true;
+  const checkBtn = $('#check-btn');
+  if (checkBtn) { checkBtn.disabled = true; checkBtn.hidden = true; }
   const learnedTag = ok && r?.learnedNow ? `<span class="learned-plain is-glitch" data-text="✓ Öğrenildi">✓ Öğrenildi</span>` : '';
-  const feedbackText = `<div class="feedback ${ok ? 'ok' : 'no'}" role="status"><div class="feedback-head"><b>${ok ? 'Doğru' : 'Yanlış'}</b>${learnedTag}</div><span>${esc(ans)}</span>
-    ${!ok && cur.kind === 'learn' ? `<small>Kelime "${statusLabel('REVIEW')}" havuzuna alındı; sonraki oturumda öncelikli gösterilecek.</small>` : ''}</div>`;
-  $('#fb').innerHTML = `${feedbackText}<button type="button" class="btn primary xl block" id="cont">Devam</button>`;
-  $('#cont').onclick = renderItem; $('#cont').focus();
+  const feedbackText = ok
+    ? `<div class="feedback feedback-compact ok" role="status"><div class="feedback-head"><b>Doğru</b>${learnedTag}</div></div>`
+    : `<div class="feedback feedback-compact no" role="status"><div class="feedback-head"><b>Yanlış</b><span>Doğru cevap: <b>${esc(curQ.display)}</b></span></div>${cur.kind === 'learn' ? `<small>Sonraki oturumda öncelikli tekrar edilecek.</small>` : ''}</div>`;
+  const contBtn = $('#cont');
+  if (contBtn) {
+    $('#fb').innerHTML = feedbackText;
+    contBtn.hidden = false;
+    contBtn.onclick = renderItem;
+    contBtn.focus();
+  } else {
+    $('#fb').innerHTML = `${feedbackText}<button type="button" class="btn primary xl block" id="cont">Devam Et</button>`;
+    $('#cont').onclick = renderItem;
+    $('#cont').focus();
+  }
 }
 
 /* ---------- Klavye ---------- */

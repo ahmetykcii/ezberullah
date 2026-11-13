@@ -369,6 +369,14 @@ handlers.finalBoss = {
             await startFinalBossExam(list, { restart: true, originHash });
           };
         }
+        const backBtn = $('#fb-back', v);
+        if (backBtn) {
+          backBtn.onclick = (e) => {
+            e.preventDefault();
+            if (location.hash === originHash) window.dispatchEvent(new HashChangeEvent('hashchange'));
+            else location.hash = originHash;
+          };
+        }
       },
     };
   },
@@ -450,40 +458,41 @@ export function openFinalBossModal({ list, originHash = '#/notebook', onChanged 
   }
 
   openModal({
-    title: '👑 Final Boss',
+    title: 'Final Boss',
     html: `<div class="stop-detail fb-modal">${bodyHtml}${footerHtml}</div>`,
     onMount(b, api) {
-      $('[data-x]', b).onclick = api.close;
+      const closeBtn = $('[data-x]', b);
+      if (closeBtn) closeBtn.onclick = api.close;
       const startBtn = $('#fb-modal-start', b);
       if (startBtn) {
         startBtn.onclick = async () => {
           api.close();
-          await startFinalBossExam(list, { restart: true, originHash });
-          if (typeof onChanged === 'function') onChanged();
+          const started = await startFinalBossExam(list, { restart: true, originHash });
+          if (!started && typeof onChanged === 'function') onChanged();
         };
       }
       const resumeBtn = $('#fb-modal-resume', b);
       if (resumeBtn) {
         resumeBtn.onclick = async () => {
           api.close();
-          await startFinalBossExam(list, { restart: false, originHash });
-          if (typeof onChanged === 'function') onChanged();
+          const started = await startFinalBossExam(list, { restart: false, originHash });
+          if (!started && typeof onChanged === 'function') onChanged();
         };
       }
       const remBtn = $('#fb-modal-remediate', b);
       if (remBtn) {
         remBtn.onclick = async () => {
           api.close();
-          await startFinalBossRemediation(list, { originHash });
-          if (typeof onChanged === 'function') onChanged();
+          const started = await startFinalBossRemediation(list, { originHash });
+          if (!started && typeof onChanged === 'function') onChanged();
         };
       }
       const restartBtn = $('#fb-modal-restart', b);
       if (restartBtn) {
         restartBtn.onclick = async () => {
           api.close();
-          await startFinalBossExam(list, { restart: true, originHash });
-          if (typeof onChanged === 'function') onChanged();
+          const started = await startFinalBossExam(list, { restart: true, originHash });
+          if (!started && typeof onChanged === 'function') onChanged();
         };
       }
     },

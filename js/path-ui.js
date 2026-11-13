@@ -109,8 +109,8 @@ export function pathCanvasHtml(summary, lo, hi, kind, extra = {}) {
     const side = x > 50 ? 'left' : 'right';
     if (isBoss) {
       const fbClass = fbPassed ? 'is-done' : (fbUnlocked ? 'is-unlocked' : 'is-locked');
-      const fbIcon = fbPassed ? '✓' : '👑';
-      const fbSub = fbPassed ? '✓ Tamamlandı' : (fbUnlocked ? '👑 Hazır' : '🔒 Kilitli');
+      const fbIcon = fbPassed ? '✓' : '★';
+      const fbSub = fbPassed ? 'Tamamlandı' : (fbUnlocked ? 'Hazır' : 'Kilitli');
       return `<button type="button" class="pstop pstop-boss ${fbClass}" data-final-boss="1" style="left:${x.toFixed(2)}%;top:${y}px"
           aria-label="Final Boss: ${fbPassed ? 'Tamamlandı' : (fbUnlocked ? 'Açık, başlatmak için dokun' : 'Kilitli, önce tüm durakları tamamla')}">
           <span class="pstop-core" aria-hidden="true">${fbIcon}</span>
@@ -184,8 +184,14 @@ const WORD_STATE = {
 export function openStopDetail({ kind, stop, list = null, level = null, onChanged = null }) {
   const ids = (stop.wordIds || []).filter((id) => state.wordMap.has(id));
   const pr = computeStopProgress(ids, state.progress);
-  const filterIds = filterWordsNeedingStudy(ids, state.progress);
-  const filterCount = filterIds.length;
+  const now = Date.now();
+  const reviewOrWrongIds = ids.filter((id) => {
+    const p = state.progress[id];
+    if (!p) return false;
+    const st = wordPathState(p);
+    return st === 'review' || (p.wrongCount > 0 && !p.learningComplete) || (p.nextReview && p.nextReview <= now);
+  });
+  const reviewCount = reviewOrWrongIds.length;
   const rows = ids.map((id) => {
     const w = state.wordMap.get(id);
     const ws = WORD_STATE[wordPathState(state.progress[id])] || WORD_STATE.new;
@@ -202,25 +208,19 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
         </div>
         <div class="progress stop-bar" role="progressbar" aria-valuenow="${pr.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pr.pct}%"></i></div>
         <ul class="stop-words">${rows || '<li class="muted small">Bu durakta kelime yok.</li>'}</ul>
-        ${filterCount === 0 ? '<p class="stop-filter-msg muted small">Şu anda çalışılacak eksik veya tekrar kelime yok.</p>' : ''}
         <div class="stop-actions">
-          <button type="button" class="btn primary block" id="stop-study-filter" ${filterCount ? '' : 'disabled'}>Eksik / Hatalı / Tekrar Çalış ${filterCount ? `(${filterCount})` : ''}</button>
-          <div class="stop-actions-row">
-            <button type="button" class="btn ghost" data-x>Kapat</button>
-            <button type="button" class="btn" id="stop-study" ${ids.length ? '' : 'disabled'}>Bu Duraktaki Kelimeleri Çalış</button>
-          </div>
+          <button type="button" class="btn primary block" id="stop-study" ${ids.length ? '' : 'disabled'}>Bu Duraktaki Kelimeleri Çalış</button>
+          ${reviewCount ? `<div class="stop-actions-row"><button type="button" class="btn sm ghost" id="stop-study-filter">Tekrar (${reviewCount})</button></div>` : ''}
         </div>
       </div>`,
     onMount(b, api) {
-      $('[data-x]', b).onclick = api.close;
+      const closeBtn = $('[data-x]', b);
+      if (closeBtn) closeBtn.onclick = api.close;
 
       const studyFilterBtn = $('#stop-study-filter', b);
       if (studyFilterBtn) {
         studyFilterBtn.onclick = async () => {
-          if (!filterIds.length) {
-            toast('Şu anda çalışılacak eksik veya tekrar kelime yok.');
-            return;
-          }
+          if (!reviewOrWrongIds.length) return;
           const originHash = typeof location !== 'undefined' ? location.hash : '';
           api.close();
           if (kind === 'notebook') {
@@ -230,18 +230,17 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
               listId: list.id,
               mode: 'list',
               userId: list.userId,
-              pathStop: { wordIds: filterIds, stopId: stop.id, number: stop.number, originHash, filterMode: true, label: `${filterIds.length} eksik / tekrar kelime` },
+              pathStop: { wordIds: reviewOrWrongIds, stopId: stop.id, number: stop.number, originHash, filterMode: true, label: `${reviewOrWrongIds.length} tekrar kelime` },
             });
           } else {
             const { startLearn } = await import('./learning.js');
             await startLearn(level, {
               skipModal: true,
-              explicitWordIds: filterIds,
+              explicitWordIds: reviewOrWrongIds,
               pathStop: { stopId: stop.id, number: stop.number, originHash, filterMode: true },
-              title: `${level} — Durak ${stop.number || ''} · Eksik/Tekrar (${filterIds.length} Kelime)`,
+              title: `${level} — Durak ${stop.number || ''} · Tekrar (${reviewOrWrongIds.length} Kelime)`,
             });
           }
-          if (typeof onChanged === 'function') onChanged();
         };
       }
 
@@ -256,7 +255,6 @@ export function openStopDetail({ kind, stop, list = null, level = null, onChange
           const { startLearn } = await import('./learning.js');
           await startLearn(level, { skipModal: true, explicitWordIds: ids, pathStop: { stopId: stop.id, number: stop.number, originHash } });
         }
-        if (typeof onChanged === 'function') onChanged();
       };
     },
   });
